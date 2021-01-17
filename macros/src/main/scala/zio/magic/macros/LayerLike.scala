@@ -12,7 +12,7 @@ trait LayerLike[A] {
 object LayerLike {
   def apply[A: LayerLike]: LayerLike[A] = implicitly[LayerLike[A]]
 
-  implicit def zLayerExprLayerLike[C <: blackbox.Context](implicit c: C): LayerLike[c.Expr[ZLayer[_, _, _]]] =
+  def exprLayerLike[C <: blackbox.Context](c: C): LayerLike[c.Expr[ZLayer[_, _, _]]] =
     new LayerLike[c.Expr[ZLayer[_, _, _]]] {
       import c.universe._
 
@@ -23,4 +23,12 @@ object LayerLike {
         c.Expr(q"""$lhs >>> $rhs""")
 
     }
+
+  implicit final class LayerLikeOps[A: LayerLike](val self: A) {
+    def >>>(that: A): A = LayerLike[A].composeV(self, that)
+  }
+
+  implicit final class LayerLikeIterableOps[A: LayerLike](val self: Iterable[A]) {
+    def combineHorizontally: A = self.reduce(LayerLike[A].composeH)
+  }
 }

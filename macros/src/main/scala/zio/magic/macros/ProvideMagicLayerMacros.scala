@@ -19,7 +19,7 @@ object ProvideMagicLayerMacros {
 
     val graph = ExprGraph(List(), c)
 
-    val layerExpr = graph.buildFinalLayer(getRequirements[Final])
+    val layerExpr = graph.buildLayerFor(getRequirements[Final])
 
     c.Expr[ZIO[Any, Nothing, A]](q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -40,7 +40,7 @@ object ProvideMagicLayerMacros {
 
     val graph = ExprGraph(List(buildNode(layer1)), c)
 
-    val layerExpr = graph.buildFinalLayer(getRequirements[Final])
+    val layerExpr = graph.buildLayerFor(getRequirements[Final])
 
     c.Expr[ZIO[Any, Nothing, A]](q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -91,7 +91,7 @@ object ProvideMagicLayerMacros {
 
     val graph = ExprGraph(List(buildNode(layer1), buildNode(layer2)), c)
 
-    val layerExpr = graph.buildFinalLayer(getRequirements[Final])
+    val layerExpr = graph.buildLayerFor(getRequirements[Final])
 
     c.Expr[ZIO[Any, Nothing, A]](q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -120,7 +120,7 @@ object ProvideMagicLayerMacros {
 
     val graph = ExprGraph(List(buildNode(layer1), buildNode(layer2), buildNode(layer3)), c)
 
-    val layerExpr = graph.buildFinalLayer(getRequirements[Final])
+    val layerExpr = graph.buildLayerFor(getRequirements[Final])
 
     c.Expr[ZIO[Any, Nothing, A]](q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -152,7 +152,7 @@ object ProvideMagicLayerMacros {
 
     val graph = ExprGraph(List(buildNode(layer1), buildNode(layer2), buildNode(layer3), buildNode(layer4)), c)
 
-    val layerExpr = graph.buildFinalLayer(getRequirements[Final])
+    val layerExpr = graph.buildLayerFor(getRequirements[Final])
 
     c.Expr[ZIO[Any, Nothing, A]](q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -188,7 +188,7 @@ object ProvideMagicLayerMacros {
     val graph =
       ExprGraph(List(buildNode(layer1), buildNode(layer2), buildNode(layer3), buildNode(layer4), buildNode(layer5)), c)
 
-    val layerExpr = graph.buildFinalLayer(getRequirements[Final])
+    val layerExpr = graph.buildLayerFor(getRequirements[Final])
 
     c.Expr[ZIO[Any, Nothing, A]](q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
