@@ -1,6 +1,7 @@
 package zio.magic.macros
 
 import zio.ZLayer
+import zio.magic.macros.ExprGraph.LayerExpr
 
 import scala.reflect.macros.blackbox
 
@@ -12,14 +13,14 @@ trait LayerLike[A] {
 object LayerLike {
   def apply[A: LayerLike]: LayerLike[A] = implicitly[LayerLike[A]]
 
-  def exprLayerLike[C <: blackbox.Context](c: C): LayerLike[c.Expr[ZLayer[_, _, _]]] =
+  def exprLayerLike(c: blackbox.Context): LayerLike[LayerExpr[c.type]] =
     new LayerLike[c.Expr[ZLayer[_, _, _]]] {
       import c.universe._
 
-      override def composeH(lhs: c.Expr[ZLayer[_, _, _]], rhs: c.Expr[ZLayer[_, _, _]]): c.Expr[ZLayer[_, _, _]] =
+      override def composeH(lhs: LayerExpr[c.type], rhs: LayerExpr[c.type]): LayerExpr[c.type] =
         c.Expr(q"""$lhs ++ $rhs""")
 
-      override def composeV(lhs: c.Expr[ZLayer[_, _, _]], rhs: c.Expr[ZLayer[_, _, _]]): c.Expr[ZLayer[_, _, _]] =
+      override def composeV(lhs: LayerExpr[c.type], rhs: LayerExpr[c.type]): LayerExpr[c.type] =
         c.Expr(q"""$lhs >>> $rhs""")
 
     }
