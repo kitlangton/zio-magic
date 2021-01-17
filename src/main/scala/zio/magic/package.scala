@@ -19,6 +19,10 @@ package object magic {
   }
 
   implicit final class ZioProvideMagicOps[Final, A](val zio: ZIO[Final, Nothing, A]) extends AnyVal {
+
+    def provideMagicLayer()(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
+      macro ProvideMagicLayerMacros.provideMagicLayer0Impl[Final, A]
+
     def provideMagicLayer[In1, Out1](
         layer1: ZLayer[In1, Nothing, Out1]
     )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =

@@ -9,10 +9,11 @@ addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVers
 
 lazy val dependencies =
   Seq(
-    "dev.zio" %% "zio"          % zioVersion,
-    "dev.zio" %% "zio-macros"   % zioVersion,
-    "dev.zio" %% "zio-test"     % zioVersion % "test",
-    "dev.zio" %% "zio-test-sbt" % zioVersion % "test"
+    "dev.zio"     %% "zio"          % zioVersion,
+    "dev.zio"     %% "zio-macros"   % zioVersion,
+    "dev.zio"     %% "zio-test"     % zioVersion % "test",
+    "dev.zio"     %% "zio-test-sbt" % zioVersion % "test",
+    "com.lihaoyi" %% "fansi"        % "0.2.7"
   )
 
 lazy val root = (project in file("."))
@@ -33,6 +34,7 @@ lazy val macros = (project in file("macros"))
     ),
     libraryDependencies ++= dependencies,
     libraryDependencies ++= Seq(
+      "dev.zio"       %% "zio-prelude"   % "1.0.0-RC1",
       "org.typelevel" %% "cats-core"     % "2.2.0",
       "org.typelevel" %% "cats-free"     % "2.2.0",
       "org.scala-lang" % "scala-reflect" % "2.13.3"

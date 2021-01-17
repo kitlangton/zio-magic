@@ -21,10 +21,12 @@ case class UniverseSyntax[U <: Universe](universe: U) {
       .map(_.dealias.typeArgs.head.toString)
   }
 
-  def buildReqs[I: U#WeakTypeTag, O: U#WeakTypeTag](layer: U#Expr[ZLayer[I, Nothing, O]]): LayerNode = {
+  def buildNode[I: U#WeakTypeTag, O: U#WeakTypeTag](
+      layer: U#Expr[ZLayer[I, Nothing, O]]
+  ): Node[U#Expr[ZLayer[I, Nothing, O]]] = {
     val ins  = getRequirements[I]
     val outs = getRequirements[O]
-    LayerNode(ins, outs, layer)
+    Node(ins, outs, layer)
   }
 
   implicit class TypeOps(tpe: Type) {

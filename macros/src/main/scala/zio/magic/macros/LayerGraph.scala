@@ -1,74 +1,50 @@
 package zio.magic.macros
+import zio.prelude._
 
-import zio.ZLayer
+case class Node[+A](inputs: List[String], outputs: List[String], value: A)
 
-import scala.reflect.api.Exprs
-import scala.reflect.macros.blackbox
+sealed trait GraphError[+A]
 
-case class LayerNode(inputs: List[String], outputs: List[String], expr: Exprs#Expr[ZLayer[_, _, _]])
+object GraphError {
+  case class MissingDependency[+A](node: Node[A], dependency: String) extends GraphError[A]
+  case class MissingTopLevelDependency(requirement: String)           extends GraphError[Nothing]
+}
 
-case class LayerGraph[C <: blackbox.Context](layers: List[LayerNode], c: C) {
-  import cats.implicits._
+case class Graph[A: LayerLike](nodes: List[Node[A]]) {
 
-  def buildFinalLayer(reqs: List[String]): C#Expr[ZLayer[_, _, _]] = {
-    buildFinalLayerEither(reqs) match {
-      case Left(error) =>
-        c.abort(
-          c.enclosingPosition,
-          s"""Graph Construction Failed: $error"""
-        )
-      case Right(value) =>
-        value
+  private def getNodeFor(output: String): Option[Node[A]] =
+    nodes.find(_.outputs.contains(output))
+
+  private def buildNode(node: Node[A]): Validation[GraphError[A], A] = {
+    val childrenEither: Validation[GraphError[A], List[A]] =
+      TraversableOps(node.inputs).foreach { in =>
+        for {
+          out  <- Validation.fromEither(getNodeFor(in).toRight(GraphError.MissingDependency(node, in)))
+          tree <- buildNode(out)
+        } yield tree
+      }
+
+    childrenEither.map { children =>
+      NonEmptyList.fromIterableOption(children) match {
+        case Some(children) =>
+          val combined = NonEmptyTraversableOps(children).reduce(LayerLike[A].composeH)
+          LayerLike[A].composeV(combined, node.value)
+        case None =>
+          node.value
+      }
     }
   }
 
-  private def findLayerFor(output: String): Option[LayerNode] =
-    layers.find(_.outputs.contains(output))
-
-  private def build(layerNode: LayerNode): Either[String, c.Expr[ZLayer[_, _, _]]] = {
-    import c.universe._
-
-    layerNode.inputs
-      .map { in =>
-        for {
-          out  <- findLayerFor(in).toRight(s"Missing $in for `${layerNode.expr.tree}`")
-          tree <- build(out)
-        } yield tree
-      }
-      .sequence
-      .map {
-        case head :: Nil =>
-          c.Expr[ZLayer[_, _, _]](
-            q"${head.asInstanceOf[c.Expr[ZLayer[_, _, _]]]} >>> ${layerNode.expr.asInstanceOf[c.Expr[ZLayer[_, _, _]]]}"
-          )
-        case Nil =>
-          layerNode.expr.asInstanceOf[c.Expr[ZLayer[_, _, _]]]
-        case more =>
-          val reduced = more.reduce { (a, b) =>
-            c.Expr[ZLayer[_, _, _]](
-              q"""$a ++ $b"""
-            )
-          }
-          val reqLayer = layerNode.expr.asInstanceOf[c.Expr[ZLayer[_, _, _]]]
-          c.Expr[ZLayer[_, _, _]](
-            q"""$reduced >>> ${reqLayer}"""
-          )
-      }
-  }
-
-  private def buildFinalLayerEither(output: List[String]): Either[String, C#Expr[ZLayer[_, _, _]]] = {
-    import c.universe._
-
-    output
-      .map(req => findLayerFor(req).toRight(s"No layer provided for ${req}"))
-      .sequence
-      .flatMap(_.map(build).sequence)
+  def buildComplete(output: List[String]): Validation[GraphError[A], A] = {
+    TraversableOps(output)
+      .foreach(req =>
+        Validation.fromEither(
+          getNodeFor(req).toRight(GraphError.MissingTopLevelDependency(req))
+        )
+      )
+      .flatMap(_.map(buildNode).flip)
       .map { layers =>
-        layers.reduce { (a, b) =>
-          c.Expr[ZLayer[_, _, _]](
-            q"""$a ++ $b"""
-          )
-        }
+        layers.reduce(LayerLike[A].composeH)
       }
   }
 

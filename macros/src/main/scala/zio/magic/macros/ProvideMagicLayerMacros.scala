@@ -5,6 +5,25 @@ import zio.{Has, ULayer, URLayer, ZIO, ZLayer}
 import scala.reflect.macros.blackbox
 
 object ProvideMagicLayerMacros {
+  def provideMagicLayer0Impl[
+      Final: c.WeakTypeTag,
+      A
+  ](
+      c: blackbox.Context
+  )()(
+      dummyK: c.Expr[DummyK[Final]]
+  ): c.Expr[ZIO[Any, Nothing, A]] = {
+    val syntax = UniverseSyntax(c)
+    import c.universe._
+    import syntax._
+
+    val graph = ExprGraph(List(), c)
+
+    val layerExpr = graph.buildFinalLayer(getRequirements[Final])
+
+    c.Expr[ZIO[Any, Nothing, A]](q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
+  }
+
   def provideMagicLayer1Impl[
       In1: c.WeakTypeTag,
       Out1: c.WeakTypeTag,
@@ -19,7 +38,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph = LayerGraph(List(buildReqs(layer1)), c)
+    val graph = ExprGraph(List(buildNode(layer1)), c)
 
     val layerExpr = graph.buildFinalLayer(getRequirements[Final])
 
@@ -70,7 +89,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph = LayerGraph(List(buildReqs(layer1), buildReqs(layer2)), c)
+    val graph = ExprGraph(List(buildNode(layer1), buildNode(layer2)), c)
 
     val layerExpr = graph.buildFinalLayer(getRequirements[Final])
 
@@ -99,7 +118,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph = LayerGraph(List(buildReqs(layer1), buildReqs(layer2), buildReqs(layer3)), c)
+    val graph = ExprGraph(List(buildNode(layer1), buildNode(layer2), buildNode(layer3)), c)
 
     val layerExpr = graph.buildFinalLayer(getRequirements[Final])
 
@@ -131,7 +150,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph = LayerGraph(List(buildReqs(layer1), buildReqs(layer2), buildReqs(layer3), buildReqs(layer4)), c)
+    val graph = ExprGraph(List(buildNode(layer1), buildNode(layer2), buildNode(layer3), buildNode(layer4)), c)
 
     val layerExpr = graph.buildFinalLayer(getRequirements[Final])
 
@@ -167,7 +186,7 @@ object ProvideMagicLayerMacros {
     import syntax._
 
     val graph =
-      LayerGraph(List(buildReqs(layer1), buildReqs(layer2), buildReqs(layer3), buildReqs(layer4), buildReqs(layer5)), c)
+      ExprGraph(List(buildNode(layer1), buildNode(layer2), buildNode(layer3), buildNode(layer4), buildNode(layer5)), c)
 
     val layerExpr = graph.buildFinalLayer(getRequirements[Final])
 

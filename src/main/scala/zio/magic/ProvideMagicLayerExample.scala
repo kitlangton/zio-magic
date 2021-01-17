@@ -62,8 +62,9 @@ private object ProvideMagicLayerExample extends App {
     val satisfied: ZIO[ZEnv, Nothing, Unit] =
       program.provideMagicLayer(
         Pie.live,
-        Berries.live,
+        Flour.live,
         Spoon.live,
+        Berries.live,
         Console.live
       )
 
