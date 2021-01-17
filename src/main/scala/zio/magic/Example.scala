@@ -2,10 +2,9 @@ package zio.magic
 import zio._
 import zio.console.Console
 import zio.macros.accessible
-import zio.magic.ProvideMagicLayerExample.Spoon.Spoon
-import zio.magic.macros.DummyK
+import zio.magic.Example.Spoon.Spoon
 
-private object ProvideMagicLayerExample extends App {
+private object Example extends App {
   import Berries.Berries
   import Flour.Flour
   import Pie.Pie
@@ -14,7 +13,7 @@ private object ProvideMagicLayerExample extends App {
     type Spoon = Has[Service]
     case class Service()
 
-    def live: ULayer[Spoon] = ZLayer.succeed(Service())
+    def live: URLayer[Any, Spoon] = ZLayer.succeed(Service())
   }
 
   object Flour {
@@ -55,8 +54,8 @@ private object ProvideMagicLayerExample extends App {
       } yield ()
 
     // Tho old way... oh no!
-    val manualLayer: ULayer[Pie with Console] =
-      ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
+//    val manualLayer: ULayer[Pie with Console] =
+//      ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
 
     // The new way... oh yes!
     val satisfied: ZIO[ZEnv, Nothing, Unit] =
