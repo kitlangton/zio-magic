@@ -16,3 +16,5 @@ val magicallyConnected: UIO[Unit] =
     cLayer
   )
 ```
+
+[tiny slapshod walkthrough video](https://cln.sh/QhhXLu)
