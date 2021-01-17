@@ -50,13 +50,16 @@ Graph Construction Failed:
   Missing "Flour.Service" for "Pie.live"
 ```
 
-*Versus leaving out a dependency the other way* 😭
+
+*Versus leaving out a dependency when manually constructing your layer*  😭
 
 ```scala
  val manualLayer: ULayer[Pie with Console] =
    (Flour.live ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
  // ^ A Spoon is missing here! 
 ```
+
+**RUN AWAY!**
 
 ```scala
 type mismatch;
