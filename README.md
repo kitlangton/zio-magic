@@ -5,7 +5,7 @@ Construct ZLayers automagically (w/ compile-time errors)
 ## Example
 
 ```scala
-  override def run(args: List[String]): URIO[ZEnv, ExitCode] = {
+override def run(args: List[String]): URIO[ZEnv, ExitCode] = {
   val program: ZIO[Console with Pie, Nothing, Unit] =
     for {
       isDelicious <- Pie.isDelicious
@@ -34,13 +34,13 @@ And if you leave something off, a **compile time warning**!
 
 ```scala
 val satisfied: ZIO[ZEnv, Nothing, Unit] =
-    program.provideMagicLayer(
-      Pie.live,
-      // Flour.live, <-- Oops
-      Berries.live,
-      Spoon.live,
-      Console.live
-    )
+  program.provideMagicLayer(
+    Pie.live,
+    // Flour.live, <-- Oops
+    Berries.live,
+    Spoon.live,
+    Console.live
+  )
 ```
 
 ```scala
