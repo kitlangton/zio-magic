@@ -45,7 +45,7 @@ val satisfied: ZIO[ZEnv, Nothing, Unit] =
   )
 ```
 
-```scala
+```shell
 [error] /Users/kit/code/zio-magic/src/main/scala/zio/magic/ProvideMagicLayerExample.scala:63:32:
 [error] 🪄  ZLayer Magic Missing Components
 [error] 🪄
@@ -65,7 +65,7 @@ val satisfied: ZIO[ZEnv, Nothing, Unit] =
 
 **RUN AWAY!**
 
-```scala
+```shell
 type mismatch;
  found   : zio.ZLayer[zio.magic.ProvideMagicLayerExample.Spoon.Spoon with Any,Nothing,zio.magic.ProvideMagicLayerExample.Pie.Pie with zio.console.Console]
     (which expands to)  zio.ZLayer[zio.Has[zio.magic.ProvideMagicLayerExample.Spoon.Service] with Any,Nothing,zio.Has[zio.magic.ProvideMagicLayerExample.Pie.Service] with zio.Has[zio.console.Console.Service]]
