@@ -2,39 +2,72 @@ package zio.magic
 import zio._
 import zio.console.Console
 import zio.macros.accessible
-import zio.magic.ProvideMagicLayerExample.FooServiceK.FooServiceK
+import zio.magic.ProvideMagicLayerExample.Spoon.Spoon
+import zio.magic.macros.DummyK
 
 private object ProvideMagicLayerExample extends App {
-  @accessible
-  object FooServiceK {
-    type FooServiceK[A] = Has[Service[A]]
+  import Berries.Berries
+  import Flour.Flour
+  import Pie.Pie
 
-    trait Service[A] {
-      def value: UIO[A]
+  object Spoon {
+    type Spoon = Has[Service]
+    case class Service()
+
+    def live: ULayer[Spoon] = ZLayer.succeed(Service())
+  }
+
+  object Flour {
+    type Flour = Has[Service]
+    case class Service()
+
+    def live: URLayer[Spoon, Flour] = ZLayer.succeed(Service())
+  }
+
+  object Berries {
+    type Berries = Has[Service]
+    case class Service()
+
+    def live: URLayer[Spoon, Berries] = ZLayer.succeed(Service())
+  }
+
+  @accessible
+  object Pie {
+    type Pie = Has[Service]
+    trait Service {
+      def isDelicious: UIO[Boolean]
     }
 
-    def live[A: Tag](value0: A): ULayer[FooServiceK[A]] = ZLayer.succeed(new Service[A] {
-      def value: UIO[A] = UIO(value0)
+    val test: ULayer[Pie] = ZLayer.succeed(new Pie.Service {
+      override def isDelicious: UIO[Boolean] = UIO(false)
+    })
+
+    val live: URLayer[Flour with Berries, Pie] = ZLayer.succeed(new Pie.Service {
+      override def isDelicious: UIO[Boolean] = UIO(true)
     })
   }
 
-  val complicatedBooleanLayer: ZLayer[FooServiceK[Int], Nothing, Has[Boolean]] =
-    FooServiceK.value[Int].map { _ % 2 == 0 }.toLayer
-
-  override def run(args: List[String]): URIO[zio.ZEnv, ExitCode] = {
-    val program: ZIO[Console with Has[Boolean], Nothing, Unit] =
+  override def run(args: List[String]): URIO[ZEnv, ExitCode] = {
+    val program: ZIO[Console with Pie, Nothing, Unit] =
       for {
-        boolean <- ZIO.service[Boolean]
-        _       <- zio.console.putStrLn(s"Result: $boolean")
+        isDelicious <- Pie.isDelicious
+        _           <- console.putStrLn(s"Pie is delicious: $isDelicious")
       } yield ()
 
-    program
-      .provideMagicLayer(
-        ZEnv.live,
-        complicatedBooleanLayer,
-        FooServiceK.live(12)
+    // Tho old way... oh no!
+    val manualLayer: ULayer[Pie with Console] =
+      ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
+
+    // The new way... oh yes!
+    val satisfied: ZIO[ZEnv, Nothing, Unit] =
+      program.provideMagicLayer(
+        Pie.live,
+        Berries.live,
+        Spoon.live,
+        Console.live
       )
-      .exitCode
+
+    satisfied.exitCode
   }
 
 }

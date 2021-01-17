@@ -5,6 +5,12 @@ import zio.magic.macros._
 package object magic {
   import scala.language.experimental.macros
 
+//  def buildMagicLayer[In1, Out1, In2, Out2, Out <: Has[_]](
+//      layer1: URLayer[In1, Out1],
+//      layer2: URLayer[In2, Out2]
+//  )(implicit dummyK: DummyK[Out]): ULayer[Out] =
+//    macro ProvideMagicLayerMacros.makeLayerImpl[In1, Out1, In2, Out2, Out]
+
   implicit final class ZioProvideSomeMagicOps[Require](val zio: ZIO[Require, Nothing, Unit]) extends AnyVal {
     def provideSomeMagicLayer[Provide, Remainder <: Require](
         zlayer: ZLayer[Any, Nothing, Provide]

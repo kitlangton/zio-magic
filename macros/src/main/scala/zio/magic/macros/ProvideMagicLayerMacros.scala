@@ -1,6 +1,6 @@
 package zio.magic.macros
 
-import zio.{ZIO, ZLayer}
+import zio.{Has, ULayer, URLayer, ZIO, ZLayer}
 
 import scala.reflect.macros.blackbox
 
@@ -24,6 +24,34 @@ object ProvideMagicLayerMacros {
     val layerExpr = graph.buildFinalLayer(getRequirements[Final])
 
     c.Expr[ZIO[Any, Nothing, A]](q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
+  }
+
+  def makeLayerImpl[
+      I1: c.WeakTypeTag, //
+      O1: c.WeakTypeTag,
+      I2: c.WeakTypeTag,
+      O2: c.WeakTypeTag,
+      Out <: Has[_]: c.WeakTypeTag
+  ](
+      c: blackbox.Context
+  )(layer1: c.Expr[URLayer[I1, O1]], layer2: c.Expr[URLayer[I2, O2]])(
+      dummyK: c.Expr[DummyK[Out]]
+  ): c.Expr[ULayer[Out]] = {
+    import c.universe._
+
+    val tree =
+      q"""
+        zio.ZIO
+          .environment[${weakTypeOf[Out]}]
+          .provideMagicLayer($layer1, $layer2)
+          .toLayerMany
+           """
+
+    println("KITTT", tree)
+
+    c.Expr[ULayer[Out]] {
+      tree
+    }
   }
 
   def provideMagicLayer2Impl[
