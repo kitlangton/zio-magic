@@ -46,12 +46,11 @@ val satisfied: ZIO[ZEnv, Nothing, Unit] =
 ```
 
 ```shell
-[error] /Users/kit/code/zio-magic/src/main/scala/zio/magic/ProvideMagicLayerExample.scala:63:32:
-[error] 🪄  ZLayer Magic Missing Components
-[error] 🪄
-[error] 🪄  provide zio.magic.ProvideMagicLayerExample.Spoon.Service
-[error] 🪄      for ProvideMagicLayerExample.this.Flour.live
-[error] 🪄      and ProvideMagicLayerExample.this.Berries.live
+/Users/kit/code/zio-magic/src/main/scala/zio/magic/Example.scala:63:32:
+🪄  ZLayer Magic Missing Components
+🪄
+🪄  provide zio.magic.Example.Spoon.Service
+🪄      for Example.this.Flour.live
 ```
 
 
@@ -67,9 +66,9 @@ val satisfied: ZIO[ZEnv, Nothing, Unit] =
 
 ```shell
 type mismatch;
- found   : zio.ZLayer[zio.magic.ProvideMagicLayerExample.Spoon.Spoon with Any,Nothing,zio.magic.ProvideMagicLayerExample.Pie.Pie with zio.console.Console]
-    (which expands to)  zio.ZLayer[zio.Has[zio.magic.ProvideMagicLayerExample.Spoon.Service] with Any,Nothing,zio.Has[zio.magic.ProvideMagicLayerExample.Pie.Service] with zio.Has[zio.console.Console.Service]]
- required: zio.ULayer[zio.magic.ProvideMagicLayerExample.Pie.Pie with zio.console.Console]
-    (which expands to)  zio.ZLayer[Any,Nothing,zio.Has[zio.magic.ProvideMagicLayerExample.Pie.Service] with zio.Has[zio.console.Console.Service]]
+ found   : zio.ZLayer[zio.magic.Example.Spoon.Spoon with Any,Nothing,zio.magic.Example.Pie.Pie with zio.console.Console]
+    (which expands to)  zio.ZLayer[zio.Has[zio.magic.Example.Spoon.Service] with Any,Nothing,zio.Has[zio.magic.Example.Pie.Service] with zio.Has[zio.console.Console.Service]]
+ required: zio.ULayer[zio.magic.Example.Pie.Pie with zio.console.Console]
+    (which expands to)  zio.ZLayer[Any,Nothing,zio.Has[zio.magic.Example.Pie.Service] with zio.Has[zio.console.Console.Service]]
       ((Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
 ```
