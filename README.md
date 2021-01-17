@@ -1,6 +1,8 @@
 # zio-magic
 
-Construct ZLayers automagically (w/ compile-time errors)
+Construct ZLayers automagically (w/ compile-time errors) 
+
+[tiny slapshod walkthrough video](https://cln.sh/QhhXLu)
 
 ## Example
 
@@ -48,4 +50,19 @@ Graph Construction Failed:
   Missing "Flour.Service" for "Pie.live"
 ```
 
-[tiny slapshod walkthrough video](https://cln.sh/QhhXLu)
+*Versus leaving out a dependency the other way* 😭
+
+```scala
+ val manualLayer: ULayer[Pie with Console] =
+   (Flour.live ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
+ // ^ A Spoon is missing here! 
+```
+
+```scala
+type mismatch;
+ found   : zio.ZLayer[zio.magic.ProvideMagicLayerExample.Spoon.Spoon with Any,Nothing,zio.magic.ProvideMagicLayerExample.Pie.Pie with zio.console.Console]
+    (which expands to)  zio.ZLayer[zio.Has[zio.magic.ProvideMagicLayerExample.Spoon.Service] with Any,Nothing,zio.Has[zio.magic.ProvideMagicLayerExample.Pie.Service] with zio.Has[zio.console.Console.Service]]
+ required: zio.ULayer[zio.magic.ProvideMagicLayerExample.Pie.Pie with zio.console.Console]
+    (which expands to)  zio.ZLayer[Any,Nothing,zio.Has[zio.magic.ProvideMagicLayerExample.Pie.Service] with zio.Has[zio.console.Console.Service]]
+      ((Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
+```
