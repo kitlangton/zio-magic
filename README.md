@@ -38,9 +38,9 @@ And if you leave something off, a **compile time warning**!
 val satisfied: ZIO[ZEnv, Nothing, Unit] =
   program.provideMagicLayer(
     Pie.live,
-    // Flour.live, <-- Oops
+    Flour.live,
     Berries.live,
-    Spoon.live,
+    // Spoon.live, <-- Oops
     Console.live
   )
 ```
