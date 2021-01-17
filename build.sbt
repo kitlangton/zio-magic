@@ -40,3 +40,15 @@ lazy val macros = (project in file("macros"))
       "org.scala-lang" % "scala-reflect" % "2.13.3"
     )
   )
+
+lazy val codegen = (project in file("codegen"))
+  .settings(
+    name := "zio-magic",
+    scalacOptions ++= Seq(
+      "-Ymacro-annotations"
+    ),
+    libraryDependencies ++= dependencies,
+    libraryDependencies ++= Seq(
+      "org.scalameta" %% "scalameta" % "4.4.6"
+    )
+  )
