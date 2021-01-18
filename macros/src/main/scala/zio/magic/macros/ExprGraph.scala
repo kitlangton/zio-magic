@@ -8,14 +8,18 @@ import scala.reflect.api.Position
 import scala.reflect.macros.blackbox
 
 case class ExprGraph[C <: blackbox.Context](graph: Graph[LayerExpr[C]], c: C) {
+  import c.universe._
 
   def buildLayerFor(output: List[String]): LayerExpr[C] =
-    graph.buildComplete(output) match {
-      case Validation.Failure(errors) =>
-        c.abort(c.enclosingPosition, renderErrors(errors))
-      case Validation.Success(value) =>
-        value
-    }
+    if (output.isEmpty)
+      c.Expr[ZLayer[_, _, _]](q"""zio.ZLayer.succeed(())""").asInstanceOf[LayerExpr[C]]
+    else
+      graph.buildComplete(output) match {
+        case Validation.Failure(errors) =>
+          c.abort(c.enclosingPosition, renderErrors(errors))
+        case Validation.Success(value) =>
+          value
+      }
 
   private def renderErrors(errors: NonEmptyChunk[GraphError[LayerExpr[C]]]): String = {
     val errorMessage =
