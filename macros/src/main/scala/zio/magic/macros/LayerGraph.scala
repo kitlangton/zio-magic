@@ -1,5 +1,4 @@
 package zio.magic.macros
-import zio.ZLayer
 import zio.magic.macros.LayerLike._
 import zio.prelude._
 

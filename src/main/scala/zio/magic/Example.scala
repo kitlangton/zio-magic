@@ -3,7 +3,6 @@ import zio._
 import zio.console.Console
 import zio.macros.accessible
 import zio.magic.Example.Spoon.Spoon
-import zio.test.environment.{Live, TestConsole}
 
 private object Example extends App {
   import Berries.Berries

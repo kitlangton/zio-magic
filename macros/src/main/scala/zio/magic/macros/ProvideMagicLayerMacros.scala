@@ -1,6 +1,6 @@
 package zio.magic.macros
 
-import zio.{Has, ULayer, URLayer, ZIO, ZLayer}
+import zio._
 
 import scala.reflect.macros.blackbox
 

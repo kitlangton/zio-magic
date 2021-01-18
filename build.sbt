@@ -9,12 +9,16 @@ addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVers
 
 lazy val dependencies =
   Seq(
-    "dev.zio"     %% "zio"          % zioVersion,
-    "dev.zio"     %% "zio-macros"   % zioVersion,
-    "dev.zio"     %% "zio-test"     % zioVersion % "test",
-    "dev.zio"     %% "zio-test-sbt" % zioVersion % "test",
-    "com.lihaoyi" %% "fansi"        % "0.2.7"
+    "dev.zio"     %% "zio"               % zioVersion,
+    "dev.zio"     %% "zio-macros"        % zioVersion,
+    "dev.zio"     %% "zio-test"          % zioVersion % "test",
+    "dev.zio"     %% "zio-test-sbt"      % zioVersion % "test",
+    "dev.zio"     %% "zio-test-magnolia" % zioVersion % "test",
+    "dev.zio"     %% "zio-test-intellij" % zioVersion % "test",
+    "com.lihaoyi" %% "fansi"             % "0.2.7"
   )
+
+testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
 
 lazy val root = (project in file("."))
   .settings(

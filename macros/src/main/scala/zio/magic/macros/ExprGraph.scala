@@ -1,10 +1,9 @@
 package zio.magic.macros
 
 import zio.magic.macros.ExprGraph.LayerExpr
-import zio.{NonEmptyChunk, ZLayer}
 import zio.prelude.Validation
+import zio.{NonEmptyChunk, ZLayer}
 
-import scala.reflect.api.Position
 import scala.reflect.macros.blackbox
 
 case class ExprGraph[C <: blackbox.Context](graph: Graph[LayerExpr[C]], c: C) {
