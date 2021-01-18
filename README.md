@@ -1,4 +1,4 @@
-# zio-magic
+# 🪄 zio-magic
 
 Construct ZLayers automagically (w/ compile-time errors) 
 
