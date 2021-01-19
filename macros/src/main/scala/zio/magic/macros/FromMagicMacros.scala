@@ -4,11 +4,10 @@ import zio.{Has, ZLayer}
 
 import scala.reflect.macros.blackbox
 
-object FromMagicMacros {
+class FromMagicMacros(val c: blackbox.Context) extends MacroUtils {
+  import c.universe._
 
-  private def assertEnvIsNotNothing[Out <: Has[_]: c.WeakTypeTag, E](c: blackbox.Context): c.Type = {
-    import c.universe._
-
+  private def assertEnvIsNotNothing[Out <: Has[_]: c.WeakTypeTag]: Unit = {
     val outType     = weakTypeOf[Out]
     val nothingType = weakTypeOf[Nothing]
     if (outType == nothingType) {
@@ -20,7 +19,6 @@ object FromMagicMacros {
            |""".stripMargin
       c.abort(c.enclosingPosition, errorMessage)
     }
-    outType
   }
 
   // GENERATED FROM HERE ON
@@ -29,14 +27,9 @@ object FromMagicMacros {
       E,
       Out <: Has[_]: c.WeakTypeTag
   ](
-      c: blackbox.Context
-  )()(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out]
 
     val layerExpr = ExprGraph(
       List(
@@ -52,15 +45,10 @@ object FromMagicMacros {
       Out1: c.WeakTypeTag,
       E,
       Out <: Has[_]: c.WeakTypeTag
-  ](
-      c: blackbox.Context
-  )(layer1: c.Expr[ZLayer[In1, E, Out1]])(
+  ](layer1: c.Expr[ZLayer[In1, E, Out1]])(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out]
 
     val layerExpr = ExprGraph(
       List(
@@ -79,15 +67,10 @@ object FromMagicMacros {
       Out2: c.WeakTypeTag,
       E,
       Out <: Has[_]: c.WeakTypeTag
-  ](
-      c: blackbox.Context
-  )(layer1: c.Expr[ZLayer[In1, E, Out1]], layer2: c.Expr[ZLayer[In2, E, Out2]])(
+  ](layer1: c.Expr[ZLayer[In1, E, Out1]], layer2: c.Expr[ZLayer[In2, E, Out2]])(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out]
 
     val layerExpr = ExprGraph(
       List(
@@ -109,15 +92,10 @@ object FromMagicMacros {
       Out3: c.WeakTypeTag,
       E,
       Out <: Has[_]: c.WeakTypeTag
-  ](
-      c: blackbox.Context
-  )(layer1: c.Expr[ZLayer[In1, E, Out1]], layer2: c.Expr[ZLayer[In2, E, Out2]], layer3: c.Expr[ZLayer[In3, E, Out3]])(
+  ](layer1: c.Expr[ZLayer[In1, E, Out1]], layer2: c.Expr[ZLayer[In2, E, Out2]], layer3: c.Expr[ZLayer[In3, E, Out3]])(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out]
 
     val layerExpr = ExprGraph(
       List(
@@ -143,8 +121,6 @@ object FromMagicMacros {
       E,
       Out <: Has[_]: c.WeakTypeTag
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -152,10 +128,7 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out]
 
     val layerExpr = ExprGraph(
       List(
@@ -184,8 +157,6 @@ object FromMagicMacros {
       E,
       Out <: Has[_]: c.WeakTypeTag
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -194,10 +165,7 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out]
 
     val layerExpr = ExprGraph(
       List(
@@ -229,8 +197,6 @@ object FromMagicMacros {
       E,
       Out <: Has[_]: c.WeakTypeTag
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -240,10 +206,7 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out]
 
     val layerExpr = ExprGraph(
       List(
@@ -278,8 +241,6 @@ object FromMagicMacros {
       E,
       Out <: Has[_]: c.WeakTypeTag
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -290,10 +251,7 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out]
 
     val layerExpr = ExprGraph(
       List(
@@ -331,8 +289,6 @@ object FromMagicMacros {
       E,
       Out <: Has[_]: c.WeakTypeTag
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -344,10 +300,7 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out]
 
     val layerExpr = ExprGraph(
       List(
@@ -388,8 +341,6 @@ object FromMagicMacros {
       E,
       Out <: Has[_]: c.WeakTypeTag
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -402,10 +353,7 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out]
 
     val layerExpr = ExprGraph(
       List(
@@ -449,8 +397,6 @@ object FromMagicMacros {
       E,
       Out <: Has[_]: c.WeakTypeTag
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -464,10 +410,7 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out]
 
     val layerExpr = ExprGraph(
       List(
@@ -514,8 +457,6 @@ object FromMagicMacros {
       E,
       Out <: Has[_]: c.WeakTypeTag
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -530,10 +471,7 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out]
 
     val layerExpr = ExprGraph(
       List(
@@ -583,8 +521,6 @@ object FromMagicMacros {
       E,
       Out <: Has[_]: c.WeakTypeTag
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -600,10 +536,7 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out]
 
     val layerExpr = ExprGraph(
       List(
@@ -656,8 +589,6 @@ object FromMagicMacros {
       E,
       Out <: Has[_]: c.WeakTypeTag
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -674,10 +605,7 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out]
 
     val layerExpr = ExprGraph(
       List(
@@ -733,8 +661,6 @@ object FromMagicMacros {
       E,
       Out <: Has[_]: c.WeakTypeTag
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -752,10 +678,7 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out]
 
     val layerExpr = ExprGraph(
       List(
@@ -814,8 +737,6 @@ object FromMagicMacros {
       E,
       Out <: Has[_]: c.WeakTypeTag
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -834,10 +755,7 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out]
 
     val layerExpr = ExprGraph(
       List(

@@ -67,8 +67,11 @@ object ExprGraph {
     ExprGraph[C](Graph(layers)(LayerLike.exprLayerLike(c).asInstanceOf[LayerLike[LayerExpr[C]]]), c)
 
   def buildLayer[C <: blackbox.Context, R: c.WeakTypeTag](layers: List[Node[LayerExpr[C]]], c: C): LayerExpr[C] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
+    val syntax = new MacroUtils {
+      override val c: blackbox.Context = c
+    }
+    import syntax.{c => _, _}
+
     ExprGraph[C](layers, c)
       .buildLayerFor(getRequirements[R])
   }

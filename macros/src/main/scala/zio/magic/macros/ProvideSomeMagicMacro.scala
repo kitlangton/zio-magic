@@ -4,23 +4,19 @@ import zio.{Has, ZLayer}
 
 import scala.reflect.macros.whitebox
 
-object ProvideSomeMagicMacro {
+class ProvideSomeMagicMacro(val c: whitebox.Context) extends MacroUtils {
+  import c.universe._
+
   def provideSomeMagicImpl[
       Require: c.WeakTypeTag,
       Provide: c.WeakTypeTag,
       Remainder <: Require
   ](
-      c: whitebox.Context
-  )(
       zlayer: c.Expr[ZLayer[Any, Nothing, Provide]]
   )(
       dummyK: c.Expr[DummyK[Require]]
   ): c.Tree = {
-    val syntax = UniverseSyntax(c)
-
-    import c.universe._
     import compat._
-    import syntax._
 
     val zioSymbol = typeOf[Has[_]].typeSymbol
 

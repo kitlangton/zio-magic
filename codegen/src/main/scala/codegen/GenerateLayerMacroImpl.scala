@@ -24,16 +24,10 @@ object GenerateLayerMacroImpl {
     E: c.WeakTypeTag,
     A
   ](
-     c: blackbox.Context
-   )(
    ${allLayerArgs(int)}
    )(
      dummyK: c.Expr[DummyK[R]]
    ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
-
     val layerExpr = ExprGraph(List(${layerNodes(int)}), c)
       .graph.buildLayerFor(getRequirements[R])
 

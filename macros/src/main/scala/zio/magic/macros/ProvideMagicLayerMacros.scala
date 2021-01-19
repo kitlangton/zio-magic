@@ -4,21 +4,17 @@ import zio._
 
 import scala.reflect.macros.blackbox
 
-object ProvideMagicLayerMacros {
+class ProvideMagicLayerMacros(val c: blackbox.Context) extends MacroUtils {
+  import c.universe._
 
   def provideMagicLayer0Impl[
       R: c.WeakTypeTag,
       E: c.WeakTypeTag,
       A
   ](
-      c: blackbox.Context
-  )(
   )(
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
 
     val layerExpr = ExprGraph(List(), c).buildLayerFor(getRequirements[R])
 
@@ -32,15 +28,10 @@ object ProvideMagicLayerMacros {
       E: c.WeakTypeTag,
       A
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]]
   )(
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
 
     val layerExpr = ExprGraph(List(buildNode(layer1)), c).buildLayerFor(getRequirements[R])
 
@@ -56,16 +47,11 @@ object ProvideMagicLayerMacros {
       E: c.WeakTypeTag,
       A
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]]
   )(
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
 
     val layerExpr = ExprGraph(List(buildNode(layer1), buildNode(layer2)), c).buildLayerFor(getRequirements[R])
 
@@ -83,17 +69,12 @@ object ProvideMagicLayerMacros {
       E: c.WeakTypeTag,
       A
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]]
   )(
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
 
     val layerExpr = ExprGraph(List(buildNode(layer1), buildNode(layer2), buildNode(layer3)), c)
       .buildLayerFor(getRequirements[R])
@@ -114,8 +95,6 @@ object ProvideMagicLayerMacros {
       E: c.WeakTypeTag,
       A
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -123,9 +102,6 @@ object ProvideMagicLayerMacros {
   )(
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
 
     val layerExpr = ExprGraph(List(buildNode(layer1), buildNode(layer2), buildNode(layer3), buildNode(layer4)), c)
       .buildLayerFor(getRequirements[R])
@@ -148,8 +124,6 @@ object ProvideMagicLayerMacros {
       E: c.WeakTypeTag,
       A
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -158,9 +132,6 @@ object ProvideMagicLayerMacros {
   )(
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
 
     val layerExpr = ExprGraph(
       List(buildNode(layer1), buildNode(layer2), buildNode(layer3), buildNode(layer4), buildNode(layer5)),
@@ -187,8 +158,6 @@ object ProvideMagicLayerMacros {
       E: c.WeakTypeTag,
       A
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -198,9 +167,6 @@ object ProvideMagicLayerMacros {
   )(
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
 
     val layerExpr = ExprGraph(
       List(
@@ -236,8 +202,6 @@ object ProvideMagicLayerMacros {
       E: c.WeakTypeTag,
       A
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -248,9 +212,6 @@ object ProvideMagicLayerMacros {
   )(
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
 
     val layerExpr = ExprGraph(
       List(
@@ -289,8 +250,6 @@ object ProvideMagicLayerMacros {
       E: c.WeakTypeTag,
       A
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -302,9 +261,6 @@ object ProvideMagicLayerMacros {
   )(
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
 
     val layerExpr = ExprGraph(
       List(
@@ -346,8 +302,6 @@ object ProvideMagicLayerMacros {
       E: c.WeakTypeTag,
       A
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -360,9 +314,6 @@ object ProvideMagicLayerMacros {
   )(
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
 
     val layerExpr = ExprGraph(
       List(
@@ -407,8 +358,6 @@ object ProvideMagicLayerMacros {
       E: c.WeakTypeTag,
       A
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -422,9 +371,6 @@ object ProvideMagicLayerMacros {
   )(
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
 
     val layerExpr = ExprGraph(
       List(
@@ -472,8 +418,6 @@ object ProvideMagicLayerMacros {
       E: c.WeakTypeTag,
       A
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -488,9 +432,6 @@ object ProvideMagicLayerMacros {
   )(
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
 
     val layerExpr = ExprGraph(
       List(
@@ -541,8 +482,6 @@ object ProvideMagicLayerMacros {
       E: c.WeakTypeTag,
       A
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -558,9 +497,6 @@ object ProvideMagicLayerMacros {
   )(
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
 
     val layerExpr = ExprGraph(
       List(
@@ -614,8 +550,6 @@ object ProvideMagicLayerMacros {
       E: c.WeakTypeTag,
       A
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -632,9 +566,6 @@ object ProvideMagicLayerMacros {
   )(
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
 
     val layerExpr = ExprGraph(
       List(
@@ -691,8 +622,6 @@ object ProvideMagicLayerMacros {
       E: c.WeakTypeTag,
       A
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -710,9 +639,6 @@ object ProvideMagicLayerMacros {
   )(
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
 
     val layerExpr = ExprGraph(
       List(
@@ -772,8 +698,6 @@ object ProvideMagicLayerMacros {
       E: c.WeakTypeTag,
       A
   ](
-      c: blackbox.Context
-  )(
       layer1: c.Expr[ZLayer[In1, E, Out1]],
       layer2: c.Expr[ZLayer[In2, E, Out2]],
       layer3: c.Expr[ZLayer[In3, E, Out3]],
@@ -792,9 +716,6 @@ object ProvideMagicLayerMacros {
   )(
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
-    val syntax = UniverseSyntax(c)
-    import c.universe._
-    import syntax._
 
     val layerExpr = ExprGraph(
       List(

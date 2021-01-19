@@ -55,6 +55,7 @@ private object Example extends App {
       } yield 3
 
     // Tho old way... oh no!
+
     val manualLayer: ULayer[Pie with Console] =
       ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
 

@@ -26,15 +26,10 @@ object GenerateFromMagicMacroImpl {
       ${layerTypes(n)}
       E,
       Out <: Has[_]: c.WeakTypeTag
-  ](
-      c: blackbox.Context
-  )(${allLayerArgs(n)})(
+  ](${allLayerArgs(n)})(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    val syntax = UniverseSyntax(c)
-    import syntax._
-
-    assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing[Out, E]
 
     val layerExpr = ExprGraph(
       List(
