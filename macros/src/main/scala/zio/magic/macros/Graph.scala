@@ -7,9 +7,9 @@ case class Node[+A](inputs: List[String], outputs: List[String], value: A)
 sealed trait GraphError[+A]
 
 object GraphError {
-  case class MissingDependency[+A](node: Node[A], dependency: String)   extends GraphError[A]
-  case class MissingTopLevelDependency(requirement: String)             extends GraphError[Nothing]
-  case class CircularDependency[+A](node: Node[A], dependency: Node[A]) extends GraphError[A]
+  case class MissingDependency[+A](node: Node[A], dependency: String)                   extends GraphError[A]
+  case class MissingTopLevelDependency(requirement: String)                             extends GraphError[Nothing]
+  case class CircularDependency[+A](node: Node[A], dependency: Node[A], depth: Int = 0) extends GraphError[A]
 }
 
 case class Graph[A: LayerLike](nodes: List[Node[A]]) {
@@ -17,7 +17,7 @@ case class Graph[A: LayerLike](nodes: List[Node[A]]) {
   def buildComplete(outputs: List[String]): Validation[GraphError[A], A] =
     TraversableOps(outputs)
       .foreach(output => getNodeWithOutput(output, error = GraphError.MissingTopLevelDependency(output)))
-      .flatMap(nodes => nodes.map(buildNode(_, nodes.toSet)).flip)
+      .flatMap(_.map(node => buildNode(node, Set(node))).flip)
       .map(_.combineHorizontally)
 
   private def getNodeWithOutput[E](output: String, error: E = ()): Validation[E, Node[A]] =
@@ -49,7 +49,7 @@ case class Graph[A: LayerLike](nodes: List[Node[A]]) {
       dependency: Node[A]
   ): Validation[GraphError.CircularDependency[A], Unit] =
     if (seen(dependency))
-      Validation.fail(GraphError.CircularDependency(node, dependency))
+      Validation.fail(GraphError.CircularDependency(node, dependency, seen.size))
     else
       Validation.unit
 

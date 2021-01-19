@@ -47,7 +47,7 @@ private object Example extends App {
   }
 
   override def run(args: List[String]): URIO[ZEnv, ExitCode] = {
-    val program: ZIO[Console with Pie, Nothing, Int] =
+    val program: ZIO[Console with Pie with Berries, Nothing, Int] =
       for {
         isDelicious <- Pie.isDelicious
         _           <- console.putStrLn(s"Pie is delicious: $isDelicious")
@@ -56,15 +56,21 @@ private object Example extends App {
 
     // Tho old way... oh no!
 
-    val manualLayer: ULayer[Pie with Console] =
-      ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
+//    val manualLayer: ULayer[Pie with Console] =
+//      ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
 
     // The new way... oh yes!
     val satisfied: ZIO[Any, Nothing, Int] =
-      program.provideMagicLayer(Pie.live, Flour.live, Spoon.live, Berries.live, ZEnv.live)
+      program.provideMagicLayer(
+        Pie.live,
+        Flour.live,
+        Berries.live,
+        Spoon.live,
+        ZEnv.live
+      )
 
-    val `or just build the layer`: ULayer[Pie] =
-      ZLayer.fromMagic[Pie](Pie.live, Flour.live, Berries.live, Spoon.live)
+//    val `or just build the layer`: ULayer[Pie] =
+//      ZLayer.fromMagic[Pie](Pie.live, Flour.live, Berries.live, Spoon.live)
 
     satisfied.exitCode
   }

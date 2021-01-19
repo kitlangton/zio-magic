@@ -39,6 +39,7 @@ lazy val root = (project in file("."))
 lazy val macros = (project in file("macros"))
   .settings(
     name := "zio-magic-macros",
+    publishTo := sonatypePublishToBundle.value,
     scalacOptions ++= Seq(
       "-Ymacro-annotations"
     ),

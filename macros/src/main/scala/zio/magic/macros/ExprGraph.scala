@@ -2,7 +2,7 @@ package zio.magic.macros
 
 import zio.magic.macros.ExprGraph.LayerExpr
 import zio.prelude.Validation
-import zio.{NonEmptyChunk, ZLayer}
+import zio.{Chunk, NonEmptyChunk, ZLayer}
 
 import scala.reflect.macros.blackbox
 
@@ -21,8 +21,10 @@ case class ExprGraph[C <: blackbox.Context](graph: Graph[LayerExpr[C]], c: C) {
       }
 
   private def renderErrors(errors: NonEmptyChunk[GraphError[LayerExpr[C]]]): String = {
+    val allErrors = sortErrors(errors)
+
     val errorMessage =
-      errors.distinct
+      allErrors
         .map(renderError)
         .mkString("\n")
         .linesIterator
@@ -33,6 +35,20 @@ case class ExprGraph[C <: blackbox.Context](graph: Graph[LayerExpr[C]], c: C) {
 🪄  $errorMessage
 
 """
+  }
+
+  /** Return only the first level of circular dependencies, as these will be the most relevant.
+    */
+  private def sortErrors(errors: NonEmptyChunk[GraphError[LayerExpr[C]]]): Chunk[GraphError[LayerExpr[C]]] = {
+    val (circularDependencyErrors, otherErrors) = errors.distinct
+      .partitionMap {
+        case circularDependency: GraphError.CircularDependency[LayerExpr[C]] =>
+          Left(circularDependency)
+        case other => Right(other)
+      }
+    val sorted                    = circularDependencyErrors.sortBy(_.depth)
+    val lowestDepthCircularErrors = sorted.takeWhile(_.depth == sorted.headOption.map(_.depth).getOrElse(0))
+    lowestDepthCircularErrors ++ otherErrors
   }
 
   private def renderError(error: GraphError[LayerExpr[C]]): String =
@@ -48,7 +64,7 @@ provide $styledDependency
         val styledDependency = fansi.Color.White(dependency).overlay(fansi.Underlined.On)
         s"""missing $styledDependency"""
 
-      case GraphError.CircularDependency(node, dependency) =>
+      case GraphError.CircularDependency(node, dependency, _) =>
         val styledNode       = fansi.Color.White(node.value.tree.toString()).overlay(fansi.Underlined.On)
         val styledDependency = fansi.Color.White(dependency.value.tree.toString())
         s"""
