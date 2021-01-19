@@ -14,7 +14,7 @@ object LayerLike {
   def apply[A: LayerLike]: LayerLike[A] = implicitly[LayerLike[A]]
 
   def exprLayerLike(c: blackbox.Context): LayerLike[LayerExpr[c.type]] =
-    new LayerLike[c.Expr[ZLayer[_, _, _]]] {
+    new LayerLike[LayerExpr[c.type]] {
       import c.universe._
 
       override def composeH(lhs: LayerExpr[c.type], rhs: LayerExpr[c.type]): LayerExpr[c.type] =

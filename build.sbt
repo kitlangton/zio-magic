@@ -1,9 +1,15 @@
 ThisBuild / scalaVersion := "2.13.3"
 ThisBuild / version := "0.1.0-SNAPSHOT"
-ThisBuild / organization := "com.kitlangton"
+ThisBuild / organization := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
+ThisBuild / description := "Magically construct ZLayers."
+ThisBuild / homepage := Some(url("https://github.com/kitlangton/zio-magic"))
 
 val zioVersion = "1.0.3"
+
+publishTo := sonatypePublishToBundle.value
+
+credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credentials")
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
 
