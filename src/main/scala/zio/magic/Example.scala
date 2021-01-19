@@ -60,17 +60,10 @@ private object Example extends App {
 
     // The new way... oh yes!
     val satisfied: ZIO[Any, Nothing, Int] =
-      program
-        .provideMagicLayer(
-          Pie.live,
-          Flour.live,
-          Spoon.live,
-          Berries.live,
-          ZEnv.live
-        )
+      program.provideMagicLayer(Pie.live, Flour.live, Spoon.live, Berries.live, ZEnv.live)
 
-    val `or just build the layer`: ULayer[Pie with Console] =
-      ZLayer.fromMagic[Pie with Console](Pie.test, Console.live)
+    val `or just build the layer`: ULayer[Pie] =
+      ZLayer.fromMagic[Pie](Pie.live, Flour.live, Berries.live, Spoon.live)
 
     satisfied.exitCode
   }
