@@ -5,7 +5,9 @@ import zio.magic.macros._
 package object magic {
   import scala.language.experimental.macros
 
-  final class BuildMagicLayer[Out <: Has[_]]() {
+  // # FROM MAGIC LAYER
+
+  final class FromMagicLayerBuilder[Out <: Has[_]]() {
     def apply[In1, Out1, In2, Out2](
         layer1: URLayer[In1, Out1],
         layer2: URLayer[In2, Out2]
@@ -14,14 +16,10 @@ package object magic {
   }
 
   implicit final class ZLayerSingletonOps(val self: ZLayer.type) extends AnyVal {
-    def fromMagic[Out <: Has[_]] = new BuildMagicLayer[Out]
+    def fromMagic[Out <: Has[_]] = new FromMagicLayerBuilder[Out]
   }
 
-  def makeAMagicLayer[In1, Out1, In2, Out2, Out <: Has[_]](
-      layer1: URLayer[In1, Out1],
-      layer2: URLayer[In2, Out2]
-  )(implicit dummyK: DummyK[Out]): ULayer[Out] =
-    macro ProvideMagicLayerMacros.makeLayerImpl[In1, Out1, In2, Out2, Out]
+  // # PROVIDE SOME MAGIC LAYER
 
   implicit final class ZioProvideSomeMagicOps[Require](val zio: ZIO[Require, Nothing, Unit]) extends AnyVal {
     def provideSomeMagicLayer[Provide, Remainder <: Require](
@@ -30,80 +28,101 @@ package object magic {
       macro ProvideSomeMagicMacro.provideSomeMagicImpl[Require, Provide, Remainder]
   }
 
-  implicit final class ZioProvideMagicOps[Final, A](val zio: ZIO[Final, Nothing, A]) extends AnyVal {
+  // # PROVIDE MAGIC LAYER
 
-    def provideMagicLayer()(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
-      macro ProvideMagicLayerMacros.provideMagicLayer0Impl[Final, A]
+  implicit final class ZioProvideMagicOps[R, E, A](val zio: ZIO[R, E, A]) extends AnyVal {
 
-    def provideMagicLayer[In1, Out1](
-        layer1: ZLayer[In1, Nothing, Out1]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
-      macro ProvideMagicLayerMacros.provideMagicLayer1Impl[In1, Out1, Final, A]
+    def provideMagicLayer(
+    )(implicit dummyK: DummyK[R]): ZIO[Any, E, A] =
+      macro ProvideMagicLayerMacros.provideMagicLayer0Impl[R, E, A]
 
-    def provideMagicLayer[In1, Out1, In2, Out2](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
-      macro ProvideMagicLayerMacros.provideMagicLayer2Impl[In1, Out1, In2, Out2, Final, A]
+    def provideMagicLayer[In1, Out1, E1 >: E](
+        layer1: ZLayer[In1, E1, Out1]
+    )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
+      macro ProvideMagicLayerMacros.provideMagicLayer1Impl[In1, Out1, R, E1, A]
 
-    def provideMagicLayer[In1, Out1, In2, Out2, In3, Out3](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
-      macro ProvideMagicLayerMacros.provideMagicLayer3Impl[In1, Out1, In2, Out2, In3, Out3, Final, A]
+    def provideMagicLayer[In1, Out1, In2, Out2, E1 >: E](
+        layer1: ZLayer[In1, E1, Out1],
+        layer2: ZLayer[In2, E1, Out2]
+    )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
+      macro ProvideMagicLayerMacros.provideMagicLayer2Impl[In1, Out1, In2, Out2, R, E1, A]
 
-    def provideMagicLayer[In1, Out1, In2, Out2, In3, Out3, In4, Out4](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
-      macro ProvideMagicLayerMacros.provideMagicLayer4Impl[In1, Out1, In2, Out2, In3, Out3, In4, Out4, Final, A]
+    def provideMagicLayer[In1, Out1, In2, Out2, In3, Out3, E1 >: E](
+        layer1: ZLayer[In1, E1, Out1],
+        layer2: ZLayer[In2, E1, Out2],
+        layer3: ZLayer[In3, E1, Out3]
+    )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
+      macro ProvideMagicLayerMacros.provideMagicLayer3Impl[In1, Out1, In2, Out2, In3, Out3, R, E1, A]
 
-    def provideMagicLayer[In1, Out1, In2, Out2, In3, Out3, In4, Out4, In5, Out5](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
+    def provideMagicLayer[In1, Out1, In2, Out2, In3, Out3, In4, Out4, E1 >: E](
+        layer1: ZLayer[In1, E1, Out1],
+        layer2: ZLayer[In2, E1, Out2],
+        layer3: ZLayer[In3, E1, Out3],
+        layer4: ZLayer[In4, E1, Out4]
+    )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
+      macro ProvideMagicLayerMacros.provideMagicLayer4Impl[In1, Out1, In2, Out2, In3, Out3, In4, Out4, R, E1, A]
+
+    def provideMagicLayer[In1, Out1, In2, Out2, In3, Out3, In4, Out4, In5, Out5, E1 >: E](
+        layer1: ZLayer[In1, E1, Out1],
+        layer2: ZLayer[In2, E1, Out2],
+        layer3: ZLayer[In3, E1, Out3],
+        layer4: ZLayer[In4, E1, Out4],
+        layer5: ZLayer[In5, E1, Out5]
+    )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
       macro ProvideMagicLayerMacros
-        .provideMagicLayer5Impl[In1, Out1, In2, Out2, In3, Out3, In4, Out4, In5, Out5, Final, A]
+        .provideMagicLayer5Impl[In1, Out1, In2, Out2, In3, Out3, In4, Out4, In5, Out5, R, E1, A]
 
-    def provideMagicLayer[In1, Out1, In2, Out2, In3, Out3, In4, Out4, In5, Out5, In6, Out6](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
+    def provideMagicLayer[In1, Out1, In2, Out2, In3, Out3, In4, Out4, In5, Out5, In6, Out6, E1 >: E](
+        layer1: ZLayer[In1, E1, Out1],
+        layer2: ZLayer[In2, E1, Out2],
+        layer3: ZLayer[In3, E1, Out3],
+        layer4: ZLayer[In4, E1, Out4],
+        layer5: ZLayer[In5, E1, Out5],
+        layer6: ZLayer[In6, E1, Out6]
+    )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
       macro ProvideMagicLayerMacros
-        .provideMagicLayer6Impl[In1, Out1, In2, Out2, In3, Out3, In4, Out4, In5, Out5, In6, Out6, Final, A]
+        .provideMagicLayer6Impl[In1, Out1, In2, Out2, In3, Out3, In4, Out4, In5, Out5, In6, Out6, R, E1, A]
 
-    def provideMagicLayer[In1, Out1, In2, Out2, In3, Out3, In4, Out4, In5, Out5, In6, Out6, In7, Out7](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6],
-        layer7: ZLayer[In7, Nothing, Out7]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
+    def provideMagicLayer[In1, Out1, In2, Out2, In3, Out3, In4, Out4, In5, Out5, In6, Out6, In7, Out7, E1 >: E](
+        layer1: ZLayer[In1, E1, Out1],
+        layer2: ZLayer[In2, E1, Out2],
+        layer3: ZLayer[In3, E1, Out3],
+        layer4: ZLayer[In4, E1, Out4],
+        layer5: ZLayer[In5, E1, Out5],
+        layer6: ZLayer[In6, E1, Out6],
+        layer7: ZLayer[In7, E1, Out7]
+    )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
       macro ProvideMagicLayerMacros
-        .provideMagicLayer7Impl[In1, Out1, In2, Out2, In3, Out3, In4, Out4, In5, Out5, In6, Out6, In7, Out7, Final, A]
+        .provideMagicLayer7Impl[In1, Out1, In2, Out2, In3, Out3, In4, Out4, In5, Out5, In6, Out6, In7, Out7, R, E1, A]
 
-    def provideMagicLayer[In1, Out1, In2, Out2, In3, Out3, In4, Out4, In5, Out5, In6, Out6, In7, Out7, In8, Out8](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6],
-        layer7: ZLayer[In7, Nothing, Out7],
-        layer8: ZLayer[In8, Nothing, Out8]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
+    def provideMagicLayer[
+        In1,
+        Out1,
+        In2,
+        Out2,
+        In3,
+        Out3,
+        In4,
+        Out4,
+        In5,
+        Out5,
+        In6,
+        Out6,
+        In7,
+        Out7,
+        In8,
+        Out8,
+        E1 >: E
+    ](
+        layer1: ZLayer[In1, E1, Out1],
+        layer2: ZLayer[In2, E1, Out2],
+        layer3: ZLayer[In3, E1, Out3],
+        layer4: ZLayer[In4, E1, Out4],
+        layer5: ZLayer[In5, E1, Out5],
+        layer6: ZLayer[In6, E1, Out6],
+        layer7: ZLayer[In7, E1, Out7],
+        layer8: ZLayer[In8, E1, Out8]
+    )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
       macro ProvideMagicLayerMacros.provideMagicLayer8Impl[
         In1,
         Out1,
@@ -121,7 +140,8 @@ package object magic {
         Out7,
         In8,
         Out8,
-        Final,
+        R,
+        E1,
         A
       ]
 
@@ -143,18 +163,19 @@ package object magic {
         In8,
         Out8,
         In9,
-        Out9
+        Out9,
+        E1 >: E
     ](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6],
-        layer7: ZLayer[In7, Nothing, Out7],
-        layer8: ZLayer[In8, Nothing, Out8],
-        layer9: ZLayer[In9, Nothing, Out9]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
+        layer1: ZLayer[In1, E1, Out1],
+        layer2: ZLayer[In2, E1, Out2],
+        layer3: ZLayer[In3, E1, Out3],
+        layer4: ZLayer[In4, E1, Out4],
+        layer5: ZLayer[In5, E1, Out5],
+        layer6: ZLayer[In6, E1, Out6],
+        layer7: ZLayer[In7, E1, Out7],
+        layer8: ZLayer[In8, E1, Out8],
+        layer9: ZLayer[In9, E1, Out9]
+    )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
       macro ProvideMagicLayerMacros.provideMagicLayer9Impl[
         In1,
         Out1,
@@ -174,7 +195,8 @@ package object magic {
         Out8,
         In9,
         Out9,
-        Final,
+        R,
+        E1,
         A
       ]
 
@@ -198,19 +220,20 @@ package object magic {
         In9,
         Out9,
         In10,
-        Out10
+        Out10,
+        E1 >: E
     ](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6],
-        layer7: ZLayer[In7, Nothing, Out7],
-        layer8: ZLayer[In8, Nothing, Out8],
-        layer9: ZLayer[In9, Nothing, Out9],
-        layer10: ZLayer[In10, Nothing, Out10]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
+        layer1: ZLayer[In1, E1, Out1],
+        layer2: ZLayer[In2, E1, Out2],
+        layer3: ZLayer[In3, E1, Out3],
+        layer4: ZLayer[In4, E1, Out4],
+        layer5: ZLayer[In5, E1, Out5],
+        layer6: ZLayer[In6, E1, Out6],
+        layer7: ZLayer[In7, E1, Out7],
+        layer8: ZLayer[In8, E1, Out8],
+        layer9: ZLayer[In9, E1, Out9],
+        layer10: ZLayer[In10, E1, Out10]
+    )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
       macro ProvideMagicLayerMacros.provideMagicLayer10Impl[
         In1,
         Out1,
@@ -232,7 +255,8 @@ package object magic {
         Out9,
         In10,
         Out10,
-        Final,
+        R,
+        E1,
         A
       ]
 
@@ -258,20 +282,21 @@ package object magic {
         In10,
         Out10,
         In11,
-        Out11
+        Out11,
+        E1 >: E
     ](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6],
-        layer7: ZLayer[In7, Nothing, Out7],
-        layer8: ZLayer[In8, Nothing, Out8],
-        layer9: ZLayer[In9, Nothing, Out9],
-        layer10: ZLayer[In10, Nothing, Out10],
-        layer11: ZLayer[In11, Nothing, Out11]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
+        layer1: ZLayer[In1, E1, Out1],
+        layer2: ZLayer[In2, E1, Out2],
+        layer3: ZLayer[In3, E1, Out3],
+        layer4: ZLayer[In4, E1, Out4],
+        layer5: ZLayer[In5, E1, Out5],
+        layer6: ZLayer[In6, E1, Out6],
+        layer7: ZLayer[In7, E1, Out7],
+        layer8: ZLayer[In8, E1, Out8],
+        layer9: ZLayer[In9, E1, Out9],
+        layer10: ZLayer[In10, E1, Out10],
+        layer11: ZLayer[In11, E1, Out11]
+    )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
       macro ProvideMagicLayerMacros.provideMagicLayer11Impl[
         In1,
         Out1,
@@ -295,7 +320,8 @@ package object magic {
         Out10,
         In11,
         Out11,
-        Final,
+        R,
+        E1,
         A
       ]
 
@@ -323,21 +349,22 @@ package object magic {
         In11,
         Out11,
         In12,
-        Out12
+        Out12,
+        E1 >: E
     ](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6],
-        layer7: ZLayer[In7, Nothing, Out7],
-        layer8: ZLayer[In8, Nothing, Out8],
-        layer9: ZLayer[In9, Nothing, Out9],
-        layer10: ZLayer[In10, Nothing, Out10],
-        layer11: ZLayer[In11, Nothing, Out11],
-        layer12: ZLayer[In12, Nothing, Out12]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
+        layer1: ZLayer[In1, E1, Out1],
+        layer2: ZLayer[In2, E1, Out2],
+        layer3: ZLayer[In3, E1, Out3],
+        layer4: ZLayer[In4, E1, Out4],
+        layer5: ZLayer[In5, E1, Out5],
+        layer6: ZLayer[In6, E1, Out6],
+        layer7: ZLayer[In7, E1, Out7],
+        layer8: ZLayer[In8, E1, Out8],
+        layer9: ZLayer[In9, E1, Out9],
+        layer10: ZLayer[In10, E1, Out10],
+        layer11: ZLayer[In11, E1, Out11],
+        layer12: ZLayer[In12, E1, Out12]
+    )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
       macro ProvideMagicLayerMacros.provideMagicLayer12Impl[
         In1,
         Out1,
@@ -363,7 +390,8 @@ package object magic {
         Out11,
         In12,
         Out12,
-        Final,
+        R,
+        E1,
         A
       ]
 
@@ -393,22 +421,23 @@ package object magic {
         In12,
         Out12,
         In13,
-        Out13
+        Out13,
+        E1 >: E
     ](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6],
-        layer7: ZLayer[In7, Nothing, Out7],
-        layer8: ZLayer[In8, Nothing, Out8],
-        layer9: ZLayer[In9, Nothing, Out9],
-        layer10: ZLayer[In10, Nothing, Out10],
-        layer11: ZLayer[In11, Nothing, Out11],
-        layer12: ZLayer[In12, Nothing, Out12],
-        layer13: ZLayer[In13, Nothing, Out13]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
+        layer1: ZLayer[In1, E1, Out1],
+        layer2: ZLayer[In2, E1, Out2],
+        layer3: ZLayer[In3, E1, Out3],
+        layer4: ZLayer[In4, E1, Out4],
+        layer5: ZLayer[In5, E1, Out5],
+        layer6: ZLayer[In6, E1, Out6],
+        layer7: ZLayer[In7, E1, Out7],
+        layer8: ZLayer[In8, E1, Out8],
+        layer9: ZLayer[In9, E1, Out9],
+        layer10: ZLayer[In10, E1, Out10],
+        layer11: ZLayer[In11, E1, Out11],
+        layer12: ZLayer[In12, E1, Out12],
+        layer13: ZLayer[In13, E1, Out13]
+    )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
       macro ProvideMagicLayerMacros.provideMagicLayer13Impl[
         In1,
         Out1,
@@ -436,7 +465,8 @@ package object magic {
         Out12,
         In13,
         Out13,
-        Final,
+        R,
+        E1,
         A
       ]
 
@@ -468,23 +498,24 @@ package object magic {
         In13,
         Out13,
         In14,
-        Out14
+        Out14,
+        E1 >: E
     ](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6],
-        layer7: ZLayer[In7, Nothing, Out7],
-        layer8: ZLayer[In8, Nothing, Out8],
-        layer9: ZLayer[In9, Nothing, Out9],
-        layer10: ZLayer[In10, Nothing, Out10],
-        layer11: ZLayer[In11, Nothing, Out11],
-        layer12: ZLayer[In12, Nothing, Out12],
-        layer13: ZLayer[In13, Nothing, Out13],
-        layer14: ZLayer[In14, Nothing, Out14]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
+        layer1: ZLayer[In1, E1, Out1],
+        layer2: ZLayer[In2, E1, Out2],
+        layer3: ZLayer[In3, E1, Out3],
+        layer4: ZLayer[In4, E1, Out4],
+        layer5: ZLayer[In5, E1, Out5],
+        layer6: ZLayer[In6, E1, Out6],
+        layer7: ZLayer[In7, E1, Out7],
+        layer8: ZLayer[In8, E1, Out8],
+        layer9: ZLayer[In9, E1, Out9],
+        layer10: ZLayer[In10, E1, Out10],
+        layer11: ZLayer[In11, E1, Out11],
+        layer12: ZLayer[In12, E1, Out12],
+        layer13: ZLayer[In13, E1, Out13],
+        layer14: ZLayer[In14, E1, Out14]
+    )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
       macro ProvideMagicLayerMacros.provideMagicLayer14Impl[
         In1,
         Out1,
@@ -514,7 +545,8 @@ package object magic {
         Out13,
         In14,
         Out14,
-        Final,
+        R,
+        E1,
         A
       ]
 
@@ -548,24 +580,25 @@ package object magic {
         In14,
         Out14,
         In15,
-        Out15
+        Out15,
+        E1 >: E
     ](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6],
-        layer7: ZLayer[In7, Nothing, Out7],
-        layer8: ZLayer[In8, Nothing, Out8],
-        layer9: ZLayer[In9, Nothing, Out9],
-        layer10: ZLayer[In10, Nothing, Out10],
-        layer11: ZLayer[In11, Nothing, Out11],
-        layer12: ZLayer[In12, Nothing, Out12],
-        layer13: ZLayer[In13, Nothing, Out13],
-        layer14: ZLayer[In14, Nothing, Out14],
-        layer15: ZLayer[In15, Nothing, Out15]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
+        layer1: ZLayer[In1, E1, Out1],
+        layer2: ZLayer[In2, E1, Out2],
+        layer3: ZLayer[In3, E1, Out3],
+        layer4: ZLayer[In4, E1, Out4],
+        layer5: ZLayer[In5, E1, Out5],
+        layer6: ZLayer[In6, E1, Out6],
+        layer7: ZLayer[In7, E1, Out7],
+        layer8: ZLayer[In8, E1, Out8],
+        layer9: ZLayer[In9, E1, Out9],
+        layer10: ZLayer[In10, E1, Out10],
+        layer11: ZLayer[In11, E1, Out11],
+        layer12: ZLayer[In12, E1, Out12],
+        layer13: ZLayer[In13, E1, Out13],
+        layer14: ZLayer[In14, E1, Out14],
+        layer15: ZLayer[In15, E1, Out15]
+    )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
       macro ProvideMagicLayerMacros.provideMagicLayer15Impl[
         In1,
         Out1,
@@ -597,728 +630,8 @@ package object magic {
         Out14,
         In15,
         Out15,
-        Final,
-        A
-      ]
-
-    def provideMagicLayer[
-        In1,
-        Out1,
-        In2,
-        Out2,
-        In3,
-        Out3,
-        In4,
-        Out4,
-        In5,
-        Out5,
-        In6,
-        Out6,
-        In7,
-        Out7,
-        In8,
-        Out8,
-        In9,
-        Out9,
-        In10,
-        Out10,
-        In11,
-        Out11,
-        In12,
-        Out12,
-        In13,
-        Out13,
-        In14,
-        Out14,
-        In15,
-        Out15,
-        In16,
-        Out16
-    ](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6],
-        layer7: ZLayer[In7, Nothing, Out7],
-        layer8: ZLayer[In8, Nothing, Out8],
-        layer9: ZLayer[In9, Nothing, Out9],
-        layer10: ZLayer[In10, Nothing, Out10],
-        layer11: ZLayer[In11, Nothing, Out11],
-        layer12: ZLayer[In12, Nothing, Out12],
-        layer13: ZLayer[In13, Nothing, Out13],
-        layer14: ZLayer[In14, Nothing, Out14],
-        layer15: ZLayer[In15, Nothing, Out15],
-        layer16: ZLayer[In16, Nothing, Out16]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
-      macro ProvideMagicLayerMacros.provideMagicLayer16Impl[
-        In1,
-        Out1,
-        In2,
-        Out2,
-        In3,
-        Out3,
-        In4,
-        Out4,
-        In5,
-        Out5,
-        In6,
-        Out6,
-        In7,
-        Out7,
-        In8,
-        Out8,
-        In9,
-        Out9,
-        In10,
-        Out10,
-        In11,
-        Out11,
-        In12,
-        Out12,
-        In13,
-        Out13,
-        In14,
-        Out14,
-        In15,
-        Out15,
-        In16,
-        Out16,
-        Final,
-        A
-      ]
-
-    def provideMagicLayer[
-        In1,
-        Out1,
-        In2,
-        Out2,
-        In3,
-        Out3,
-        In4,
-        Out4,
-        In5,
-        Out5,
-        In6,
-        Out6,
-        In7,
-        Out7,
-        In8,
-        Out8,
-        In9,
-        Out9,
-        In10,
-        Out10,
-        In11,
-        Out11,
-        In12,
-        Out12,
-        In13,
-        Out13,
-        In14,
-        Out14,
-        In15,
-        Out15,
-        In16,
-        Out16,
-        In17,
-        Out17
-    ](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6],
-        layer7: ZLayer[In7, Nothing, Out7],
-        layer8: ZLayer[In8, Nothing, Out8],
-        layer9: ZLayer[In9, Nothing, Out9],
-        layer10: ZLayer[In10, Nothing, Out10],
-        layer11: ZLayer[In11, Nothing, Out11],
-        layer12: ZLayer[In12, Nothing, Out12],
-        layer13: ZLayer[In13, Nothing, Out13],
-        layer14: ZLayer[In14, Nothing, Out14],
-        layer15: ZLayer[In15, Nothing, Out15],
-        layer16: ZLayer[In16, Nothing, Out16],
-        layer17: ZLayer[In17, Nothing, Out17]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
-      macro ProvideMagicLayerMacros.provideMagicLayer17Impl[
-        In1,
-        Out1,
-        In2,
-        Out2,
-        In3,
-        Out3,
-        In4,
-        Out4,
-        In5,
-        Out5,
-        In6,
-        Out6,
-        In7,
-        Out7,
-        In8,
-        Out8,
-        In9,
-        Out9,
-        In10,
-        Out10,
-        In11,
-        Out11,
-        In12,
-        Out12,
-        In13,
-        Out13,
-        In14,
-        Out14,
-        In15,
-        Out15,
-        In16,
-        Out16,
-        In17,
-        Out17,
-        Final,
-        A
-      ]
-
-    def provideMagicLayer[
-        In1,
-        Out1,
-        In2,
-        Out2,
-        In3,
-        Out3,
-        In4,
-        Out4,
-        In5,
-        Out5,
-        In6,
-        Out6,
-        In7,
-        Out7,
-        In8,
-        Out8,
-        In9,
-        Out9,
-        In10,
-        Out10,
-        In11,
-        Out11,
-        In12,
-        Out12,
-        In13,
-        Out13,
-        In14,
-        Out14,
-        In15,
-        Out15,
-        In16,
-        Out16,
-        In17,
-        Out17,
-        In18,
-        Out18
-    ](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6],
-        layer7: ZLayer[In7, Nothing, Out7],
-        layer8: ZLayer[In8, Nothing, Out8],
-        layer9: ZLayer[In9, Nothing, Out9],
-        layer10: ZLayer[In10, Nothing, Out10],
-        layer11: ZLayer[In11, Nothing, Out11],
-        layer12: ZLayer[In12, Nothing, Out12],
-        layer13: ZLayer[In13, Nothing, Out13],
-        layer14: ZLayer[In14, Nothing, Out14],
-        layer15: ZLayer[In15, Nothing, Out15],
-        layer16: ZLayer[In16, Nothing, Out16],
-        layer17: ZLayer[In17, Nothing, Out17],
-        layer18: ZLayer[In18, Nothing, Out18]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
-      macro ProvideMagicLayerMacros.provideMagicLayer18Impl[
-        In1,
-        Out1,
-        In2,
-        Out2,
-        In3,
-        Out3,
-        In4,
-        Out4,
-        In5,
-        Out5,
-        In6,
-        Out6,
-        In7,
-        Out7,
-        In8,
-        Out8,
-        In9,
-        Out9,
-        In10,
-        Out10,
-        In11,
-        Out11,
-        In12,
-        Out12,
-        In13,
-        Out13,
-        In14,
-        Out14,
-        In15,
-        Out15,
-        In16,
-        Out16,
-        In17,
-        Out17,
-        In18,
-        Out18,
-        Final,
-        A
-      ]
-
-    def provideMagicLayer[
-        In1,
-        Out1,
-        In2,
-        Out2,
-        In3,
-        Out3,
-        In4,
-        Out4,
-        In5,
-        Out5,
-        In6,
-        Out6,
-        In7,
-        Out7,
-        In8,
-        Out8,
-        In9,
-        Out9,
-        In10,
-        Out10,
-        In11,
-        Out11,
-        In12,
-        Out12,
-        In13,
-        Out13,
-        In14,
-        Out14,
-        In15,
-        Out15,
-        In16,
-        Out16,
-        In17,
-        Out17,
-        In18,
-        Out18,
-        In19,
-        Out19
-    ](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6],
-        layer7: ZLayer[In7, Nothing, Out7],
-        layer8: ZLayer[In8, Nothing, Out8],
-        layer9: ZLayer[In9, Nothing, Out9],
-        layer10: ZLayer[In10, Nothing, Out10],
-        layer11: ZLayer[In11, Nothing, Out11],
-        layer12: ZLayer[In12, Nothing, Out12],
-        layer13: ZLayer[In13, Nothing, Out13],
-        layer14: ZLayer[In14, Nothing, Out14],
-        layer15: ZLayer[In15, Nothing, Out15],
-        layer16: ZLayer[In16, Nothing, Out16],
-        layer17: ZLayer[In17, Nothing, Out17],
-        layer18: ZLayer[In18, Nothing, Out18],
-        layer19: ZLayer[In19, Nothing, Out19]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
-      macro ProvideMagicLayerMacros.provideMagicLayer19Impl[
-        In1,
-        Out1,
-        In2,
-        Out2,
-        In3,
-        Out3,
-        In4,
-        Out4,
-        In5,
-        Out5,
-        In6,
-        Out6,
-        In7,
-        Out7,
-        In8,
-        Out8,
-        In9,
-        Out9,
-        In10,
-        Out10,
-        In11,
-        Out11,
-        In12,
-        Out12,
-        In13,
-        Out13,
-        In14,
-        Out14,
-        In15,
-        Out15,
-        In16,
-        Out16,
-        In17,
-        Out17,
-        In18,
-        Out18,
-        In19,
-        Out19,
-        Final,
-        A
-      ]
-
-    def provideMagicLayer[
-        In1,
-        Out1,
-        In2,
-        Out2,
-        In3,
-        Out3,
-        In4,
-        Out4,
-        In5,
-        Out5,
-        In6,
-        Out6,
-        In7,
-        Out7,
-        In8,
-        Out8,
-        In9,
-        Out9,
-        In10,
-        Out10,
-        In11,
-        Out11,
-        In12,
-        Out12,
-        In13,
-        Out13,
-        In14,
-        Out14,
-        In15,
-        Out15,
-        In16,
-        Out16,
-        In17,
-        Out17,
-        In18,
-        Out18,
-        In19,
-        Out19,
-        In20,
-        Out20
-    ](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6],
-        layer7: ZLayer[In7, Nothing, Out7],
-        layer8: ZLayer[In8, Nothing, Out8],
-        layer9: ZLayer[In9, Nothing, Out9],
-        layer10: ZLayer[In10, Nothing, Out10],
-        layer11: ZLayer[In11, Nothing, Out11],
-        layer12: ZLayer[In12, Nothing, Out12],
-        layer13: ZLayer[In13, Nothing, Out13],
-        layer14: ZLayer[In14, Nothing, Out14],
-        layer15: ZLayer[In15, Nothing, Out15],
-        layer16: ZLayer[In16, Nothing, Out16],
-        layer17: ZLayer[In17, Nothing, Out17],
-        layer18: ZLayer[In18, Nothing, Out18],
-        layer19: ZLayer[In19, Nothing, Out19],
-        layer20: ZLayer[In20, Nothing, Out20]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
-      macro ProvideMagicLayerMacros.provideMagicLayer20Impl[
-        In1,
-        Out1,
-        In2,
-        Out2,
-        In3,
-        Out3,
-        In4,
-        Out4,
-        In5,
-        Out5,
-        In6,
-        Out6,
-        In7,
-        Out7,
-        In8,
-        Out8,
-        In9,
-        Out9,
-        In10,
-        Out10,
-        In11,
-        Out11,
-        In12,
-        Out12,
-        In13,
-        Out13,
-        In14,
-        Out14,
-        In15,
-        Out15,
-        In16,
-        Out16,
-        In17,
-        Out17,
-        In18,
-        Out18,
-        In19,
-        Out19,
-        In20,
-        Out20,
-        Final,
-        A
-      ]
-
-    def provideMagicLayer[
-        In1,
-        Out1,
-        In2,
-        Out2,
-        In3,
-        Out3,
-        In4,
-        Out4,
-        In5,
-        Out5,
-        In6,
-        Out6,
-        In7,
-        Out7,
-        In8,
-        Out8,
-        In9,
-        Out9,
-        In10,
-        Out10,
-        In11,
-        Out11,
-        In12,
-        Out12,
-        In13,
-        Out13,
-        In14,
-        Out14,
-        In15,
-        Out15,
-        In16,
-        Out16,
-        In17,
-        Out17,
-        In18,
-        Out18,
-        In19,
-        Out19,
-        In20,
-        Out20,
-        In21,
-        Out21
-    ](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6],
-        layer7: ZLayer[In7, Nothing, Out7],
-        layer8: ZLayer[In8, Nothing, Out8],
-        layer9: ZLayer[In9, Nothing, Out9],
-        layer10: ZLayer[In10, Nothing, Out10],
-        layer11: ZLayer[In11, Nothing, Out11],
-        layer12: ZLayer[In12, Nothing, Out12],
-        layer13: ZLayer[In13, Nothing, Out13],
-        layer14: ZLayer[In14, Nothing, Out14],
-        layer15: ZLayer[In15, Nothing, Out15],
-        layer16: ZLayer[In16, Nothing, Out16],
-        layer17: ZLayer[In17, Nothing, Out17],
-        layer18: ZLayer[In18, Nothing, Out18],
-        layer19: ZLayer[In19, Nothing, Out19],
-        layer20: ZLayer[In20, Nothing, Out20],
-        layer21: ZLayer[In21, Nothing, Out21]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
-      macro ProvideMagicLayerMacros.provideMagicLayer21Impl[
-        In1,
-        Out1,
-        In2,
-        Out2,
-        In3,
-        Out3,
-        In4,
-        Out4,
-        In5,
-        Out5,
-        In6,
-        Out6,
-        In7,
-        Out7,
-        In8,
-        Out8,
-        In9,
-        Out9,
-        In10,
-        Out10,
-        In11,
-        Out11,
-        In12,
-        Out12,
-        In13,
-        Out13,
-        In14,
-        Out14,
-        In15,
-        Out15,
-        In16,
-        Out16,
-        In17,
-        Out17,
-        In18,
-        Out18,
-        In19,
-        Out19,
-        In20,
-        Out20,
-        In21,
-        Out21,
-        Final,
-        A
-      ]
-
-    def provideMagicLayer[
-        In1,
-        Out1,
-        In2,
-        Out2,
-        In3,
-        Out3,
-        In4,
-        Out4,
-        In5,
-        Out5,
-        In6,
-        Out6,
-        In7,
-        Out7,
-        In8,
-        Out8,
-        In9,
-        Out9,
-        In10,
-        Out10,
-        In11,
-        Out11,
-        In12,
-        Out12,
-        In13,
-        Out13,
-        In14,
-        Out14,
-        In15,
-        Out15,
-        In16,
-        Out16,
-        In17,
-        Out17,
-        In18,
-        Out18,
-        In19,
-        Out19,
-        In20,
-        Out20,
-        In21,
-        Out21,
-        In22,
-        Out22
-    ](
-        layer1: ZLayer[In1, Nothing, Out1],
-        layer2: ZLayer[In2, Nothing, Out2],
-        layer3: ZLayer[In3, Nothing, Out3],
-        layer4: ZLayer[In4, Nothing, Out4],
-        layer5: ZLayer[In5, Nothing, Out5],
-        layer6: ZLayer[In6, Nothing, Out6],
-        layer7: ZLayer[In7, Nothing, Out7],
-        layer8: ZLayer[In8, Nothing, Out8],
-        layer9: ZLayer[In9, Nothing, Out9],
-        layer10: ZLayer[In10, Nothing, Out10],
-        layer11: ZLayer[In11, Nothing, Out11],
-        layer12: ZLayer[In12, Nothing, Out12],
-        layer13: ZLayer[In13, Nothing, Out13],
-        layer14: ZLayer[In14, Nothing, Out14],
-        layer15: ZLayer[In15, Nothing, Out15],
-        layer16: ZLayer[In16, Nothing, Out16],
-        layer17: ZLayer[In17, Nothing, Out17],
-        layer18: ZLayer[In18, Nothing, Out18],
-        layer19: ZLayer[In19, Nothing, Out19],
-        layer20: ZLayer[In20, Nothing, Out20],
-        layer21: ZLayer[In21, Nothing, Out21],
-        layer22: ZLayer[In22, Nothing, Out22]
-    )(implicit dummyK: DummyK[Final]): ZIO[Any, Nothing, A] =
-      macro ProvideMagicLayerMacros.provideMagicLayer22Impl[
-        In1,
-        Out1,
-        In2,
-        Out2,
-        In3,
-        Out3,
-        In4,
-        Out4,
-        In5,
-        Out5,
-        In6,
-        Out6,
-        In7,
-        Out7,
-        In8,
-        Out8,
-        In9,
-        Out9,
-        In10,
-        Out10,
-        In11,
-        Out11,
-        In12,
-        Out12,
-        In13,
-        Out13,
-        In14,
-        Out14,
-        In15,
-        Out15,
-        In16,
-        Out16,
-        In17,
-        Out17,
-        In18,
-        Out18,
-        In19,
-        Out19,
-        In20,
-        Out20,
-        In21,
-        Out21,
-        In22,
-        Out22,
-        Final,
+        R,
+        E1,
         A
       ]
 

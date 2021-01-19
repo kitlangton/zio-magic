@@ -19,11 +19,12 @@ case class UniverseSyntax[U <: Universe](universe: U) {
     weakTypeOf[T].dealias.intersectionTypes
       .filter(_.dealias.typeSymbol == zioSymbol)
       .map(_.dealias.typeArgs.head.toString)
+      .distinct
   }
 
-  def buildNode[I: U#WeakTypeTag, O: U#WeakTypeTag](
-      layer: U#Expr[ZLayer[I, Nothing, O]]
-  ): Node[U#Expr[ZLayer[I, Nothing, O]]] = {
+  def buildNode[I: U#WeakTypeTag, E, O: U#WeakTypeTag](
+      layer: U#Expr[ZLayer[I, E, O]]
+  ): Node[U#Expr[ZLayer[I, E, O]]] = {
     val ins  = getRequirements[I]
     val outs = getRequirements[O]
     Node(ins, outs, layer)
@@ -31,8 +32,7 @@ case class UniverseSyntax[U <: Universe](universe: U) {
 
   implicit class TypeOps(tpe: Type) {
 
-    /** Given a type `A with B with C`
-      * You'll get back List[A,B,C]
+    /** Given a type `A with B with C` You'll get back List[A,B,C]
       */
     def intersectionTypes: List[Type] = tpe match {
       case t: RefinedType =>

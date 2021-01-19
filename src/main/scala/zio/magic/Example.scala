@@ -20,7 +20,7 @@ private object Example extends App {
     type Flour = Has[Service]
     case class Service()
 
-    def live: URLayer[Spoon, Flour] = ZLayer.succeed(Service())
+    def live: ZLayer[Spoon, Nothing, Flour] = ZLayer.succeed(Service())
   }
 
   object Berries {
@@ -37,35 +37,40 @@ private object Example extends App {
       def isDelicious: UIO[Boolean]
     }
 
-    val test: ULayer[Pie] = ZLayer.succeed(new Pie.Service {
+    val test: ZLayer[Any, Nothing, Pie] = ZLayer.succeed(new Pie.Service {
       override def isDelicious: UIO[Boolean] = UIO(false)
     })
 
-    val live: URLayer[Flour with Berries, Pie] = ZLayer.succeed(new Pie.Service {
+    val live: ZLayer[Flour with Berries, Nothing, Pie] = ZLayer.succeed(new Pie.Service {
       override def isDelicious: UIO[Boolean] = UIO(true)
     })
   }
 
   override def run(args: List[String]): URIO[ZEnv, ExitCode] = {
-    val program: ZIO[Console with Pie, Nothing, Unit] =
+    val program: ZIO[Console with Pie, Nothing, Int] =
       for {
         isDelicious <- Pie.isDelicious
         _           <- console.putStrLn(s"Pie is delicious: $isDelicious")
-      } yield ()
+
+      } yield 3
 
     // Tho old way... oh no!
     val manualLayer: ULayer[Pie with Console] =
       ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
 
     // The new way... oh yes!
-    val satisfied: ZIO[ZEnv, Nothing, Unit] =
-      program.provideMagicLayer(
-        Pie.live,
-        Flour.live,
-        Spoon.live,
-        Berries.live,
-        ZEnv.live
-      )
+    val satisfied: ZIO[Any, Nothing, Int] =
+      program
+        .provideMagicLayer(
+          Pie.live,
+          Flour.live,
+          Spoon.live,
+          Berries.live,
+          ZEnv.live
+        )
+
+    val `or just build the layer`: ULayer[Pie with Console] =
+      ZLayer.fromMagic[Pie with Console](Pie.test, Console.live)
 
     satisfied.exitCode
   }

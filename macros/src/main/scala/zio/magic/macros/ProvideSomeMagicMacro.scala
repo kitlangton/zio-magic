@@ -32,10 +32,6 @@ object ProvideSomeMagicMacro {
 
     val result = requirements.diff(provided)
 
-    println("Require Types", requirements)
-    println("Provide Types", provided)
-    println("Result Types", result)
-
     val tpe: c.universe.Type = weakTypeOf[Require]
     val resultType           = RefinedType(result.toList, tpe.decls)
     val tree                 = q"""
