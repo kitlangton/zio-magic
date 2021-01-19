@@ -26,7 +26,7 @@ class FromMagicMacros(val c: blackbox.Context) extends MacroUtils {
   def fromMagic0Impl[
       E,
       Out <: Has[_]: c.WeakTypeTag
-  ](
+  ]()(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
     assertEnvIsNotNothing[Out]
