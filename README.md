@@ -1,6 +1,6 @@
 # 🪄 zio-magic
 
-[![Snapshot Artifacts][Badge-SonatypeSnapshots]][Link-SonatypeSnapshots]
+[![Snapshot Artifacts][Badge-SonatypeSnapshots]][Link-SonatypeSnapshots] <--- Doesn't work yet 😅 (Still figuring out this whole _release_ thing)
 
 Construct ZLayers automagically (w/ compile-time errors) 
 
