@@ -3,7 +3,7 @@
 Construct ZLayers automagically (w/ compile-time errors) 
 
 ```scala 
-// Given a layer hierarchy (A requires B and C; C requires D)
+// Given a dependency graph (A requires B and C; C requires D)
 //
 //            A
 //          B   C 
