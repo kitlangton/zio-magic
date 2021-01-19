@@ -9,8 +9,7 @@ package object magic {
 
   final class FromMagicLayerBuilder[Out <: Has[_]]() {
 
-    def apply[E](
-    )(implicit dummyK: DummyK[Out]): ZLayer[Any, E, Out] =
+    def apply[E]()(implicit dummyK: DummyK[Out]): ZLayer[Any, E, Out] =
       macro FromMagicMacros.fromMagic0Impl[E, Out]
 
     def apply[In1, Out1, E](

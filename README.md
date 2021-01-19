@@ -1,5 +1,7 @@
 # 🪄 zio-magic
 
+[![Snapshot Artifacts][Badge-SonatypeSnapshots]][Link-SonatypeSnapshots] <--- Doesn't work yet 😅 (Still figuring out this whole _release_ thing)
+
 Construct ZLayers automagically (w/ compile-time errors) 
 
 ```scala 
@@ -90,3 +92,8 @@ type mismatch;
     (which expands to)  zio.ZLayer[Any,Nothing,zio.Has[zio.magic.Example.Pie.Service] with zio.Has[zio.console.Console.Service]]
       ((Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
 ```
+
+
+[Badge-SonatypeReleases]: https://img.shields.io/nexus/r/https/oss.sonatype.org/io.github.kitlangton/zio-magic_2.13.svg "Sonatype Releases"
+[Badge-SonatypeSnapshots]: https://img.shields.io/nexus/s/https/oss.sonatype.org/io.github.kitlangton/zio-magic_2.13.svg "Sonatype Snapshots"
+[Link-SonatypeSnapshots]: https://oss.sonatype.org/content/repositories/snapshots/io/github/kitlangton/zio-magic_2.13 "Sonatype Snapshots"
