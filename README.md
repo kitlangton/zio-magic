@@ -2,6 +2,24 @@
 
 Construct ZLayers automagically (w/ compile-time errors) 
 
+```scala 
+// Given a layer hierarchy (A requires B and C; C requires D)
+//
+//            A
+//          B   C 
+//                D
+
+val program : URIO[A, Unit] = ???
+
+// Provide the layer, magically constructed at compile-time.
+val provided: UIO[Unit] = 
+  program.provideMagicLayer(A.live, B.live, C.live, D.live)
+  
+// Or just build a layer
+val aLayer: ULayer[A] = 
+  ZLayer.fromMagic(A.live, B.live, C.live, D.live)
+```
+
 [tiny slapshod walkthrough video](https://cln.sh/QhhXLu)
 
 ## Example
