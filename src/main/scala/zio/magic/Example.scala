@@ -67,5 +67,4 @@ private object Example extends App {
 
     satisfied.exitCode
   }
-
 }
