@@ -20,8 +20,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph     = ExprGraph(List(), c)
-    val layerExpr = graph.buildLayerFor(getRequirements[R])
+    val layerExpr = ExprGraph(List(), c).buildLayerFor(getRequirements[R])
 
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -43,8 +42,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph     = ExprGraph(List(buildNode(layer1)), c)
-    val layerExpr = graph.buildLayerFor(getRequirements[R])
+    val layerExpr = ExprGraph(List(buildNode(layer1)), c).buildLayerFor(getRequirements[R])
 
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -69,8 +67,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph     = ExprGraph(List(buildNode(layer1), buildNode(layer2)), c)
-    val layerExpr = graph.buildLayerFor(getRequirements[R])
+    val layerExpr = ExprGraph(List(buildNode(layer1), buildNode(layer2)), c).buildLayerFor(getRequirements[R])
 
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -98,8 +95,8 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph     = ExprGraph(List(buildNode(layer1), buildNode(layer2), buildNode(layer3)), c)
-    val layerExpr = graph.buildLayerFor(getRequirements[R])
+    val layerExpr = ExprGraph(List(buildNode(layer1), buildNode(layer2), buildNode(layer3)), c)
+      .buildLayerFor(getRequirements[R])
 
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -130,8 +127,8 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph     = ExprGraph(List(buildNode(layer1), buildNode(layer2), buildNode(layer3), buildNode(layer4)), c)
-    val layerExpr = graph.buildLayerFor(getRequirements[R])
+    val layerExpr = ExprGraph(List(buildNode(layer1), buildNode(layer2), buildNode(layer3), buildNode(layer4)), c)
+      .buildLayerFor(getRequirements[R])
 
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -165,9 +162,10 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph =
-      ExprGraph(List(buildNode(layer1), buildNode(layer2), buildNode(layer3), buildNode(layer4), buildNode(layer5)), c)
-    val layerExpr = graph.buildLayerFor(getRequirements[R])
+    val layerExpr = ExprGraph(
+      List(buildNode(layer1), buildNode(layer2), buildNode(layer3), buildNode(layer4), buildNode(layer5)),
+      c
+    ).buildLayerFor(getRequirements[R])
 
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -204,7 +202,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph = ExprGraph(
+    val layerExpr = ExprGraph(
       List(
         buildNode(layer1),
         buildNode(layer2),
@@ -214,8 +212,7 @@ object ProvideMagicLayerMacros {
         buildNode(layer6)
       ),
       c
-    )
-    val layerExpr = graph.buildLayerFor(getRequirements[R])
+    ).buildLayerFor(getRequirements[R])
 
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -255,7 +252,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph = ExprGraph(
+    val layerExpr = ExprGraph(
       List(
         buildNode(layer1),
         buildNode(layer2),
@@ -266,8 +263,7 @@ object ProvideMagicLayerMacros {
         buildNode(layer7)
       ),
       c
-    )
-    val layerExpr = graph.buildLayerFor(getRequirements[R])
+    ).buildLayerFor(getRequirements[R])
 
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -310,7 +306,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph = ExprGraph(
+    val layerExpr = ExprGraph(
       List(
         buildNode(layer1),
         buildNode(layer2),
@@ -322,8 +318,7 @@ object ProvideMagicLayerMacros {
         buildNode(layer8)
       ),
       c
-    )
-    val layerExpr = graph.buildLayerFor(getRequirements[R])
+    ).buildLayerFor(getRequirements[R])
 
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -369,7 +364,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph = ExprGraph(
+    val layerExpr = ExprGraph(
       List(
         buildNode(layer1),
         buildNode(layer2),
@@ -382,8 +377,7 @@ object ProvideMagicLayerMacros {
         buildNode(layer9)
       ),
       c
-    )
-    val layerExpr = graph.buildLayerFor(getRequirements[R])
+    ).buildLayerFor(getRequirements[R])
 
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -432,7 +426,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph = ExprGraph(
+    val layerExpr = ExprGraph(
       List(
         buildNode(layer1),
         buildNode(layer2),
@@ -446,8 +440,7 @@ object ProvideMagicLayerMacros {
         buildNode(layer10)
       ),
       c
-    )
-    val layerExpr = graph.buildLayerFor(getRequirements[R])
+    ).buildLayerFor(getRequirements[R])
 
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -499,7 +492,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph = ExprGraph(
+    val layerExpr = ExprGraph(
       List(
         buildNode(layer1),
         buildNode(layer2),
@@ -514,8 +507,7 @@ object ProvideMagicLayerMacros {
         buildNode(layer11)
       ),
       c
-    )
-    val layerExpr = graph.buildLayerFor(getRequirements[R])
+    ).buildLayerFor(getRequirements[R])
 
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -570,7 +562,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph = ExprGraph(
+    val layerExpr = ExprGraph(
       List(
         buildNode(layer1),
         buildNode(layer2),
@@ -586,8 +578,7 @@ object ProvideMagicLayerMacros {
         buildNode(layer12)
       ),
       c
-    )
-    val layerExpr = graph.buildLayerFor(getRequirements[R])
+    ).buildLayerFor(getRequirements[R])
 
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -645,7 +636,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph = ExprGraph(
+    val layerExpr = ExprGraph(
       List(
         buildNode(layer1),
         buildNode(layer2),
@@ -662,8 +653,7 @@ object ProvideMagicLayerMacros {
         buildNode(layer13)
       ),
       c
-    )
-    val layerExpr = graph.buildLayerFor(getRequirements[R])
+    ).buildLayerFor(getRequirements[R])
 
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -724,7 +714,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph = ExprGraph(
+    val layerExpr = ExprGraph(
       List(
         buildNode(layer1),
         buildNode(layer2),
@@ -742,8 +732,7 @@ object ProvideMagicLayerMacros {
         buildNode(layer14)
       ),
       c
-    )
-    val layerExpr = graph.buildLayerFor(getRequirements[R])
+    ).buildLayerFor(getRequirements[R])
 
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
@@ -807,7 +796,7 @@ object ProvideMagicLayerMacros {
     import c.universe._
     import syntax._
 
-    val graph = ExprGraph(
+    val layerExpr = ExprGraph(
       List(
         buildNode(layer1),
         buildNode(layer2),
@@ -826,8 +815,7 @@ object ProvideMagicLayerMacros {
         buildNode(layer15)
       ),
       c
-    )
-    val layerExpr = graph.buildLayerFor(getRequirements[R])
+    ).buildLayerFor(getRequirements[R])
 
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }

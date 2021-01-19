@@ -15,4 +15,18 @@ object Utils {
       }
       .mkString(", ")
 
+  def layerTypes(int: Int): String =
+    (1 to int)
+      .map(n => s"""
+In$n: c.WeakTypeTag,
+Out$n: c.WeakTypeTag,
+     """.trim)
+      .mkString("\n")
+
+  def layerNodes(int: Int): String =
+    (1 to int)
+      .map { i =>
+        s"buildNode(layer$i)"
+      }
+      .mkString(", ")
 }

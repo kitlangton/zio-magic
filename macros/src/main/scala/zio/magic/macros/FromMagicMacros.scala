@@ -33,17 +33,18 @@ object FromMagicMacros {
   )()(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    import c.universe._
+    val syntax = UniverseSyntax(c)
+    import syntax._
 
-    val outType = assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing(c)
 
-    val tree =
-      q"""
-        import zio.magic._
-        zio.ZIO.environment[$outType].provideMagicLayer().toLayerMany
-        """
+    val layerExpr = ExprGraph(
+      List(
+      ),
+      c
+    ).buildLayerFor(getRequirements[Out])
 
-    c.Expr[ZLayer[Any, E, Out]] { tree }
+    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
   def fromMagic1Impl[
@@ -56,17 +57,19 @@ object FromMagicMacros {
   )(layer1: c.Expr[ZLayer[In1, E, Out1]])(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    import c.universe._
+    val syntax = UniverseSyntax(c)
+    import syntax._
 
-    val outType = assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing(c)
 
-    val tree =
-      q"""
-        import zio.magic._
-        zio.ZIO.environment[$outType].provideMagicLayer($layer1).toLayerMany
-        """
+    val layerExpr = ExprGraph(
+      List(
+        buildNode(layer1)
+      ),
+      c
+    ).buildLayerFor(getRequirements[Out])
 
-    c.Expr[ZLayer[Any, E, Out]] { tree }
+    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
   def fromMagic2Impl[
@@ -81,17 +84,20 @@ object FromMagicMacros {
   )(layer1: c.Expr[ZLayer[In1, E, Out1]], layer2: c.Expr[ZLayer[In2, E, Out2]])(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    import c.universe._
+    val syntax = UniverseSyntax(c)
+    import syntax._
 
-    val outType = assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing(c)
 
-    val tree =
-      q"""
-        import zio.magic._
-        zio.ZIO.environment[$outType].provideMagicLayer($layer1, $layer2).toLayerMany
-        """
+    val layerExpr = ExprGraph(
+      List(
+        buildNode(layer1),
+        buildNode(layer2)
+      ),
+      c
+    ).buildLayerFor(getRequirements[Out])
 
-    c.Expr[ZLayer[Any, E, Out]] { tree }
+    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
   def fromMagic3Impl[
@@ -108,17 +114,21 @@ object FromMagicMacros {
   )(layer1: c.Expr[ZLayer[In1, E, Out1]], layer2: c.Expr[ZLayer[In2, E, Out2]], layer3: c.Expr[ZLayer[In3, E, Out3]])(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    import c.universe._
+    val syntax = UniverseSyntax(c)
+    import syntax._
 
-    val outType = assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing(c)
 
-    val tree =
-      q"""
-        import zio.magic._
-        zio.ZIO.environment[$outType].provideMagicLayer($layer1, $layer2, $layer3).toLayerMany
-        """
+    val layerExpr = ExprGraph(
+      List(
+        buildNode(layer1),
+        buildNode(layer2),
+        buildNode(layer3)
+      ),
+      c
+    ).buildLayerFor(getRequirements[Out])
 
-    c.Expr[ZLayer[Any, E, Out]] { tree }
+    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
   def fromMagic4Impl[
@@ -142,17 +152,22 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    import c.universe._
+    val syntax = UniverseSyntax(c)
+    import syntax._
 
-    val outType = assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing(c)
 
-    val tree =
-      q"""
-        import zio.magic._
-        zio.ZIO.environment[$outType].provideMagicLayer($layer1, $layer2, $layer3, $layer4).toLayerMany
-        """
+    val layerExpr = ExprGraph(
+      List(
+        buildNode(layer1),
+        buildNode(layer2),
+        buildNode(layer3),
+        buildNode(layer4)
+      ),
+      c
+    ).buildLayerFor(getRequirements[Out])
 
-    c.Expr[ZLayer[Any, E, Out]] { tree }
+    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
   def fromMagic5Impl[
@@ -179,17 +194,23 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    import c.universe._
+    val syntax = UniverseSyntax(c)
+    import syntax._
 
-    val outType = assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing(c)
 
-    val tree =
-      q"""
-        import zio.magic._
-        zio.ZIO.environment[$outType].provideMagicLayer($layer1, $layer2, $layer3, $layer4, $layer5).toLayerMany
-        """
+    val layerExpr = ExprGraph(
+      List(
+        buildNode(layer1),
+        buildNode(layer2),
+        buildNode(layer3),
+        buildNode(layer4),
+        buildNode(layer5)
+      ),
+      c
+    ).buildLayerFor(getRequirements[Out])
 
-    c.Expr[ZLayer[Any, E, Out]] { tree }
+    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
   def fromMagic6Impl[
@@ -219,17 +240,24 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    import c.universe._
+    val syntax = UniverseSyntax(c)
+    import syntax._
 
-    val outType = assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing(c)
 
-    val tree =
-      q"""
-        import zio.magic._
-        zio.ZIO.environment[$outType].provideMagicLayer($layer1, $layer2, $layer3, $layer4, $layer5, $layer6).toLayerMany
-        """
+    val layerExpr = ExprGraph(
+      List(
+        buildNode(layer1),
+        buildNode(layer2),
+        buildNode(layer3),
+        buildNode(layer4),
+        buildNode(layer5),
+        buildNode(layer6)
+      ),
+      c
+    ).buildLayerFor(getRequirements[Out])
 
-    c.Expr[ZLayer[Any, E, Out]] { tree }
+    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
   def fromMagic7Impl[
@@ -262,17 +290,25 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    import c.universe._
+    val syntax = UniverseSyntax(c)
+    import syntax._
 
-    val outType = assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing(c)
 
-    val tree =
-      q"""
-        import zio.magic._
-        zio.ZIO.environment[$outType].provideMagicLayer($layer1, $layer2, $layer3, $layer4, $layer5, $layer6, $layer7).toLayerMany
-        """
+    val layerExpr = ExprGraph(
+      List(
+        buildNode(layer1),
+        buildNode(layer2),
+        buildNode(layer3),
+        buildNode(layer4),
+        buildNode(layer5),
+        buildNode(layer6),
+        buildNode(layer7)
+      ),
+      c
+    ).buildLayerFor(getRequirements[Out])
 
-    c.Expr[ZLayer[Any, E, Out]] { tree }
+    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
   def fromMagic8Impl[
@@ -308,17 +344,26 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    import c.universe._
+    val syntax = UniverseSyntax(c)
+    import syntax._
 
-    val outType = assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing(c)
 
-    val tree =
-      q"""
-        import zio.magic._
-        zio.ZIO.environment[$outType].provideMagicLayer($layer1, $layer2, $layer3, $layer4, $layer5, $layer6, $layer7, $layer8).toLayerMany
-        """
+    val layerExpr = ExprGraph(
+      List(
+        buildNode(layer1),
+        buildNode(layer2),
+        buildNode(layer3),
+        buildNode(layer4),
+        buildNode(layer5),
+        buildNode(layer6),
+        buildNode(layer7),
+        buildNode(layer8)
+      ),
+      c
+    ).buildLayerFor(getRequirements[Out])
 
-    c.Expr[ZLayer[Any, E, Out]] { tree }
+    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
   def fromMagic9Impl[
@@ -357,17 +402,27 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    import c.universe._
+    val syntax = UniverseSyntax(c)
+    import syntax._
 
-    val outType = assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing(c)
 
-    val tree =
-      q"""
-        import zio.magic._
-        zio.ZIO.environment[$outType].provideMagicLayer($layer1, $layer2, $layer3, $layer4, $layer5, $layer6, $layer7, $layer8, $layer9).toLayerMany
-        """
+    val layerExpr = ExprGraph(
+      List(
+        buildNode(layer1),
+        buildNode(layer2),
+        buildNode(layer3),
+        buildNode(layer4),
+        buildNode(layer5),
+        buildNode(layer6),
+        buildNode(layer7),
+        buildNode(layer8),
+        buildNode(layer9)
+      ),
+      c
+    ).buildLayerFor(getRequirements[Out])
 
-    c.Expr[ZLayer[Any, E, Out]] { tree }
+    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
   def fromMagic10Impl[
@@ -409,17 +464,28 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    import c.universe._
+    val syntax = UniverseSyntax(c)
+    import syntax._
 
-    val outType = assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing(c)
 
-    val tree =
-      q"""
-        import zio.magic._
-        zio.ZIO.environment[$outType].provideMagicLayer($layer1, $layer2, $layer3, $layer4, $layer5, $layer6, $layer7, $layer8, $layer9, $layer10).toLayerMany
-        """
+    val layerExpr = ExprGraph(
+      List(
+        buildNode(layer1),
+        buildNode(layer2),
+        buildNode(layer3),
+        buildNode(layer4),
+        buildNode(layer5),
+        buildNode(layer6),
+        buildNode(layer7),
+        buildNode(layer8),
+        buildNode(layer9),
+        buildNode(layer10)
+      ),
+      c
+    ).buildLayerFor(getRequirements[Out])
 
-    c.Expr[ZLayer[Any, E, Out]] { tree }
+    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
   def fromMagic11Impl[
@@ -464,17 +530,29 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    import c.universe._
+    val syntax = UniverseSyntax(c)
+    import syntax._
 
-    val outType = assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing(c)
 
-    val tree =
-      q"""
-        import zio.magic._
-        zio.ZIO.environment[$outType].provideMagicLayer($layer1, $layer2, $layer3, $layer4, $layer5, $layer6, $layer7, $layer8, $layer9, $layer10, $layer11).toLayerMany
-        """
+    val layerExpr = ExprGraph(
+      List(
+        buildNode(layer1),
+        buildNode(layer2),
+        buildNode(layer3),
+        buildNode(layer4),
+        buildNode(layer5),
+        buildNode(layer6),
+        buildNode(layer7),
+        buildNode(layer8),
+        buildNode(layer9),
+        buildNode(layer10),
+        buildNode(layer11)
+      ),
+      c
+    ).buildLayerFor(getRequirements[Out])
 
-    c.Expr[ZLayer[Any, E, Out]] { tree }
+    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
   def fromMagic12Impl[
@@ -522,17 +600,30 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    import c.universe._
+    val syntax = UniverseSyntax(c)
+    import syntax._
 
-    val outType = assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing(c)
 
-    val tree =
-      q"""
-        import zio.magic._
-        zio.ZIO.environment[$outType].provideMagicLayer($layer1, $layer2, $layer3, $layer4, $layer5, $layer6, $layer7, $layer8, $layer9, $layer10, $layer11, $layer12).toLayerMany
-        """
+    val layerExpr = ExprGraph(
+      List(
+        buildNode(layer1),
+        buildNode(layer2),
+        buildNode(layer3),
+        buildNode(layer4),
+        buildNode(layer5),
+        buildNode(layer6),
+        buildNode(layer7),
+        buildNode(layer8),
+        buildNode(layer9),
+        buildNode(layer10),
+        buildNode(layer11),
+        buildNode(layer12)
+      ),
+      c
+    ).buildLayerFor(getRequirements[Out])
 
-    c.Expr[ZLayer[Any, E, Out]] { tree }
+    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
   def fromMagic13Impl[
@@ -583,17 +674,31 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    import c.universe._
+    val syntax = UniverseSyntax(c)
+    import syntax._
 
-    val outType = assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing(c)
 
-    val tree =
-      q"""
-        import zio.magic._
-        zio.ZIO.environment[$outType].provideMagicLayer($layer1, $layer2, $layer3, $layer4, $layer5, $layer6, $layer7, $layer8, $layer9, $layer10, $layer11, $layer12, $layer13).toLayerMany
-        """
+    val layerExpr = ExprGraph(
+      List(
+        buildNode(layer1),
+        buildNode(layer2),
+        buildNode(layer3),
+        buildNode(layer4),
+        buildNode(layer5),
+        buildNode(layer6),
+        buildNode(layer7),
+        buildNode(layer8),
+        buildNode(layer9),
+        buildNode(layer10),
+        buildNode(layer11),
+        buildNode(layer12),
+        buildNode(layer13)
+      ),
+      c
+    ).buildLayerFor(getRequirements[Out])
 
-    c.Expr[ZLayer[Any, E, Out]] { tree }
+    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
   def fromMagic14Impl[
@@ -647,17 +752,32 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    import c.universe._
+    val syntax = UniverseSyntax(c)
+    import syntax._
 
-    val outType = assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing(c)
 
-    val tree =
-      q"""
-        import zio.magic._
-        zio.ZIO.environment[$outType].provideMagicLayer($layer1, $layer2, $layer3, $layer4, $layer5, $layer6, $layer7, $layer8, $layer9, $layer10, $layer11, $layer12, $layer13, $layer14).toLayerMany
-        """
+    val layerExpr = ExprGraph(
+      List(
+        buildNode(layer1),
+        buildNode(layer2),
+        buildNode(layer3),
+        buildNode(layer4),
+        buildNode(layer5),
+        buildNode(layer6),
+        buildNode(layer7),
+        buildNode(layer8),
+        buildNode(layer9),
+        buildNode(layer10),
+        buildNode(layer11),
+        buildNode(layer12),
+        buildNode(layer13),
+        buildNode(layer14)
+      ),
+      c
+    ).buildLayerFor(getRequirements[Out])
 
-    c.Expr[ZLayer[Any, E, Out]] { tree }
+    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
   def fromMagic15Impl[
@@ -714,17 +834,33 @@ object FromMagicMacros {
   )(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    import c.universe._
+    val syntax = UniverseSyntax(c)
+    import syntax._
 
-    val outType = assertEnvIsNotNothing(c)
+    assertEnvIsNotNothing(c)
 
-    val tree =
-      q"""
-        import zio.magic._
-        zio.ZIO.environment[$outType].provideMagicLayer($layer1, $layer2, $layer3, $layer4, $layer5, $layer6, $layer7, $layer8, $layer9, $layer10, $layer11, $layer12, $layer13, $layer14, $layer15).toLayerMany
-        """
+    val layerExpr = ExprGraph(
+      List(
+        buildNode(layer1),
+        buildNode(layer2),
+        buildNode(layer3),
+        buildNode(layer4),
+        buildNode(layer5),
+        buildNode(layer6),
+        buildNode(layer7),
+        buildNode(layer8),
+        buildNode(layer9),
+        buildNode(layer10),
+        buildNode(layer11),
+        buildNode(layer12),
+        buildNode(layer13),
+        buildNode(layer14),
+        buildNode(layer15)
+      ),
+      c
+    ).buildLayerFor(getRequirements[Out])
 
-    c.Expr[ZLayer[Any, E, Out]] { tree }
+    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
 }

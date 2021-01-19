@@ -16,7 +16,9 @@ import zio.magic.ComplexExample.K.K
 import zio.magic.ComplexExample.L.L
 import zio.magic.ComplexExample.M.M
 
-/**           RIO[A with J, Int]
+/** An example of magically constructing the following nested layer graph:
+  *
+  *           RIO[A with J, Int]
   *        A                      J
   *    B       C                K   L
   *  D E F   G H I            M
@@ -39,15 +41,13 @@ private object ComplexExample extends App {
         J.live,
         B.live,
         C.live,
-        D.live,
-        E.live,
-        F.live,
         G.live,
         H.live,
         I.live,
         K.live,
         L.live,
-        M.live
+        M.live,
+        ZLayer.fromMagic[D with E with F](D.live, E.live, F.live)
       )
 
     satisfied.exitCode
@@ -197,6 +197,7 @@ private object ComplexExample extends App {
   }
 
   object K {
+
     type K = Has[Service]
 
     trait Service {
