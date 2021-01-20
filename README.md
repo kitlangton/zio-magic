@@ -30,7 +30,7 @@ val provided: UIO[Unit] =
   
 // Or just build a layer
 val aLayer: ULayer[A] = 
-  ZLayer.fromMagic(A.live, B.live, C.live, D.live)
+  ZLayer.fromMagic[A](A.live, B.live, C.live, D.live)
 ```
 
 [tiny slapshod walkthrough video](https://cln.sh/QhhXLu)
