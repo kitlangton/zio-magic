@@ -4,12 +4,23 @@
 
 Construct ZLayers automagically (w/ compile-time errors) 
 
+## Getting Started
+
+```sbt
+// build.sbt
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+libraryDependencies += "io.github.kitlangton" %% "zio-magic" % "0.1.2-SNAPSHOT"
+```
+
 ```scala 
 // Given a dependency graph (A requires B and C; C requires D)
 //
 //            A
 //          B   C 
 //                D
+
+import zio._
+import zio.magic._
 
 val program : URIO[A, Unit] = ???
 
