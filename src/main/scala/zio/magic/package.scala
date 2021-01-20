@@ -32,6 +32,10 @@ package object magic {
         layers: ZLayer[_, E1, _]*
     )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
       macro ProvideMagicLayerMacros.provideMagicLayerImpl[R, E1, A]
-  }
 
+    def provideCustomMagicLayer[In1, Out1, In2, Out2, E1 >: E](
+        layers: ZLayer[_, E1, _]*
+    )(implicit dummyK: DummyK[R]): ZIO[ZEnv, E1, A] =
+      macro ProvideMagicLayerMacros.provideCustomMagicLayerImpl[R, E1, A]
+  }
 }

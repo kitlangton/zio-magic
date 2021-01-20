@@ -1,5 +1,5 @@
 ThisBuild / scalaVersion := "2.13.3"
-ThisBuild / version := "0.1.3"
+ThisBuild / version := "0.1.4-SNAPSHOT"
 ThisBuild / organization := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
 ThisBuild / description := "Magically construct ZLayers."
@@ -9,17 +9,20 @@ val zioVersion = "1.0.3"
 
 // Sonatype Publishing
 import xerial.sbt.Sonatype._
-publishMavenStyle := true
-sonatypeProjectHosting := Some(GitHubHosting("kitlangton", "zio-magic", "kit.langton@gmail.com"))
-publishTo := sonatypePublishToBundle.value
-licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
-credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credentials")
-developers := List(
-  Developer(
-    id = "kitlangton",
-    name = "Kit Langton",
-    email = "kit.langton@gmail.com",
-    url = url("https://github.com/kitlangton")
+
+val sharedSettings = Seq(
+  publishMavenStyle := true,
+  sonatypeProjectHosting := Some(GitHubHosting("kitlangton", "zio-magic", "kit.langton@gmail.com")),
+  publishTo := sonatypePublishToBundle.value,
+  licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
+  credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credentials"),
+  developers := List(
+    Developer(
+      id = "kitlangton",
+      name = "Kit Langton",
+      email = "kit.langton@gmail.com",
+      url = url("https://github.com/kitlangton")
+    )
   )
 )
 
@@ -46,13 +49,14 @@ lazy val root = (project in file("."))
     ),
     libraryDependencies ++= dependencies
   )
+  .settings(sharedSettings)
   .aggregate(macros)
   .dependsOn(macros)
 
 lazy val macros = (project in file("macros"))
+  .settings(sharedSettings)
   .settings(
     name := "zio-magic-macros",
-    publishTo := sonatypePublishToBundle.value,
     scalacOptions ++= Seq(
       "-Ymacro-annotations"
     ),

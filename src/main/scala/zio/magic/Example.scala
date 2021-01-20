@@ -59,13 +59,12 @@ private object Example extends App {
       ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
 
     // The new way... oh yes!
-    val satisfied: ZIO[Any, Nothing, Int] =
-      program.provideMagicLayer(
+    val satisfied: ZIO[ZEnv, Nothing, Int] =
+      program.provideCustomMagicLayer(
         Pie.live,
         Flour.live,
         Berries.live,
-        Spoon.live,
-        ZEnv.live
+        Spoon.live
       )
 
     val `or just build the layer`: ULayer[Pie] =

@@ -25,6 +25,14 @@ trait MacroUtils {
       .map(_.dealias.typeArgs.head.toString)
       .distinct
 
+  def assertProperVarArgs(layers: Seq[c.Expr[_]]) =
+    layers.map(_.tree) collect { case Typed(_, Ident(typeNames.WILDCARD_STAR)) =>
+      c.abort(
+        c.enclosingPosition,
+        "Magic doesn't work with `someList: _*` syntax.\nPlease pass the layers themselves into this function."
+      )
+    }
+
   implicit class TypeOps(tpe: Type) {
 
     /** Given a type `A with B with C` You'll get back List[A,B,C]

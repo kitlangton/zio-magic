@@ -29,6 +29,7 @@ class FromMagicMacros(val c: blackbox.Context) extends MacroUtils {
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
     assertEnvIsNotNothing[Out]
+    assertProperVarArgs(layers)
     val layerExpr = ExprGraph(layers.map(getNode).toList, c).buildLayerFor(getRequirements[Out])
     layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }

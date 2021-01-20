@@ -25,12 +25,7 @@ object RealWorldExample extends zio.App {
       }
 
     program
-      .provideMagicLayer(
-        ZEnv.live,
-        gitLive,
-        viewLayer,
-        projectStateLive
-      )
+      .provideCustomMagicLayer(gitLive, viewLayer, projectStateLive)
       .exitCode
   }
 }
