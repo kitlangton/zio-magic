@@ -7,7 +7,7 @@ package object magic {
 
   // # FROM MAGIC LAYER
 
-  final class FromMagicLayerBuilder[Out <: Has[_]]() {
+  final class FromMagicLayerPartiallyApplied[Out <: Has[_]](val dummy: Boolean = true) extends AnyVal {
 
     def apply[E]()(implicit dummyK: DummyK[Out]): ZLayer[Any, E, Out] =
       macro FromMagicMacros.fromMagic0Impl[E, Out]
@@ -548,7 +548,7 @@ package object magic {
   }
 
   implicit final class ZLayerSingletonOps(val self: ZLayer.type) extends AnyVal {
-    def fromMagic[Out <: Has[_]] = new FromMagicLayerBuilder[Out]
+    def fromMagic[Out <: Has[_]] = new FromMagicLayerPartiallyApplied[Out]
   }
 
   // # PROVIDE SOME MAGIC LAYER

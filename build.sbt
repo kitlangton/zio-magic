@@ -8,9 +8,7 @@ ThisBuild / homepage := Some(url("https://github.com/kitlangton/zio-magic"))
 val zioVersion = "1.0.3"
 
 publishTo := sonatypePublishToBundle.value
-
 credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credentials")
-
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
 
 lazy val dependencies =
