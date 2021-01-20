@@ -1,5 +1,6 @@
 # 🪄 zio-magic
 
+[![Release Artifacts][Badge-SonatypeReleases]][Link-SonatypeReleases]
 [![Snapshot Artifacts][Badge-SonatypeSnapshots]][Link-SonatypeSnapshots]
 
 Construct ZLayers automagically (w/ compile-time errors) 
@@ -8,8 +9,7 @@ Construct ZLayers automagically (w/ compile-time errors)
 
 ```sbt
 // build.sbt
-resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
-libraryDependencies += "io.github.kitlangton" %% "zio-magic" % "0.1.2-SNAPSHOT"
+libraryDependencies += "io.github.kitlangton" % "zio-magic" % "0.1.3"
 ```
 
 ```scala 
@@ -108,3 +108,5 @@ type mismatch;
 [Badge-SonatypeReleases]: https://img.shields.io/nexus/r/https/oss.sonatype.org/io.github.kitlangton/zio-magic_2.13.svg "Sonatype Releases"
 [Badge-SonatypeSnapshots]: https://img.shields.io/nexus/s/https/oss.sonatype.org/io.github.kitlangton/zio-magic_2.13.svg "Sonatype Snapshots"
 [Link-SonatypeSnapshots]: https://oss.sonatype.org/content/repositories/snapshots/io/github/kitlangton/zio-magic_2.13/ "Sonatype Snapshots"
+[Link-SonatypeReleases]: https://oss.sonatype.org/content/repositories/releases/io/github/kitlangton/zio-magic_2.13/ "Sonatype Releases"
+
