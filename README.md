@@ -1,6 +1,6 @@
 # 🪄 zio-magic
 
-[![Snapshot Artifacts][Badge-SonatypeSnapshots]][Link-SonatypeSnapshots] <--- Doesn't work yet 😅 (Still figuring out this whole _release_ thing)
+[![Snapshot Artifacts][Badge-SonatypeSnapshots]][Link-SonatypeSnapshots]
 
 Construct ZLayers automagically (w/ compile-time errors) 
 
@@ -96,4 +96,4 @@ type mismatch;
 
 [Badge-SonatypeReleases]: https://img.shields.io/nexus/r/https/oss.sonatype.org/io.github.kitlangton/zio-magic_2.13.svg "Sonatype Releases"
 [Badge-SonatypeSnapshots]: https://img.shields.io/nexus/s/https/oss.sonatype.org/io.github.kitlangton/zio-magic_2.13.svg "Sonatype Snapshots"
-[Link-SonatypeSnapshots]: https://oss.sonatype.org/content/repositories/snapshots/io/github/kitlangton/zio-magic_2.13 "Sonatype Snapshots"
+[Link-SonatypeSnapshots]: https://oss.sonatype.org/content/repositories/snapshots/io/github/kitlangton/zio-magic_2.13/ "Sonatype Snapshots"
