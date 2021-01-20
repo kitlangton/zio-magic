@@ -22,6 +22,12 @@ object ProvideMagicLayerSpec extends DefaultRunnableSpec {
           string <- ZIO.service[String]
         } yield string * int
 
+        val provided0 = program
+          .provideMagicLayer(
+            ZLayer.succeed(3),
+            ZLayer.succeed("ha!")
+          )
+
         val provided = program.provideMagicLayer(
           ZLayer.succeed(3),
           ZLayer.succeed("ha")

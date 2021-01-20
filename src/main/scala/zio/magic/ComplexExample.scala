@@ -34,25 +34,23 @@ private object ComplexExample extends App {
         _ <- console.putStrLn(s"Result:\n$a\n$j")
       } yield ()
 
-//    val satisfied: ZIO[Any, E, Unit] =
-//      program.provideMagicLayer(
-//        Console.live,
-//        A.live,
-//        J.live,
-//        B.live,
-//        C.live,
-//        G.live,
-//        H.live,
-//        I.live,
-//        K.live,
-//        L.live,
-//        M.live,
-//        ZLayer.fromMagic[D with E with F](D.live, E.live, F.live)
-//      )
-//
-//    satisfied.exitCode
-    UIO(1).exitCode
+    val satisfied: ZIO[Any, E, Unit] =
+      program.provideMagicLayer(
+        Console.live,
+        A.live,
+        J.live,
+        B.live,
+        C.live,
+        G.live,
+        H.live,
+        I.live,
+        K.live,
+        L.live,
+        M.live,
+        ZLayer.fromMagic[D with E with F](D.live, E.live, F.live)
+      )
 
+    satisfied.exitCode
   }
 
   object A {

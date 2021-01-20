@@ -10,20 +10,20 @@ trait MacroUtils {
 
   private val zioSymbol = typeOf[Has[_]].typeSymbol
 
-  def getRequirements[T: c.WeakTypeTag]: List[String] = {
-    weakTypeOf[T].intersectionTypes
+  def getNode(layer: c.Expr[ZLayer[_, _, _]]): Node[c.Expr[ZLayer[_, _, _]]] = {
+    val tpe                   = layer.actualType.dealias
+    val in :: _ :: out :: Nil = tpe.typeArgs
+    Node(getRequirements(in), getRequirements(out), layer)
+  }
+
+  def getRequirements[T: c.WeakTypeTag]: List[String] =
+    getRequirements(weakTypeOf[T])
+
+  def getRequirements(tpe: Type): List[String] =
+    tpe.intersectionTypes
       .filter(_.dealias.typeSymbol == zioSymbol)
       .map(_.dealias.typeArgs.head.toString)
       .distinct
-  }
-
-  def buildNode[I: c.WeakTypeTag, E, O: c.WeakTypeTag](
-      layer: c.Expr[ZLayer[I, E, O]]
-  ): Node[c.Expr[ZLayer[I, E, O]]] = {
-    val ins  = getRequirements[I]
-    val outs = getRequirements[O]
-    Node(ins, outs, layer)
-  }
 
   implicit class TypeOps(tpe: Type) {
 

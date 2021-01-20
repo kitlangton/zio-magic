@@ -1,5 +1,5 @@
 ThisBuild / scalaVersion := "2.13.3"
-ThisBuild / version := "0.1.2-SNAPSHOT"
+ThisBuild / version := "0.1.3"
 ThisBuild / organization := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
 ThisBuild / description := "Magically construct ZLayers."
@@ -7,8 +7,22 @@ ThisBuild / homepage := Some(url("https://github.com/kitlangton/zio-magic"))
 
 val zioVersion = "1.0.3"
 
+// Sonatype Publishing
+import xerial.sbt.Sonatype._
+publishMavenStyle := true
+sonatypeProjectHosting := Some(GitHubHosting("kitlangton", "zio-magic", "kit.langton@gmail.com"))
 publishTo := sonatypePublishToBundle.value
+licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credentials")
+developers := List(
+  Developer(
+    id = "kitlangton",
+    name = "Kit Langton",
+    email = "kit.langton@gmail.com",
+    url = url("https://github.com/kitlangton")
+  )
+)
+
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
 
 lazy val dependencies =
@@ -48,17 +62,5 @@ lazy val macros = (project in file("macros"))
       "org.typelevel" %% "cats-core"     % "2.2.0",
       "org.typelevel" %% "cats-free"     % "2.2.0",
       "org.scala-lang" % "scala-reflect" % "2.13.3"
-    )
-  )
-
-lazy val codegen = (project in file("codegen"))
-  .settings(
-    name := "zio-magic",
-    scalacOptions ++= Seq(
-      "-Ymacro-annotations"
-    ),
-    libraryDependencies ++= dependencies,
-    libraryDependencies ++= Seq(
-      "org.scalameta" %% "scalameta" % "4.4.6"
     )
   )
