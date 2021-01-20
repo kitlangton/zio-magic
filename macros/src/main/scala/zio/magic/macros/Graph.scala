@@ -18,29 +18,38 @@ case class Graph[A: LayerLike](nodes: List[Node[A]]) {
     TraversableOps(outputs)
       .foreach(output => getNodeWithOutput(output, error = GraphError.MissingTopLevelDependency(output)))
       .flatMap(_.map(node => buildNode(node, Set(node))).flip)
-      .map(_.combineHorizontally)
+      .map(_.distinct.combineHorizontally)
 
   private def getNodeWithOutput[E](output: String, error: E = ()): Validation[E, Node[A]] =
     Validation.fromEither {
       nodes.find(_.outputs.contains(output)).toRight(error)
     }
 
+  private def getDependencies[E](node: Node[A]): Validation[GraphError[A], List[Node[A]]] =
+    TraversableOps(node.inputs)
+      .foreach { input =>
+        getNodeWithOutput(input, error = GraphError.MissingDependency(node, input))
+      }
+      .map(_.distinctBy(_.value))
+
   /** @param node The node to build the sub-graph for
     * @param seen The nodes already seen. Used to check for cycles.
     * @return Either the fully constructed sub-graph or a graph errors
     */
   private def buildNode(node: Node[A], seen: Set[Node[A]] = Set.empty): Validation[GraphError[A], A] =
-    TraversableOps(node.inputs)
-      .foreach { in =>
-        for {
-          out  <- getNodeWithOutput(in, error = GraphError.MissingDependency(node, in))
-          _    <- assertNonCircularDependency(node, seen, out)
-          tree <- buildNode(out, seen + out)
-        } yield tree
-      }
-      .map {
-        case Nil      => node.value
-        case children => children.combineHorizontally >>> node.value
+    getDependencies(node)
+      .flatMap {
+        TraversableOps(_)
+          .foreach { out =>
+            for {
+              _    <- assertNonCircularDependency(node, seen, out)
+              tree <- buildNode(out, seen + out)
+            } yield tree
+          }
+          .map {
+            case Nil      => node.value
+            case children => children.distinct.combineHorizontally >>> node.value
+          }
       }
 
   private def assertNonCircularDependency(

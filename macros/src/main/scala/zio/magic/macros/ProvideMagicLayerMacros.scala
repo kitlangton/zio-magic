@@ -106,6 +106,10 @@ class ProvideMagicLayerMacros(val c: blackbox.Context) extends MacroUtils {
     val layerExpr = ExprGraph(List(buildNode(layer1), buildNode(layer2), buildNode(layer3), buildNode(layer4)), c)
       .buildLayerFor(getRequirements[R])
 
+    println("KITTT")
+    println(getRequirements[R])
+    println(layerExpr.tree.toString())
+
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }
 

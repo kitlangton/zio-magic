@@ -11,7 +11,7 @@ trait MacroUtils {
   private val zioSymbol = typeOf[Has[_]].typeSymbol
 
   def getRequirements[T: c.WeakTypeTag]: List[String] = {
-    weakTypeOf[T].dealias.intersectionTypes
+    weakTypeOf[T].intersectionTypes
       .filter(_.dealias.typeSymbol == zioSymbol)
       .map(_.dealias.typeArgs.head.toString)
       .distinct
@@ -29,9 +29,9 @@ trait MacroUtils {
 
     /** Given a type `A with B with C` You'll get back List[A,B,C]
       */
-    def intersectionTypes: List[Type] = tpe match {
+    def intersectionTypes: List[Type] = tpe.dealias match {
       case t: RefinedType =>
-        t.parents
+        t.parents.flatMap(_.dealias.intersectionTypes)
       case _ => List(tpe)
     }
   }

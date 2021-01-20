@@ -1,5 +1,5 @@
 ThisBuild / scalaVersion := "2.13.3"
-ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / version := "0.1.2-SNAPSHOT"
 ThisBuild / organization := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
 ThisBuild / description := "Magically construct ZLayers."
@@ -34,6 +34,7 @@ lazy val root = (project in file("."))
     ),
     libraryDependencies ++= dependencies
   )
+  .aggregate(macros)
   .dependsOn(macros)
 
 lazy val macros = (project in file("macros"))
