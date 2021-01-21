@@ -4,6 +4,7 @@ import zio.{Has, ZLayer}
 
 import scala.reflect.macros.whitebox
 
+// WIP: Not completed yet. The whitebox context will need plugin support to work nicely with IntelliJ IDEA
 class ProvideSomeMagicMacro(val c: whitebox.Context) extends MacroUtils {
   import c.universe._
 

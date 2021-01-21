@@ -17,7 +17,6 @@ class ProvideMagicLayerMacros(val c: blackbox.Context) extends MacroUtils {
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
     assertProperVarArgs(layers)
-
     val layerExpr = ExprGraph(layers.map(getNode).toList, c).buildLayerFor(getRequirements[R])
     c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
   }

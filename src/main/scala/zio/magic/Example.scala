@@ -37,21 +37,22 @@ private object Example extends App {
       def isDelicious: UIO[Boolean]
     }
 
-    val test: ZLayer[Any, Nothing, Pie] = ZLayer.succeed(new Pie.Service {
-      override def isDelicious: UIO[Boolean] = UIO(false)
-    })
+    val test: ZLayer[Any, Nothing, Pie] =
+      ZLayer.succeed(new Pie.Service {
+        override def isDelicious: UIO[Boolean] = UIO(false)
+      })
 
-    val live: ZLayer[Flour with Berries, Nothing, Pie] = ZLayer.succeed(new Pie.Service {
-      override def isDelicious: UIO[Boolean] = UIO(true)
-    })
+    val live: ZLayer[Flour with Berries, Nothing, Pie] =
+      ZLayer.succeed(new Pie.Service {
+        override def isDelicious: UIO[Boolean] = UIO(true)
+      })
   }
 
   override def run(args: List[String]): URIO[ZEnv, ExitCode] = {
-    val program: ZIO[Console with Pie with Berries, Nothing, Int] =
+    val program: ZIO[Console with Pie, Nothing, Int] =
       for {
         isDelicious <- Pie.isDelicious
         _           <- console.putStrLn(s"Pie is delicious: $isDelicious")
-
       } yield 3
 
     // Tho old way... oh no!

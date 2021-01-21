@@ -10,9 +10,9 @@ case class ExprGraph[C <: blackbox.Context](graph: Graph[LayerExpr[C]], c: C) {
   import c.universe._
 
   def buildLayerFor(output: List[String]): LayerExpr[C] =
-    if (output.isEmpty)
-      c.Expr[ZLayer[_, _, _]](q"""zio.ZLayer.succeed(())""").asInstanceOf[LayerExpr[C]]
-    else
+    if (output.isEmpty) {
+      reify { zio.ZLayer.succeed(()) }.asInstanceOf[LayerExpr[C]]
+    } else
       graph.buildComplete(output) match {
         case Validation.Failure(errors) =>
           c.abort(c.enclosingPosition, renderErrors(errors))

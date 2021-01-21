@@ -12,18 +12,18 @@ package object magic {
       macro FromMagicMacros.fromMagicImpl[E, Out]
   }
 
-  implicit final class ZLayerSingletonOps(val self: ZLayer.type) extends AnyVal {
+  implicit final class ZLayerCompanionOps(val self: ZLayer.type) extends AnyVal {
     def fromMagic[Out <: Has[_]] = new FromMagicLayerPartiallyApplied[Out]
   }
 
   // # PROVIDE SOME MAGIC LAYER
 
-  implicit final class ZioProvideSomeMagicOps[Require](val zio: ZIO[Require, Nothing, Unit]) extends AnyVal {
-    def provideSomeMagicLayer[Provide, Remainder <: Require](zlayer: ZLayer[Any, Nothing, Provide])(implicit
-        dummyK: DummyK[Require]
-    ): ZIO[Remainder, Nothing, Unit] =
-      macro ProvideSomeMagicMacro.provideSomeMagicImpl[Require, Provide, Remainder]
-  }
+//  implicit final class ZioProvideSomeMagicOps[Require](val zio: ZIO[Require, Nothing, Unit]) extends AnyVal {
+//    def provideSomeMagicLayer[Provide, Remainder <: Require](zlayer: ZLayer[Any, Nothing, Provide])(implicit
+//        dummyK: DummyK[Require]
+//    ): ZIO[Remainder, Nothing, Unit] =
+//      macro ProvideSomeMagicMacro.provideSomeMagicImpl[Require, Provide, Remainder]
+//  }
 
   // # PROVIDE MAGIC LAYER
 
