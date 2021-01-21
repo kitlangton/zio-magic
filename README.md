@@ -91,7 +91,7 @@ type mismatch;
 
 ## Also
 
-You can also build up a ZLayer without providing it, however you must annotate the call to `ZLayer.fromMagic[TargetGoesHere]`, because macros.
+You can also directly construct a ZLayer (However you must annotate the call to `ZLayer.fromMagic[LikeThis]`, because macros).
 
 ```scala
 val layer = Zlayer.fromMagic[Flour with Console](Console.live, Flour.live, Spoon.live)
