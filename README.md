@@ -56,9 +56,9 @@ And if you leave something off, a **compile time clue**!
 val satisfied: ZIO[ZEnv, Nothing, Unit] =
   program.provideMagicLayer(
     Pie.live,
-    Flour.live,
+    //Flour.live, <-- Oops
     Berries.live,
-    // Spoon.live, <-- Oops
+    Spoon.live,
     Console.live
   )
 ```
@@ -67,8 +67,8 @@ val satisfied: ZIO[ZEnv, Nothing, Unit] =
 /Users/kit/code/zio-magic/src/main/scala/zio/magic/Example.scala:63:32:
 🪄  ZLayer Magic Missing Components
 🪄
-🪄  provide zio.magic.Example.Spoon.Service
-🪄      for Example.this.Flour.live
+🪄  provide zio.magic.Example.Flour.Service
+🪄      for Example.this.Pie.live
 ```
 
 ----
