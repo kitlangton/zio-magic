@@ -91,7 +91,7 @@ type mismatch;
       ((Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
 ```
 
-### Also
+## Also
 
 You can also build up a ZLayer without providing it, however you must annotate the call to `ZLayer.fromMagic[TargetGoesHere]`, because macros.
 
