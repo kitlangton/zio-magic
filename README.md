@@ -72,7 +72,7 @@ val satisfied: ZIO[ZEnv, Nothing, Unit] =
 ```
 
 ----
-*Versus leaving out a dependency when manually constructing your layer*  😭
+Versus leaving out a dependency when manually constructing your layer...
 
 ```scala
  val manualLayer: ULayer[Pie with Console] =
