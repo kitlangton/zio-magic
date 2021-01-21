@@ -80,8 +80,6 @@ val satisfied: ZIO[ZEnv, Nothing, Unit] =
  // ^ A Spoon is missing here! 
 ```
 
-**RUN AWAY!**
-
 ```shell
 type mismatch;
  found   : zio.ZLayer[zio.magic.Example.Spoon.Spoon with Any,Nothing,zio.magic.Example.Pie.Pie with zio.console.Console]
