@@ -13,21 +13,21 @@ private object Example extends App {
     type Spoon = Has[Service]
     case class Service()
 
-    def live: URLayer[Any, Spoon] = ZLayer.succeed(Service())
+    val live: URLayer[Any, Spoon] = ZLayer.succeed(Service())
   }
 
   object Flour {
     type Flour = Has[Service]
     case class Service()
 
-    def live: ZLayer[Spoon, Nothing, Flour] = ZLayer.succeed(Service())
+    val live: ZLayer[Spoon, Nothing, Flour] = ZLayer.succeed(Service())
   }
 
   object Berries {
     type Berries = Has[Service]
     case class Service()
 
-    def live: URLayer[Spoon, Berries] = ZLayer.succeed(Service())
+    val live: URLayer[Spoon, Berries] = ZLayer.succeed(Service())
   }
 
   @accessible
@@ -69,7 +69,12 @@ private object Example extends App {
       )
 
     val `or just build the layer`: ULayer[Pie] =
-      ZLayer.fromMagic[Pie](Pie.live, Flour.live, Berries.live, Spoon.live)
+      ZLayer.fromMagic[Pie](
+        Pie.live,
+        Flour.live,
+        Berries.live,
+        Spoon.live
+      )
 
     satisfied.exitCode
   }

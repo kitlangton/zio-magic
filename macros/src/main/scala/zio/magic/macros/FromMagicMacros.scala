@@ -4,10 +4,10 @@ import zio.{Has, ZLayer}
 
 import scala.reflect.macros.blackbox
 
-class FromMagicMacros(val c: blackbox.Context) extends MacroUtils {
+class FromMagicMacros(val c: blackbox.Context) extends MacroUtils with ExprGraphSupport {
   import c.universe._
 
-  private def assertEnvIsNotNothing[Out <: Has[_]: c.WeakTypeTag]: Unit = {
+  private def assertEnvIsNotNothing[Out <: Has[_]: c.WeakTypeTag](): Unit = {
     val outType     = weakTypeOf[Out]
     val nothingType = weakTypeOf[Nothing]
     if (outType == nothingType) {
@@ -28,10 +28,11 @@ class FromMagicMacros(val c: blackbox.Context) extends MacroUtils {
   ](layers: c.Expr[ZLayer[_, E, _]]*)(
       dummyK: c.Expr[DummyK[Out]]
   ): c.Expr[ZLayer[Any, E, Out]] = {
-    assertEnvIsNotNothing[Out]
+    assertEnvIsNotNothing[Out]()
     assertProperVarArgs(layers)
-    val layerExpr = ExprGraph(layers.map(getNode).toList, c).buildLayerFor(getRequirements[Out])
-    layerExpr.asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
+    ExprGraph
+      .buildLayer[Out](layers.map(getNode).toList)
+      .asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
   }
 
 }

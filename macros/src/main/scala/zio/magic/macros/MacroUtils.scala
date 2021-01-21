@@ -10,7 +10,9 @@ trait MacroUtils {
 
   private val zioSymbol = typeOf[Has[_]].typeSymbol
 
-  def getNode(layer: c.Expr[ZLayer[_, _, _]]): Node[c.Expr[ZLayer[_, _, _]]] = {
+  type LayerExpr = c.Expr[ZLayer[_, _, _]]
+
+  def getNode(layer: LayerExpr): Node[LayerExpr] = {
     val tpe                   = layer.actualType.dealias
     val in :: _ :: out :: Nil = tpe.typeArgs
     Node(getRequirements(in), getRequirements(out), layer)
@@ -25,7 +27,7 @@ trait MacroUtils {
       .map(_.dealias.typeArgs.head.toString)
       .distinct
 
-  def assertProperVarArgs(layers: Seq[c.Expr[_]]) =
+  def assertProperVarArgs(layers: Seq[c.Expr[_]]): Unit =
     layers.map(_.tree) collect { case Typed(_, Ident(typeNames.WILDCARD_STAR)) =>
       c.abort(
         c.enclosingPosition,

@@ -4,7 +4,7 @@ import zio._
 
 import scala.reflect.macros.blackbox
 
-class ProvideMagicLayerMacros(val c: blackbox.Context) extends MacroUtils {
+class ProvideMagicLayerMacros(val c: blackbox.Context) extends MacroUtils with ExprGraphSupport {
   import c.universe._
 
   def provideMagicLayerImpl[
@@ -17,8 +17,8 @@ class ProvideMagicLayerMacros(val c: blackbox.Context) extends MacroUtils {
       dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
     assertProperVarArgs(layers)
-    val layerExpr = ExprGraph(layers.map(getNode).toList, c).buildLayerFor(getRequirements[R])
-    c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
+    val layerExpr = ExprGraph.buildLayer[R](layers.map(getNode).toList)
+    c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree})")
   }
 
   def provideCustomMagicLayerImpl[
@@ -34,11 +34,10 @@ class ProvideMagicLayerMacros(val c: blackbox.Context) extends MacroUtils {
     val ZEnvRequirements = getRequirements[ZEnv]
     val requirements     = getRequirements[R] diff ZEnvRequirements
 
-    val zEnvAny   = reify { ZEnv.any }
-    val zEnvLayer = Node(List.empty, ZEnvRequirements, zEnvAny)
+    val zEnvLayer = Node(List.empty, ZEnvRequirements, reify(ZEnv.any))
     val nodes     = (zEnvLayer +: layers.map(getNode)).toList
 
-    val layerExpr = ExprGraph(nodes, c).buildLayerFor(requirements)
-    c.Expr(q"${c.prefix}.zio.provideCustomLayer(${layerExpr.tree.asInstanceOf[c.Tree]})")
+    val layerExpr = ExprGraph(nodes).buildLayerFor(requirements)
+    c.Expr(q"${c.prefix}.zio.provideCustomLayer(${layerExpr.tree})")
   }
 }
