@@ -13,7 +13,7 @@ libraryDependencies += "io.github.kitlangton" % "zio-magic" % "0.1.4"
 ## What!?
 
 ```scala
-// Given a dependency graph* (Pie requires Berries and Flour; Berries and Flour both require Spoon)
+// Given a dependency graph (Pie needs Berries & Flour, which in turn need Spoon)*
 //
 //           Pie
 //          /   \
