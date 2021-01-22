@@ -1,5 +1,5 @@
 ThisBuild / scalaVersion := "2.13.3"
-ThisBuild / version := "0.1.4"
+ThisBuild / version := "0.1.5"
 ThisBuild / organization := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
 ThisBuild / description := "Magically construct ZLayers."
@@ -74,6 +74,15 @@ lazy val examples = (project in file("examples"))
     scalacOptions ++= Seq(
       "-Ymacro-annotations"
     ),
-    libraryDependencies ++= dependencies
+    libraryDependencies ++= dependencies,
+    libraryDependencies ++= Seq(
+//      "org.typelevel" %% "cats-core" % "2.3.1",
+//      "dev.zio" %% "zio" % "1.0.4",
+//      "org.scastie" %% "runtime-scala" % "1.0.0-SNAPSHOT",
+      "org.tpolecat"         %% "doobie-core" % "0.10.0",
+      "org.typelevel"        %% "cats-effect" % "2.3.1",
+      "io.github.gaelrenoux" %% "tranzactio"  % "1.2.0",
+      "co.fs2"               %% "fs2-core"    % "2.5.0"
+    )
   )
   .dependsOn(root)
