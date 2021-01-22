@@ -1,5 +1,9 @@
 package zio.magic.macros
 
+import zio.console.Console
+import zio.magic.macros.StringSyntax.StringOps
+import zio.magic.macros.graph.{Graph, GraphError}
+import zio.prelude.Validation
 import zio.{Has, ZLayer}
 
 import scala.reflect.macros.blackbox
@@ -21,7 +25,6 @@ class FromMagicMacros(val c: blackbox.Context) extends MacroUtils with ExprGraph
     }
   }
 
-  // GENERATED FROM HERE ON
   def fromMagicImpl[
       E,
       Out <: Has[_]: c.WeakTypeTag
@@ -33,6 +36,36 @@ class FromMagicMacros(val c: blackbox.Context) extends MacroUtils with ExprGraph
     ExprGraph
       .buildLayer[Out](layers.map(getNode).toList)
       .asInstanceOf[c.Expr[ZLayer[Any, E, Out]]]
+  }
+
+  def fromMagicDebugImpl[
+      E,
+      Out <: Has[_]: c.WeakTypeTag
+  ](layers: c.Expr[ZLayer[_, E, _]]*)(
+      dummyK: c.Expr[DummyK[Out]]
+  ): c.Expr[ZLayer[Any, E, Out]] = {
+    assertEnvIsNotNothing[Out]()
+    assertProperVarArgs(layers)
+    val graph        = ExprGraph(layers.map(getNode).toList)
+    val requirements = getRequirements[Out]
+    graph.buildLayerFor(requirements)
+
+    val graphString: String = graph.graph
+      .map { layer => StupidGraph(layer.showTree) }
+      .buildComplete(requirements)
+      .toOption
+      .get
+      .render
+
+    val maxWidth = graphString.maxLineWidth
+    val title    = "Your Delicately Rendered Graph"
+    val adjust   = (maxWidth - title.length) / 2
+
+    val rendered = "\n" + (" " * adjust) + fansi.Color
+      .Blue(title)
+      .overlay(fansi.Underlined.On) + "\n\n" + graphString + "\n\n"
+
+    c.abort(c.enclosingPosition, rendered)
   }
 
 }

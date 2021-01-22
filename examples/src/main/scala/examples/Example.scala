@@ -1,8 +1,11 @@
-package zio.magic
+package examples
+
+import examples.Example.Spoon.Spoon
 import zio._
+import zio.blocking.Blocking
 import zio.console.Console
 import zio.macros.accessible
-import zio.magic.Example.Spoon.Spoon
+import zio.magic._
 
 private object Example extends App {
   import Berries.Berries
@@ -13,14 +16,14 @@ private object Example extends App {
     type Spoon = Has[Service]
     case class Service()
 
-    val live: URLayer[Any, Spoon] = ZLayer.succeed(Service())
+    val live: URLayer[Blocking, Spoon] = ZLayer.succeed(Service())
   }
 
   object Flour {
     type Flour = Has[Service]
     case class Service()
 
-    val live: ZLayer[Spoon, Nothing, Flour] = ZLayer.succeed(Service())
+    val live: ZLayer[Spoon with Console, Nothing, Flour] = ZLayer.succeed(Service())
   }
 
   object Berries {
@@ -56,8 +59,8 @@ private object Example extends App {
       } yield 3
 
     // Tho old way... oh no!
-    val manualLayer: ULayer[Pie with Console] =
-      ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
+//    val manualLayer: ULayer[Pie with Console] =
+//      ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
 
     // The new way... oh yes!
     val satisfied: ZIO[ZEnv, Nothing, Int] =
@@ -73,7 +76,9 @@ private object Example extends App {
         Pie.live,
         Flour.live,
         Berries.live,
-        Spoon.live
+        Spoon.live,
+        Blocking.live,
+        Console.live
       )
 
     satisfied.exitCode

@@ -63,8 +63,17 @@ lazy val macros = (project in file("macros"))
     libraryDependencies ++= dependencies,
     libraryDependencies ++= Seq(
       "dev.zio"       %% "zio-prelude"   % "1.0.0-RC1",
-      "org.typelevel" %% "cats-core"     % "2.2.0",
-      "org.typelevel" %% "cats-free"     % "2.2.0",
       "org.scala-lang" % "scala-reflect" % "2.13.3"
     )
   )
+
+lazy val examples = (project in file("examples"))
+  .settings(sharedSettings)
+  .settings(
+    name := "zio-magic-examples",
+    scalacOptions ++= Seq(
+      "-Ymacro-annotations"
+    ),
+    libraryDependencies ++= dependencies
+  )
+  .dependsOn(root)

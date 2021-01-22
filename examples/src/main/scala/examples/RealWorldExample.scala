@@ -1,7 +1,9 @@
-package zio.magic
+package examples
+
 import zio._
 import zio.blocking.Blocking
 import zio.console.Console
+import zio.magic._
 
 object RealWorldExample extends zio.App {
 

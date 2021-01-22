@@ -1,5 +1,6 @@
 package zio.magic.macros
 
+import zio.magic.macros.graph.Node
 import zio.{Has, ZLayer}
 
 import scala.reflect.macros.{Universe, blackbox}
@@ -35,14 +36,23 @@ trait MacroUtils {
       )
     }
 
-  implicit class TypeOps(tpe: Type) {
+  implicit class TypeOps(self: Type) {
 
     /** Given a type `A with B with C` You'll get back List[A,B,C]
       */
-    def intersectionTypes: List[Type] = tpe.dealias match {
+    def intersectionTypes: List[Type] = self.dealias match {
       case t: RefinedType =>
         t.parents.flatMap(_.dealias.intersectionTypes)
-      case _ => List(tpe)
+      case _ => List(self)
     }
+  }
+
+  implicit class ZLayerExprOps(self: c.Expr[ZLayer[_, _, _]]) {
+    def outputTypes: List[Type] = self.actualType.dealias.typeArgs(2).intersectionTypes
+    def inputTypes: List[Type]  = self.actualType.dealias.typeArgs.head.intersectionTypes
+  }
+
+  implicit class TreeOps(self: c.Expr[_]) {
+    def showTree: String = CleanCodePrinter.show(c)(self.tree)
   }
 }

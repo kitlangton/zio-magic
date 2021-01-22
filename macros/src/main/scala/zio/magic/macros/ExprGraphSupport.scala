@@ -1,5 +1,6 @@
 package zio.magic.macros
 
+import zio.magic.macros.graph.{Graph, GraphError, LayerLike, Node}
 import zio.prelude.Validation
 import zio.{Chunk, NonEmptyChunk}
 
@@ -56,7 +57,7 @@ trait ExprGraphSupport { self: MacroUtils =>
       error match {
         case GraphError.MissingDependency(node, dependency) =>
           val styledDependency = fansi.Color.White(dependency).overlay(fansi.Underlined.On)
-          val styledLayer      = fansi.Color.White(node.value.tree.toString())
+          val styledLayer      = fansi.Color.White(node.value.showTree)
           s"""
 provide $styledDependency
     for $styledLayer"""
@@ -66,8 +67,8 @@ provide $styledDependency
           s"""missing $styledDependency"""
 
         case GraphError.CircularDependency(node, dependency, _) =>
-          val styledNode       = fansi.Color.White(node.value.tree.toString()).overlay(fansi.Underlined.On)
-          val styledDependency = fansi.Color.White(dependency.value.tree.toString())
+          val styledNode       = fansi.Color.White(node.value.showTree).overlay(fansi.Underlined.On)
+          val styledDependency = fansi.Color.White(dependency.value.showTree)
           s"""
 ${fansi.Color.Magenta("PARADOX ENCOUNTERED")} — Please don't open a rift in space-time!
 $styledNode

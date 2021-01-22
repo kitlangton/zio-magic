@@ -1,8 +1,4 @@
-package zio.magic.macros
-
-import zio.ZLayer
-
-import scala.reflect.macros.blackbox
+package zio.magic.macros.graph
 
 trait LayerLike[A] {
   def composeH(lhs: A, rhs: A): A

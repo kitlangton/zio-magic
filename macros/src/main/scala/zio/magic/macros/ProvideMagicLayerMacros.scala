@@ -1,6 +1,7 @@
 package zio.magic.macros
 
 import zio._
+import zio.magic.macros.graph.Node
 
 import scala.reflect.macros.blackbox
 

@@ -1,20 +1,21 @@
-package zio.magic
+package examples
 
+import examples.ComplexExample.A.A
+import examples.ComplexExample.B.B
+import examples.ComplexExample.C.C
+import examples.ComplexExample.D.D
+import examples.ComplexExample.E.E
+import examples.ComplexExample.F.F
+import examples.ComplexExample.G.G
+import examples.ComplexExample.H.H
+import examples.ComplexExample.I.I
+import examples.ComplexExample.J.J
+import examples.ComplexExample.K.K
+import examples.ComplexExample.L.L
+import examples.ComplexExample.M.M
+import zio.magic._
 import zio._
 import zio.console.Console
-import zio.magic.ComplexExample.A.A
-import zio.magic.ComplexExample.B.B
-import zio.magic.ComplexExample.C.C
-import zio.magic.ComplexExample.D.D
-import zio.magic.ComplexExample.E.E
-import zio.magic.ComplexExample.F.F
-import zio.magic.ComplexExample.G.G
-import zio.magic.ComplexExample.H.H
-import zio.magic.ComplexExample.I.I
-import zio.magic.ComplexExample.J.J
-import zio.magic.ComplexExample.K.K
-import zio.magic.ComplexExample.L.L
-import zio.magic.ComplexExample.M.M
 
 /** An example of magically constructing the following nested layer graph:
   *
@@ -47,8 +48,26 @@ private object ComplexExample extends App {
         K.live,
         L.live,
         M.live,
-        ZLayer.fromMagic[D with E with F](D.live, E.live, F.live)
+        D.live,
+        E.live,
+        F.live
       )
+
+    val orBuildTheLayer = ZLayer.fromMagic[A with J](
+      A.live,
+      J.live,
+      B.live,
+      C.live,
+      G.live,
+      H.live,
+      I.live,
+      K.live,
+      L.live,
+      M.live,
+      D.live,
+      E.live,
+      F.live
+    )
 
     satisfied.exitCode
   }
