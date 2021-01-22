@@ -1,9 +1,9 @@
-package zio.magic.macros
+package zio.magic.macros.utils
 
 import zio.magic.macros.graph.Node
 import zio.{Has, ZLayer}
 
-import scala.reflect.macros.{Universe, blackbox}
+import scala.reflect.macros.blackbox
 
 trait MacroUtils {
   val c: blackbox.Context

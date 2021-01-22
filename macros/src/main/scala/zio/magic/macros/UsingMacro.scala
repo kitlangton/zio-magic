@@ -1,5 +1,6 @@
 package zio.magic.macros
 
+import zio.magic.macros.utils.{DummyK, MacroUtils}
 import zio.{Has, ZLayer}
 
 import scala.reflect.macros.whitebox

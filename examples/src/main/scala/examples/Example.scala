@@ -59,8 +59,9 @@ private object Example extends App {
       } yield 3
 
     // Tho old way... oh no!
-//    val manualLayer: ULayer[Pie with Console] =
-//      ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
+    val manualLayer: ULayer[Pie with Console] =
+      ((Console.live ++ (Blocking.live >>> Spoon.live) >>> Flour.live) ++
+        (Blocking.live >>> Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
 
     // The new way... oh yes!
     val satisfied: ZIO[ZEnv, Nothing, Int] =

@@ -1,7 +1,7 @@
-package zio.magic.macros
+package zio.magic.macros.utils
 
-import zio.magic.macros.StringSyntax.StringOps
 import zio.magic.macros.graph.LayerLike
+import zio.magic.macros.utils.StringSyntax.StringOps
 
 sealed trait StupidGraph { self =>
   def ++(that: StupidGraph): StupidGraph

@@ -1,4 +1,4 @@
-package zio.magic.macros
+package zio.magic.macros.utils
 
 import zio.magic.macros.graph.{Graph, GraphError, LayerLike, Node}
 import zio.prelude.Validation

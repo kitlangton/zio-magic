@@ -1,4 +1,4 @@
-package zio.magic.macros
+package zio.magic.macros.utils
 
 import scala.reflect.macros.blackbox
 

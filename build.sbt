@@ -1,5 +1,5 @@
 ThisBuild / scalaVersion := "2.13.3"
-ThisBuild / version := "0.1.5"
+ThisBuild / version := "0.1.6"
 ThisBuild / organization := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
 ThisBuild / description := "Magically construct ZLayers."
