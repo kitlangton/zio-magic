@@ -10,7 +10,7 @@ Construct ZLayers automagically (w/ friendly compile-time hints)
 libraryDependencies += "io.github.kitlangton" % "zio-magic" % "0.1.7"
 ```
 
-## Who goes there!?
+## What's all this then?
 
 ```scala
 // Given a dependency graph (Pie needs Berries & Flour, which in turn need Spoon)*
