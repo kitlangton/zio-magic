@@ -1,11 +1,16 @@
-ThisBuild / scalaVersion := "2.13.3"
-ThisBuild / version := "0.1.6"
+lazy val scala213               = "2.13.4"
+lazy val scala212               = "2.12.10"
+lazy val scala211               = "2.11.12"
+lazy val supportedScalaVersions = List(scala213, scala212, scala211)
+
+ThisBuild / scalaVersion := scala213
+ThisBuild / version := "0.1.7-SNAPSHOT"
 ThisBuild / organization := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
 ThisBuild / description := "Magically construct ZLayers."
 ThisBuild / homepage := Some(url("https://github.com/kitlangton/zio-magic"))
 
-val zioVersion = "1.0.3"
+val zioVersion = "1.0.4"
 
 // Sonatype Publishing
 import xerial.sbt.Sonatype._
@@ -23,47 +28,63 @@ val sharedSettings = Seq(
       email = "kit.langton@gmail.com",
       url = url("https://github.com/kitlangton")
     )
-  )
+  ),
+  libraryDependencies ++= dependencies,
+  testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework"),
+  libraryDependencies ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, n)) if n <= 12 =>
+        List(
+          compilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
+          "com.lihaoyi" %% "fansi" % "0.2.6"
+        )
+      case _ =>
+        List(
+          "com.lihaoyi" %% "fansi" % "0.2.9"
+        )
+    }
+  },
+  Compile / scalacOptions ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, n)) if n <= 12 => Nil
+      case _                       => List("-Ymacro-annotations")
+    }
+  }
 )
-
-addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
 
 lazy val dependencies =
   Seq(
-    "dev.zio"     %% "zio"               % zioVersion,
-    "dev.zio"     %% "zio-macros"        % zioVersion,
-    "dev.zio"     %% "zio-test"          % zioVersion % "test",
-    "dev.zio"     %% "zio-test-sbt"      % zioVersion % "test",
-    "dev.zio"     %% "zio-test-magnolia" % zioVersion % "test",
-    "dev.zio"     %% "zio-test-intellij" % zioVersion % "test",
-    "com.lihaoyi" %% "fansi"             % "0.2.7"
+    "dev.zio" %% "zio"          % zioVersion,
+    "dev.zio" %% "zio-macros"   % zioVersion,
+    "dev.zio" %% "zio-test"     % zioVersion % "test",
+    "dev.zio" %% "zio-test-sbt" % zioVersion % "test"
   )
-
-testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
 
 lazy val root = (project in file("."))
+  .settings(sharedSettings)
+  .aggregate(core, macros)
+  .settings(
+    // crossScalaVersions must be set to Nil on the aggregating project
+    crossScalaVersions := Nil,
+    publish / skip := true
+  )
+
+lazy val core = (project in file("core"))
   .settings(
     name := "zio-magic",
-    scalacOptions ++= Seq(
-      "-Ymacro-annotations"
-    ),
-    libraryDependencies ++= dependencies
+    crossScalaVersions := supportedScalaVersions
   )
   .settings(sharedSettings)
-  .aggregate(macros)
   .dependsOn(macros)
 
 lazy val macros = (project in file("macros"))
   .settings(sharedSettings)
   .settings(
     name := "zio-magic-macros",
-    scalacOptions ++= Seq(
-      "-Ymacro-annotations"
-    ),
-    libraryDependencies ++= dependencies,
+    crossScalaVersions := supportedScalaVersions,
     libraryDependencies ++= Seq(
       "dev.zio"       %% "zio-prelude"   % "1.0.0-RC1",
-      "org.scala-lang" % "scala-reflect" % "2.13.3"
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value
     )
   )
 
@@ -71,18 +92,11 @@ lazy val examples = (project in file("examples"))
   .settings(sharedSettings)
   .settings(
     name := "zio-magic-examples",
-    scalacOptions ++= Seq(
-      "-Ymacro-annotations"
-    ),
-    libraryDependencies ++= dependencies,
     libraryDependencies ++= Seq(
-//      "org.typelevel" %% "cats-core" % "2.3.1",
-//      "dev.zio" %% "zio" % "1.0.4",
-//      "org.scastie" %% "runtime-scala" % "1.0.0-SNAPSHOT",
       "org.tpolecat"         %% "doobie-core" % "0.10.0",
       "org.typelevel"        %% "cats-effect" % "2.3.1",
       "io.github.gaelrenoux" %% "tranzactio"  % "1.2.0",
       "co.fs2"               %% "fs2-core"    % "2.5.0"
     )
   )
-  .dependsOn(root)
+  .dependsOn(core)

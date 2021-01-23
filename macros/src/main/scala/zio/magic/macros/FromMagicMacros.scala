@@ -1,10 +1,7 @@
 package zio.magic.macros
 
-import zio.console.Console
 import zio.magic.macros.utils.StringSyntax.StringOps
-import zio.magic.macros.graph.{Graph, GraphError}
 import zio.magic.macros.utils.{DummyK, ExprGraphSupport, MacroUtils, StupidGraph}
-import zio.prelude.Validation
 import zio.{Has, ZLayer}
 
 import scala.reflect.macros.blackbox

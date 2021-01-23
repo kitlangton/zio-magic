@@ -141,7 +141,7 @@ private object ComplexExample extends App {
       def string: UIO[String]
     }
 
-    def live: URLayer[Any, E] = ZLayer.succeed(new Service {
+    def live: URLayer[J, E] = ZLayer.succeed(new Service {
       override def string: UIO[String] = UIO("E")
     })
   }
@@ -179,7 +179,7 @@ private object ComplexExample extends App {
       def string: UIO[String]
     }
 
-    def live: URLayer[Any, H] = ZLayer.succeed(new Service {
+    def live: URLayer[J, H] = ZLayer.succeed(new Service {
 
       override def string: UIO[String] = UIO("H")
 

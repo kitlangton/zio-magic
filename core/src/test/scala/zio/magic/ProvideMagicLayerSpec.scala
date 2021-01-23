@@ -6,8 +6,6 @@ import zio.test._
 import zio.test.environment.TestEnvironment
 import zio.{Has, ZIO, ZLayer}
 
-import scala.annotation.unused
-
 object ProvideMagicLayerSpec extends DefaultRunnableSpec {
   override def spec: ZSpec[TestEnvironment, Any] = suite("provideMagicLayer")(
     constructLayersSuite,
@@ -55,7 +53,6 @@ object ProvideMagicLayerSpec extends DefaultRunnableSpec {
   }
 
   private def compileErrorSuite = {
-    @unused("used by the typeCheck macros below. Please spare me, scala-check")
     val program = for {
       int    <- ZIO.service[Int]
       string <- ZIO.service[String]

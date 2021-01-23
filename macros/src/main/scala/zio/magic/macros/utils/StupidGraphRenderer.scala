@@ -3,6 +3,8 @@ package zio.magic.macros.utils
 import zio.magic.macros.graph.LayerLike
 import zio.magic.macros.utils.StringSyntax.StringOps
 
+import scala.util.Try
+
 sealed trait StupidGraph { self =>
   def ++(that: StupidGraph): StupidGraph
   def >>>(that: StupidGraph): StupidGraph
@@ -106,11 +108,13 @@ object StupidGraph {
 
 object StringSyntax {
   implicit class StringOps(val self: String) extends AnyVal {
-    def maxLineWidth: Int = self
-      .replaceAll("\u001B\\[[;\\d]*m", "")
-      .linesIterator
-      .map(_.length)
-      .maxOption getOrElse 0
+    def maxLineWidth: Int = Try(
+      self
+        .replaceAll("\u001B\\[[;\\d]*m", "")
+        .linesIterator
+        .map(_.length)
+        .max
+    ).getOrElse(0)
 
     def +++(that: String): String = {
       val lines     = self.linesIterator.toList

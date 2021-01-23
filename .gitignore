@@ -3,3 +3,7 @@ out/
 .idea
 .bloop
 .bsp
+.metals
+.vscode
+project/project
+project/metals.sbt

@@ -1,7 +1,7 @@
 package zio.magic.macros.graph
 
 import zio.magic.macros.graph.LayerLike._
-import zio.prelude.{TraversableOps, Validation}
+import zio.prelude._
 
 case class Graph[A: LayerLike](nodes: List[Node[A]]) {
 
@@ -11,9 +11,10 @@ case class Graph[A: LayerLike](nodes: List[Node[A]]) {
     })
 
   def buildComplete(outputs: List[String]): Validation[GraphError[A], A] =
-    TraversableOps(outputs)
-      .foreach(output => getNodeWithOutput(output, error = GraphError.MissingTopLevelDependency(output)))
-      .flatMap(_.map(node => buildNode(node, Set(node))).flip)
+    traverse(outputs) { output =>
+      getNodeWithOutput(output, error = GraphError.MissingTopLevelDependency(output))
+    }
+      .flatMap(traverse(_)(node => buildNode(node, Set(node))))
       .map(_.distinct.combineHorizontally)
 
   private def getNodeWithOutput[E](output: String, error: E = ()): Validation[E, Node[A]] =
@@ -22,11 +23,10 @@ case class Graph[A: LayerLike](nodes: List[Node[A]]) {
     }
 
   private def getDependencies[E](node: Node[A]): Validation[GraphError[A], List[Node[A]]] =
-    TraversableOps(node.inputs)
-      .foreach { input =>
-        getNodeWithOutput(input, error = GraphError.MissingDependency(node, input))
-      }
-      .map(_.distinctBy(_.value))
+    traverse(node.inputs) { input =>
+      getNodeWithOutput(input, error = GraphError.MissingDependency(node, input))
+    }
+      .map(_.distinct)
 
   /** @param node The node to build the sub-graph for
     * @param seen The nodes already seen. Used to check for cycles.
@@ -35,13 +35,12 @@ case class Graph[A: LayerLike](nodes: List[Node[A]]) {
   private def buildNode(node: Node[A], seen: Set[Node[A]] = Set.empty): Validation[GraphError[A], A] =
     getDependencies(node)
       .flatMap {
-        TraversableOps(_)
-          .foreach { out =>
-            for {
-              _    <- assertNonCircularDependency(node, seen, out)
-              tree <- buildNode(out, seen + out)
-            } yield tree
-          }
+        traverse(_) { out =>
+          for {
+            _    <- assertNonCircularDependency(node, seen, out)
+            tree <- buildNode(out, seen + out)
+          } yield tree
+        }
           .map {
             case Nil      => node.value
             case children => children.distinct.combineHorizontally >>> node.value
@@ -57,5 +56,20 @@ case class Graph[A: LayerLike](nodes: List[Node[A]]) {
       Validation.fail(GraphError.CircularDependency(node, dependency, seen.size))
     else
       Validation.unit
+
+  /** Unfortunately, Traversable.forEach was not working w/ 2.12 or 2.11, so here we go!
+    */
+  private def traverse[B, C](list: List[B])(f: B => Validation[GraphError[A], C]): Validation[GraphError[A], List[C]] =
+    sequence(list.map(f))
+
+  private def sequence[B](list: List[Validation[GraphError[A], B]]): Validation[GraphError[A], List[B]] =
+    list.foldLeft[Validation[GraphError[A], List[B]]](Validation.succeed(List.empty)) { (acc, a) =>
+      (a, acc) match {
+        case (Validation.Failure(e1), Validation.Failure(e2)) => Validation.Failure(e1 ++ e2)
+        case (_, failure @ Validation.Failure(_))             => failure
+        case (failure @ Validation.Failure(_), _)             => failure
+        case (Validation.Success(a), Validation.Success(acc)) => Validation.Success(a +: acc)
+      }
+    }
 
 }
