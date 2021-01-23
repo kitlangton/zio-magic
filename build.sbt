@@ -4,7 +4,7 @@ lazy val scala211               = "2.11.12"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211)
 
 ThisBuild / scalaVersion := scala213
-ThisBuild / version := "0.1.7-SNAPSHOT"
+ThisBuild / version := "0.1.7"
 ThisBuild / organization := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
 ThisBuild / description := "Magically construct ZLayers."
@@ -46,7 +46,7 @@ val sharedSettings = Seq(
   },
   Compile / scalacOptions ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, n)) if n <= 12 => Nil
+      case Some((2, n)) if n <= 12 => List("-Ypartial-unification")
       case _                       => List("-Ymacro-annotations")
     }
   }

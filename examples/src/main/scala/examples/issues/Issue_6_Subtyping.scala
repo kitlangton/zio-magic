@@ -30,16 +30,10 @@ object Issue_6_Subtyping extends App {
       : ZLayer[Has[DataSource] with Has[ErrorStrategies] with Blocking with Clock, Nothing, doobie.Database.Database] =
     Database.fromDatasourceAndErrorStrategies
 
-  def workaroundDatabase
-      : ZLayer[Has[DataSource] with Has[ErrorStrategies] with Blocking with Clock, Nothing, Database] =
-    validOneButCompilationError.map { db =>
-      db.asInstanceOf[Database]
-    }
-
   val errorStrategiesLayer: ULayer[Has[ErrorStrategies]] =
     ZLayer.succeed(ErrorStrategies.retryCountExponential(count = 5, delay = 1.second, maxDelay = 5.seconds))
 
-  val dataSourceLayer: ZLayer[Any, Nothing, Has[DataSource]] = Task(stubDataSource).orDie.toLayer
+  val dataSourceLayer: ZLayer[Any, Nothing, Has[DataSource]] = ZLayer.succeed(null)
 
   private val _manualLayer =
     ZEnv.live ++ errorStrategiesLayer ++ dataSourceLayer >>> validOneButCompilationError >>>
@@ -60,5 +54,4 @@ object Issue_6_Subtyping extends App {
   val app: RIO[AppEnv, ExitCode] =
     MyService.plusOne(1).exitCode
 
-  def stubDataSource: DataSource = ???
 }
