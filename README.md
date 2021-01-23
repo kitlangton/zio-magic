@@ -24,18 +24,19 @@ libraryDependencies += "io.github.kitlangton" % "zio-magic" % "0.1.7"
 // *Not an actual recipe.
 
 override def run(args: List[String]): URIO[ZEnv, ExitCode] = {
-  val program: ZIO[Console with Pie, Nothing, Unit] =
-    for {
-      isDelicious <- Pie.isDelicious
-      _           <- console.putStrLn(s"Pie is delicious: $isDelicious")
-    } yield ()
 
-  // Tho old way... oh no!
-  val manualLayer: ULayer[Pie with Console] =
-    ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
+  // A trivial program depending on Console and Pie. Yum!
+  val program: URIO[Console with Pie, Unit] =
+    Pie.isDelicious.flatMap { bool => putStrLn(s"Pie is delicious: $bool") }
 
-  // The new way... oh yes! (The order doesn't matter)
-  val satisfied: UIO[Unit] =
+  // Tho old way
+  val manual: UIO[Unit =
+    program.provideLayer(
+      ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
+    )
+
+  // The magical way (The order doesn't matter)
+  val magical: UIO[Unit] =
     program.provideMagicLayer(
       Pie.live,
       Flour.live,
@@ -44,7 +45,7 @@ override def run(args: List[String]): URIO[ZEnv, ExitCode] = {
       Console.live
     )
 
-  satisfied.exitCode
+  magical.exitCode
 }
 ```
 
@@ -53,7 +54,7 @@ override def run(args: List[String]): URIO[ZEnv, ExitCode] = {
 And if you leave something off, a **compile time clue**!
 
 ```scala
-val satisfied: ZIO[ZEnv, Nothing, Unit] =
+val magical: UIO[Unit] =
   program.provideMagicLayer(
     Pie.live,
     //Flour.live, <-- Oops
@@ -64,7 +65,6 @@ val satisfied: ZIO[ZEnv, Nothing, Unit] =
 ```
 
 ```shell
-/Users/kit/code/zio-magic/src/main/scala/zio/magic/Example.scala:63:32:
 🪄  ZLayer Magic Missing Components
 🪄
 🪄  provide zio.magic.Example.Flour.Service
@@ -75,7 +75,6 @@ val satisfied: ZIO[ZEnv, Nothing, Unit] =
 Versus leaving out a dependency when manually constructing your layer...
 
 ```scala
- val manualLayer: ULayer[Pie with Console] =
    (Flour.live ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
  // ^ A Spoon is missing here! 
 ```
