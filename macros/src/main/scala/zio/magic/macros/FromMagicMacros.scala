@@ -1,7 +1,7 @@
 package zio.magic.macros
 
 import zio.magic.macros.utils.StringSyntax.StringOps
-import zio.magic.macros.utils.{DummyK, ExprGraphSupport, MacroUtils, StupidGraph}
+import zio.magic.macros.utils.{DummyK, ExprGraphSupport, MacroUtils, RenderGraph}
 import zio.{Has, ZLayer}
 
 import scala.reflect.macros.blackbox
@@ -49,7 +49,7 @@ class FromMagicMacros(val c: blackbox.Context) extends MacroUtils with ExprGraph
     graph.buildLayerFor(requirements)
 
     val graphString: String = graph.graph
-      .map { layer => StupidGraph(layer.showTree) }
+      .map { layer => RenderGraph(layer.showTree) }
       .buildComplete(requirements)
       .toOption
       .get

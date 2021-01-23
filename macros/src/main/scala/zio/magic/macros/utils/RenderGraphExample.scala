@@ -3,30 +3,28 @@ package zio.magic.macros.utils
 import zio.magic.macros.graph.LayerLike
 import zio.magic.macros.utils.StringSyntax.StringOps
 
-import scala.util.Try
-
-sealed trait StupidGraph { self =>
-  def ++(that: StupidGraph): StupidGraph
-  def >>>(that: StupidGraph): StupidGraph
+sealed trait RenderGraph { self =>
+  def ++(that: RenderGraph): RenderGraph
+  def >>>(that: RenderGraph): RenderGraph
   def render: String
 }
 
-object StupidGraph {
-  def apply(string: String): StupidGraph = Value(string)
+object RenderGraph {
+  def apply(string: String): RenderGraph = Value(string)
 
-  case class Value(string: String, children: List[StupidGraph] = List.empty) extends StupidGraph { self =>
+  case class Value(string: String, children: List[RenderGraph] = List.empty) extends RenderGraph { self =>
     private val marker = "°"
-    override def ++(that: StupidGraph): StupidGraph = that match {
+    override def ++(that: RenderGraph): RenderGraph = that match {
       case value: Value =>
         Row(List(self, value))
       case Row(values) =>
         Row(self +: values)
     }
 
-    override def >>>(that: StupidGraph): StupidGraph =
+    override def >>>(that: RenderGraph): RenderGraph =
       that match {
         case Value(string, children) => Value(string, self +: children)
-        case Row(values)             => throw new Error("NOT THIS")
+        case Row(_)                  => throw new Error("NOT LIKE THIS")
       }
 
     /** Forgive me. What have I done?
@@ -81,8 +79,8 @@ object StupidGraph {
 
   }
 
-  case class Row(values: List[StupidGraph]) extends StupidGraph { self =>
-    override def ++(that: StupidGraph): StupidGraph =
+  case class Row(values: List[RenderGraph]) extends RenderGraph { self =>
+    override def ++(that: RenderGraph): RenderGraph =
       that match {
         case value: Value =>
           Row(self.values :+ value)
@@ -90,69 +88,38 @@ object StupidGraph {
           Row(self.values ++ values)
       }
 
-    override def >>>(that: StupidGraph): StupidGraph =
+    override def >>>(that: RenderGraph): RenderGraph =
       that match {
         case Value(string, children) => Value(string, self.values ++ children)
-        case Row(values)             => throw new Error("NOT THIS")
+        case Row(_)                  => throw new Error("NOT LIKE THIS")
       }
 
     override def render: String = values.map(_.render).foldLeft("")(_ +++ _)
   }
 
-  implicit val layerLike = new LayerLike[StupidGraph] {
-    override def composeH(lhs: StupidGraph, rhs: StupidGraph): StupidGraph = lhs ++ rhs
+  implicit val layerLike: LayerLike[RenderGraph] = new LayerLike[RenderGraph] {
+    override def composeH(lhs: RenderGraph, rhs: RenderGraph): RenderGraph = lhs ++ rhs
 
-    override def composeV(lhs: StupidGraph, rhs: StupidGraph): StupidGraph = lhs >>> rhs
+    override def composeV(lhs: RenderGraph, rhs: RenderGraph): RenderGraph = lhs >>> rhs
   }
 }
 
-object StringSyntax {
-  implicit class StringOps(val self: String) extends AnyVal {
-    def maxLineWidth: Int = Try(
-      self
-        .replaceAll("\u001B\\[[;\\d]*m", "")
-        .linesIterator
-        .map(_.length)
-        .max
-    ).getOrElse(0)
-
-    def +++(that: String): String = {
-      val lines     = self.linesIterator.toList
-      val thatLines = that.linesIterator.toList
-      val maxSize   = Math.max(lines.length, thatLines.length)
-
-      val left: List[String] =
-        lines
-          .map(_.padTo(maxLineWidth, " ").mkString)
-          .padTo(maxSize, " " * (maxLineWidth))
-
-      val right: List[String] =
-        thatLines.padTo(maxSize, " " * (that.maxLineWidth))
-
-      left
-        .zip(right)
-        .map { case (str, str1) => str ++ str1 }
-        .mkString("\n")
-    }
-  }
-}
-
-object StupidGraphRenderer {
+private object RenderGraphExample {
   def main(args: Array[String]): Unit = {
-    val a   = StupidGraph.Value("Alpha Layer")
-    val b   = StupidGraph.Value("Baby House")
-    val d   = StupidGraph.Value("Daunting")
-    val e   = StupidGraph.Value("Eek")
-    val f   = StupidGraph.Value("Fancy")
-    val c   = StupidGraph.Value("Callous")
+    val a   = RenderGraph("Alpha Layer")
+    val b   = RenderGraph("Baby House")
+    val d   = RenderGraph("Daunting")
+    val e   = RenderGraph("Eek")
+    val f   = RenderGraph("Fancy")
+    val c   = RenderGraph("Callous")
     val end = (((d ++ e ++ f) >>> b) ++ c) >>> a
     println(end.render)
     println("")
 
-    val l1 = StupidGraph.Value("Cool")
-    val l2 = StupidGraph.Value("Cool")
-    val l3 = StupidGraph.Value("Cool")
-    println(((l2 ++ l3 ++ l3 ++ l3 ++ l3) >>> l1).render)
-    println((l3 >>> l3 >>> l3).render)
+    val l1 = RenderGraph("Cool")
+    val l2 = RenderGraph("Neat")
+    val l3 = RenderGraph("Alright")
+    println(((l2 ++ l3 ++ l1 ++ l2 ++ l3) >>> l1).render)
+    println((l1 >>> l2 >>> l3).render)
   }
 }
