@@ -7,10 +7,10 @@ Construct ZLayers automagically (w/ friendly compile-time hints)
 
 ```sbt
 // build.sbt
-libraryDependencies += "io.github.kitlangton" % "zio-magic" % "0.1.4"
+libraryDependencies += "io.github.kitlangton" % "zio-magic" % "0.1.6"
 ```
 
-## What!?
+## Who goes there!?
 
 ```scala
 // Given a dependency graph (Pie needs Berries & Flour, which in turn need Spoon)*
@@ -107,6 +107,26 @@ val wheelLayer: ZLayer[Any, Nothing, Wheels] = ???
 
 // The ZEnv you plug-in later will provide both Blocking to carLayer and Console to the program
 val provided: ZIO[ZEnv, Nothing, Unit] = program.provideCustomMagicLayer(carLayer, wheelLayer)
+```
+
+## Specs
+
+`provideLayer`, `provideCustomLayer`, `provideLayerShared`, and `provideCustomLayerShared` all work for zio-test's `Spec`. 
+
+## Debug!
+
+Try `ZLayer.fromMagicDebug[Pie]` to print out a pretty graph! _Ooh la la!_
+
+```shell
+      Your Delicately Rendered Graph
+
+                   Pie.live                   
+               ┌───────┴──────────────┐       
+          Flour.live            Berries.live  
+        ┌──────┴───────┐              │       
+   Spoon.live    Console.live    Spoon.live   
+       │                             │       
+ Blocking.live                Blocking.live 
 ```
 
 **Let me know if you can think of any helpful variants and I'll give 'em a whirl!**
