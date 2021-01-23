@@ -3,14 +3,14 @@
 [![Release Artifacts][Badge-SonatypeReleases]][Link-SonatypeReleases]
 [![Snapshot Artifacts][Badge-SonatypeSnapshots]][Link-SonatypeSnapshots]
 
-Construct ZLayers automagically (w/ friendly compile-time hints) 
+Construct ZLayers _automagically_, with friendly compile-time hints!
 
 ```sbt
 // build.sbt
-libraryDependencies += "io.github.kitlangton" % "zio-magic" % "0.1.7"
+libraryDependencies += "io.github.kitlangton" %% "zio-magic" % "0.1.7"
 ```
 
-## Who goes there!?
+## What's all this then?
 
 ```scala
 // Given a dependency graph (Pie needs Berries & Flour, which in turn need Spoon)*
@@ -23,19 +23,18 @@ libraryDependencies += "io.github.kitlangton" % "zio-magic" % "0.1.7"
 //
 // *Not an actual recipe.
 
-override def run(args: List[String]): URIO[ZEnv, ExitCode] = {
-  val program: ZIO[Console with Pie, Nothing, Unit] =
-    for {
-      isDelicious <- Pie.isDelicious
-      _           <- console.putStrLn(s"Pie is delicious: $isDelicious")
-    } yield ()
+def run(args: List[String]): URIO[ZEnv, ExitCode] = {
+  
+  // An effect requiring Pie and Console. Yum!
+  val program: URIO[Console with Pie, Unit] =
+    Pie.isDelicious.flatMap { bool => console.putStrLn(s"Pie is delicious: $bool") }
 
-  // Tho old way... oh no!
-  val manualLayer: ULayer[Pie with Console] =
+  // Tho old way
+  val manually: ULayer[Pie with Console] =
     ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
 
-  // The new way... oh yes! (The order doesn't matter)
-  val satisfied: UIO[Unit] =
+  // The magical way (The order doesn't matter)
+  val magically: UIO[Unit] =
     program.provideMagicLayer(
       Pie.live,
       Flour.live,
@@ -44,7 +43,7 @@ override def run(args: List[String]): URIO[ZEnv, ExitCode] = {
       Console.live
     )
 
-  satisfied.exitCode
+  magically.exitCode
 }
 ```
 
@@ -53,7 +52,7 @@ override def run(args: List[String]): URIO[ZEnv, ExitCode] = {
 And if you leave something off, a **compile time clue**!
 
 ```scala
-val satisfied: ZIO[ZEnv, Nothing, Unit] =
+val magically: UIO[Unit] =
   program.provideMagicLayer(
     Pie.live,
     //Flour.live, <-- Oops
@@ -64,18 +63,17 @@ val satisfied: ZIO[ZEnv, Nothing, Unit] =
 ```
 
 ```shell
-/Users/kit/code/zio-magic/src/main/scala/zio/magic/Example.scala:63:32:
 🪄  ZLayer Magic Missing Components
 🪄
 🪄  provide zio.magic.Example.Flour.Service
-🪄      for Example.this.Pie.live
+🪄      for Pie.live
 ```
 
 ----
 Versus leaving out a dependency when manually constructing your layer...
 
 ```scala
- val manualLayer: ULayer[Pie with Console] =
+ val manually: ULayer[Pie with Console] =
    (Flour.live ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
  // ^ A Spoon is missing here! 
 ```
@@ -100,13 +98,14 @@ val layer = Zlayer.fromMagic[Flour with Console](Console.live, Flour.live, Spoon
 There's also `.provideCustomMagicLayer` for which behaves similarly to `.provideCustomLayer`, only it also provides `ZEnv.any` to all transitive dependencies.
 
 ```scala
-val program: ZIO[Console with Car, Nothing, Unit] = ???
+val program: URIO[Console with Car, Unit] = ???
 
-val carLayer: ZLayer[Blocking with Wheels, Nothing, Car] = ???
-val wheelLayer: ZLayer[Any, Nothing, Wheels] = ???
+val carLayer: URLayer[Blocking with Wheels, Car] = ???
+val wheelLayer: ULayer[Wheels] = ???
 
-// The ZEnv you plug-in later will provide both Blocking to carLayer and Console to the program
-val provided: ZIO[ZEnv, Nothing, Unit] = program.provideCustomMagicLayer(carLayer, wheelLayer)
+// The ZEnv you use later will provide both Blocking to carLayer and Console to the program
+val provided: URIO[ZEnv, Unit] = 
+  program.provideCustomMagicLayer(carLayer, wheelLayer)
 ```
 
 ## Specs
@@ -129,7 +128,7 @@ Try `ZLayer.fromMagicDebug[Pie]` to print out a pretty graph! _Ooh la la!_
  Blocking.live                Blocking.live 
 ```
 
-**Let me know if you can think of any helpful variants and I'll give 'em a whirl!**
+**Let me know if you can think of any helpful variants, and I'll give 'em a whirl!**
 
 [Badge-SonatypeReleases]: https://img.shields.io/nexus/r/https/oss.sonatype.org/io.github.kitlangton/zio-magic_2.13.svg "Sonatype Releases"
 [Badge-SonatypeSnapshots]: https://img.shields.io/nexus/s/https/oss.sonatype.org/io.github.kitlangton/zio-magic_2.13.svg "Sonatype Snapshots"
