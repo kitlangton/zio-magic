@@ -29,7 +29,7 @@ def run(args: List[String]): URIO[ZEnv, ExitCode] = {
   val program: URIO[Console with Pie, Unit] =
     Pie.isDelicious.flatMap { bool => console.putStrLn(s"Pie is delicious: $bool") }
 
-  // Tho old way
+  // The old way
   val manually: ULayer[Pie with Console] =
     ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
 
