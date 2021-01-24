@@ -18,7 +18,8 @@ class UsingMacro(val c: whitebox.Context) extends MacroUtils {
       dummyIn: c.Expr[DummyK[In]],
       dummyOut: c.Expr[DummyK[Out]]
   ): c.Tree = {
-    val zioSymbol = typeOf[Has[_]].typeSymbol
+
+    typeOf[Has[_]].typeSymbol
 
     val requirements = getRequirements[In].toSet
     val provided     = layers.flatMap(_.outputTypes.map(_.toString)).toSet

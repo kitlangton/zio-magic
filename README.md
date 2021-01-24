@@ -33,7 +33,7 @@ def run(args: List[String]): URIO[ZEnv, ExitCode] = {
   val manually: ULayer[Pie with Console] =
     ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
 
-  // The magical way (The order doesn't matter)
+  // Tho magical way (The order doesn't matter)
   val magically: UIO[Unit] =
     program.provideMagicLayer(
       Pie.live,

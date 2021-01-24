@@ -65,12 +65,13 @@ private object Example extends App {
 
     // The new way... oh yes!
     val satisfied: ZIO[ZEnv, Nothing, Int] =
-      program.provideCustomMagicLayer(
-        Pie.live,
-        Flour.live,
-        Berries.live,
-        Spoon.live
-      )
+      program
+        .provideCustomMagicLayer(
+          Pie.live,
+          Flour.live,
+          Berries.live,
+          Spoon.live
+        )
 
     val `or just build the layer`: ULayer[Pie] =
       ZLayer.fromMagic[Pie](

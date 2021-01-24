@@ -8,8 +8,6 @@ import zio.test.environment.TestEnvironment
 package object magic {
   import scala.language.experimental.macros
 
-  // ZLayer.fromMagic(...)
-
   final class FromMagicLayerPartiallyApplied[Out <: Has[_]](val dummy: Boolean = true) extends AnyVal {
     def apply[E](layers: ZLayer[_, E, _]*)(implicit dummyK: DummyK[Out]): ZLayer[Any, E, Out] =
       macro FromMagicMacros.fromMagicImpl[E, Out]
@@ -64,13 +62,12 @@ package object magic {
 
   // # PROVIDE SOME MAGIC LAYER
 
-  //  implicit final class ZioProvideSomeMagicOps[Require](val zio: ZIO[Require, Nothing, Unit]) extends AnyVal {
-  //    def provideSomeMagicLayer[Provide, Remainder <: Require](zlayer: ZLayer[Any, Nothing, Provide])(implicit
-  //        dummyK: DummyK[Require]
-  //    ): ZIO[Remainder, Nothing, Unit] =
-  //      macro ProvideSomeMagicMacro.provideSomeMagicImpl[Require, Provide, Remainder]
-  //  }
-
+//  implicit final class ZioProvideSomeMagicOps[Require, E, A](val zio: ZIO[Require, E, A]) extends AnyVal {
+//    def provideSomeMagicLayer[Provide, Remainder <: Require](zlayer: ZLayer[Any, Nothing, Provide])(implicit
+//        dummyK: DummyK[Require]
+//    ): ZIO[Remainder, E, A] =
+//      macro ProvideSomeMagicMacro.provideSomeMagicImpl[Require, Provide, Remainder]
+//  }
 //  implicit final class ZLayerOps[In, E, Out](val zlayer: ZLayer[In, E, Out]) extends AnyVal {
 //    def using[E1 >: E](
 //        layers: ZLayer[_, E1, _]*

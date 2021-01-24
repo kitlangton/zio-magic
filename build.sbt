@@ -1,13 +1,14 @@
 lazy val scala213               = "2.13.4"
 lazy val scala212               = "2.12.10"
 lazy val scala211               = "2.11.12"
+lazy val scala3                 = "3.0.0-M3"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211)
 
 ThisBuild / scalaVersion := scala213
-ThisBuild / version := "0.1.7"
+ThisBuild / version := "0.1.8-SNAPSHOT"
 ThisBuild / organization := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
-ThisBuild / description := "Magically construct ZLayers."
+ThisBuild / description := "Magically construct ZLayers at compile-time (with friendly errors)"
 ThisBuild / homepage := Some(url("https://github.com/kitlangton/zio-magic"))
 
 val zioVersion = "1.0.4"
@@ -21,6 +22,8 @@ val sharedSettings = Seq(
   publishTo := sonatypePublishToBundle.value,
   licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
   credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credentials"),
+  semanticdbEnabled := true,                        // enable SemanticDB
+  semanticdbVersion := scalafixSemanticdb.revision, // use Scalafix compatible version
   developers := List(
     Developer(
       id = "kitlangton",
@@ -40,14 +43,14 @@ val sharedSettings = Seq(
         )
       case _ =>
         List(
-          "com.lihaoyi" %% "fansi" % "0.2.9"
+          "com.lihaoyi" %% "fansi" % "0.2.10"
         )
     }
   },
   Compile / scalacOptions ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, n)) if n <= 12 => List("-Ypartial-unification")
-      case _                       => List("-Ymacro-annotations")
+      case _                       => List("-Ymacro-annotations", "-Ywarn-unused")
     }
   }
 )
