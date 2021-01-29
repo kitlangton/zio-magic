@@ -7,7 +7,7 @@ Construct ZLayers _automagically_, with friendly compile-time hints!
 
 ```sbt
 // build.sbt
-libraryDependencies += "io.github.kitlangton" %% "zio-magic" % "0.1.7"
+libraryDependencies += "io.github.kitlangton" %% "zio-magic" % "0.1.8"
 ```
 
 ## What's all this then?
@@ -33,7 +33,7 @@ def run(args: List[String]): URIO[ZEnv, ExitCode] = {
   val manually: ULayer[Pie with Console] =
     ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
 
-  // Tho magical way (The order doesn't matter)
+  // The magical way (The order doesn't matter)
   val magically: UIO[Unit] =
     program.provideMagicLayer(
       Pie.live,
