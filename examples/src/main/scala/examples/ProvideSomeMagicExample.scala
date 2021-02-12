@@ -11,20 +11,7 @@ private object ProvideSomeMagicExample extends App {
     def manual: ZIO[Has[String], Nothing, Unit] =
       program.provideSomeLayer[Has[String]](ZLayer.succeed(1) ++ ZLayer.succeed(true))
 
-//    def magic = program.provideSomeMagicLayer(provided)
-
-//    val cool = magic
-
-    // val magic =
-    //   program
-    //     .provideSomeMagicLayer(provided)
-    //     .provideLayer(ZLayer.succeed("HELLO") ++ ZLayer.succeed(true))
-    //     .exitCode
-
-    def debug[R](zio: ZIO[R, _, _])(implicit tag: Tag[R]) =
-      println(s"TAG $tag")
-
-//    debug(magic)
+    val magic = program.provideSomeMagicLayer[Has[String]](ZLayer.succeed(1), ZLayer.succeed(true))
 
     UIO(1).exitCode
   }

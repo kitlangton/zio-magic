@@ -36,6 +36,20 @@ trait MacroUtils {
       )
     }
 
+  def assertEnvIsNotNothing[Out <: Has[_]: c.WeakTypeTag](): Unit = {
+    val outType     = weakTypeOf[Out]
+    val nothingType = weakTypeOf[Nothing]
+    if (outType == nothingType) {
+      val fromMagicName  = fansi.Bold.On("fromMagic")
+      val typeAnnotation = fansi.Color.White("[A with B]")
+      val errorMessage =
+        s"""
+           |🪄  You must provide a type to $fromMagicName (e.g. ZIO.fromMagic$typeAnnotation(A.live, B.live))
+           |""".stripMargin
+      c.abort(c.enclosingPosition, errorMessage)
+    }
+  }
+
   implicit class TypeOps(self: Type) {
 
     /** Given a type `A with B with C` You'll get back List[A,B,C]
