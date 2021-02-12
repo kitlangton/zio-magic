@@ -2,7 +2,7 @@ package zio.magic.macros
 
 import zio.magic.macros.graph.Node
 import zio.magic.macros.utils.StringSyntax.StringOps
-import zio.magic.macros.utils.{DummyK, ExprGraphSupport, MacroUtils, RenderGraph}
+import zio.magic.macros.utils.{ExprGraphSupport, MacroUtils, RenderGraph}
 import zio.{Has, ZLayer}
 
 import scala.reflect.macros.blackbox

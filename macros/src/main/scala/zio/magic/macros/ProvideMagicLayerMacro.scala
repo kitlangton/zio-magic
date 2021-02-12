@@ -2,7 +2,7 @@ package zio.magic.macros
 
 import zio._
 import zio.magic.macros.graph.Node
-import zio.magic.macros.utils.{DummyK, ExprGraphSupport, MacroUtils}
+import zio.magic.macros.utils.{ExprGraphSupport, MacroUtils}
 import zio.test.Spec
 import zio.test.environment.TestEnvironment
 
@@ -17,8 +17,6 @@ class ProvideMagicLayerMacro(val c: blackbox.Context) extends MacroUtils with Ex
       A
   ](
       layers: c.Expr[ZLayer[_, E, _]]*
-  )(
-      dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[Any, E, A]] = {
     assertProperVarArgs(layers)
     val layerExpr = ExprGraph.buildLayer[R](layers.map(getNode).toList)
@@ -31,8 +29,6 @@ class ProvideMagicLayerMacro(val c: blackbox.Context) extends MacroUtils with Ex
       A
   ](
       layers: c.Expr[ZLayer[_, E, _]]*
-  )(
-      dummyK: c.Expr[DummyK[R]]
   ): c.Expr[ZIO[ZEnv, E, A]] = {
     assertProperVarArgs(layers)
     val ZEnvRequirements = getRequirements[ZEnv]
@@ -77,8 +73,6 @@ class SpecProvideMagicLayerMacro(val c: blackbox.Context) extends MacroUtils wit
       A
   ](
       layers: c.Expr[ZLayer[_, E, _]]*
-  )(
-      dummyK: c.Expr[DummyK[R]]
   ): c.Expr[Spec[Any, E, A]] = {
     assertProperVarArgs(layers)
     val layerExpr = ExprGraph.buildLayer[R](layers.map(getNode).toList)
@@ -91,8 +85,6 @@ class SpecProvideMagicLayerMacro(val c: blackbox.Context) extends MacroUtils wit
       A
   ](
       layers: c.Expr[ZLayer[_, E, _]]*
-  )(
-      dummyK: c.Expr[DummyK[R]]
   ): c.Expr[Spec[TestEnvironment, E, A]] = {
     assertProperVarArgs(layers)
     val TestEnvRequirements = getRequirements[TestEnvironment]
@@ -111,8 +103,6 @@ class SpecProvideMagicLayerMacro(val c: blackbox.Context) extends MacroUtils wit
       A
   ](
       layers: c.Expr[ZLayer[_, E, _]]*
-  )(
-      dummyK: c.Expr[DummyK[R]]
   ): c.Expr[Spec[Any, E, A]] = {
     assertProperVarArgs(layers)
     val layerExpr = ExprGraph.buildLayer[R](layers.map(getNode).toList)
@@ -125,8 +115,6 @@ class SpecProvideMagicLayerMacro(val c: blackbox.Context) extends MacroUtils wit
       A
   ](
       layers: c.Expr[ZLayer[_, E, _]]*
-  )(
-      dummyK: c.Expr[DummyK[R]]
   ): c.Expr[Spec[TestEnvironment, E, A]] = {
     assertProperVarArgs(layers)
     val TestEnvRequirements = getRequirements[TestEnvironment]
