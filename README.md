@@ -95,6 +95,14 @@ You can also directly construct a ZLayer (However you must annotate the call to 
 val layer = Zlayer.fromMagic[Flour with Console](Console.live, Flour.live, Spoon.live)
 ```
 
+To construct `URLayer[In, Out]` use `Zlayer.fromSomeMagic[In, Out]` this way:
+
+```scala
+val layer = Zlayer.fromSomeMagic[CommonEnv, Flour with Console](Console.live, Flour.live, Spoon.live)
+```
+
+Alternatively you can provide environment partially with `provideSomeMagicLayer[Rest](l1, l2, l3)` - similarly to `.provideSomeLayer`.
+
 There's also `.provideCustomMagicLayer` for which behaves similarly to `.provideCustomLayer`, only it also provides `ZEnv.any` to all transitive dependencies.
 
 ```scala
@@ -110,11 +118,11 @@ val provided: URIO[ZEnv, Unit] =
 
 ## Specs
 
-`provideLayer`, `provideCustomLayer`, `provideLayerShared`, and `provideCustomLayerShared` all work for zio-test's `Spec`. 
+`provideMagicLayer`, `provideCustomMagicLayer`, `provideSomeMagicLayer`, `provideMagicLayerShared`, `provideCustomMagicLayerShared` and `provideSomeMagicLayerShared` all work for zio-test's `Spec`. 
 
 ## Debug!
 
-Try `ZLayer.fromMagicDebug[Pie]` to print out a pretty graph! _Ooh la la!_
+Try `ZLayer.fromMagicDebug[Pie]` or `ZLayer.fromSomeMagicDebug[Blocking with Console, Pie]` to print out a pretty graph! _Ooh la la!_
 
 ```shell
       Your Delicately Rendered Graph
