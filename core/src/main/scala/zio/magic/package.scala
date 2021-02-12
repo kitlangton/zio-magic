@@ -9,12 +9,12 @@ package object magic {
   import scala.language.experimental.macros
 
   final class FromMagicLayerPartiallyApplied[Out <: Has[_]](val dummy: Boolean = true) extends AnyVal {
-    def apply[E](layers: ZLayer[_, E, _]*)(implicit dummyK: DummyK[Out]): ZLayer[Any, E, Out] =
+    def apply[E](layers: ZLayer[_, E, _]*): ZLayer[Any, E, Out] =
       macro FromMagicMacros.fromMagicImpl[E, Out]
   }
 
   final class FromMagicLayerDebugPartiallyApplied[Out <: Has[_]](val dummy: Boolean = true) extends AnyVal {
-    def apply[E](layers: ZLayer[_, E, _]*)(implicit dummyK: DummyK[Out]): ZLayer[Any, E, Out] =
+    def apply[E](layers: ZLayer[_, E, _]*): ZLayer[Any, E, Out] =
       macro FromMagicMacros.fromMagicDebugImpl[E, Out]
   }
 
@@ -40,16 +40,20 @@ package object magic {
     def fromSomeMagicDebug[In <: Has[_], Out <: Has[_]] = new FromSomeMagicLayerDebugPartiallyApplied[In, Out]
   }
 
+  final class ProvideSomeMagicLayerPartiallyApplied[In <: Has[_], R, E, A](val zio: ZIO[R, E, A]) extends AnyVal {
+    def apply[E1 >: E](layers: ZLayer[_, E1, _]*): ZIO[In, E1, A] =
+      macro ProvideMagicLayerMacro.provideSomeMagicLayerImpl[In, R, E1, A]
+  }
+
   implicit final class ZioProvideMagicOps[R, E, A](val zio: ZIO[R, E, A]) extends AnyVal {
-    def provideMagicLayer[In1, Out1, In2, Out2, E1 >: E](
-        layers: ZLayer[_, E1, _]*
-    )(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
+    def provideMagicLayer[E1 >: E](layers: ZLayer[_, E1, _]*)(implicit dummyK: DummyK[R]): ZIO[Any, E1, A] =
       macro ProvideMagicLayerMacro.provideMagicLayerImpl[R, E1, A]
 
-    def provideCustomMagicLayer[In1, Out1, In2, Out2, E1 >: E](
-        layers: ZLayer[_, E1, _]*
-    )(implicit dummyK: DummyK[R]): ZIO[ZEnv, E1, A] =
+    def provideCustomMagicLayer[E1 >: E](layers: ZLayer[_, E1, _]*)(implicit dummyK: DummyK[R]): ZIO[ZEnv, E1, A] =
       macro ProvideMagicLayerMacro.provideCustomMagicLayerImpl[R, E1, A]
+
+    def provideSomeMagicLayer[In <: Has[_]] = new ProvideSomeMagicLayerPartiallyApplied[In, R, E, A](zio)
+
   }
 
   implicit final class ZSpecProvideMagicOps[R, E, A](val spec: Spec[R, E, A]) extends AnyVal {
