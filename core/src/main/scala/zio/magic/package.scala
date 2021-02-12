@@ -55,6 +55,18 @@ package object magic {
 
   }
 
+  final class ZSpecProvideSomeMagicLayerPartiallyApplied[In <: Has[_], R, E, A](val spec: Spec[R, E, A])
+      extends AnyVal {
+    def apply[E1 >: E](layers: ZLayer[_, E1, _]*): Spec[In, E1, A] =
+      macro SpecProvideMagicLayerMacro.provideSomeMagicLayerImpl[In, R, E1, A]
+  }
+
+  final class ZSpecProvideSomeMagicLayerSharedPartiallyApplied[In <: Has[_], R, E, A](val spec: Spec[R, E, A])
+      extends AnyVal {
+    def apply[E1 >: E](layers: ZLayer[_, E1, _]*): Spec[In, E1, A] =
+      macro SpecProvideMagicLayerMacro.provideSomeMagicLayerSharedImpl[In, R, E1, A]
+  }
+
   implicit final class ZSpecProvideMagicOps[R, E, A](val spec: Spec[R, E, A]) extends AnyVal {
     def provideMagicLayer[E1 >: E](layers: ZLayer[_, E1, _]*): Spec[Any, E1, A] =
       macro SpecProvideMagicLayerMacro.provideMagicLayerImpl[R, E1, A]
@@ -62,10 +74,15 @@ package object magic {
     def provideCustomMagicLayer[E1 >: E](layers: ZLayer[_, E1, _]*): Spec[TestEnvironment, E1, A] =
       macro SpecProvideMagicLayerMacro.provideCustomMagicLayerImpl[R, E1, A]
 
+    def provideSomeMagicLayer[In <: Has[_]] = new ZSpecProvideSomeMagicLayerPartiallyApplied[In, R, E, A](spec)
+
     def provideMagicLayerShared[E1 >: E](layers: ZLayer[_, E1, _]*): Spec[Any, E1, A] =
       macro SpecProvideMagicLayerMacro.provideMagicLayerSharedImpl[R, E1, A]
 
     def provideCustomMagicLayerShared[E1 >: E](layers: ZLayer[_, E1, _]*): Spec[TestEnvironment, E1, A] =
       macro SpecProvideMagicLayerMacro.provideCustomMagicLayerSharedImpl[R, E1, A]
+
+    def provideSomeMagicLayerShared[In <: Has[_]] =
+      new ZSpecProvideSomeMagicLayerSharedPartiallyApplied[In, R, E, A](spec)
   }
 }

@@ -97,6 +97,26 @@ class SpecProvideMagicLayerMacro(val c: blackbox.Context) extends MacroUtils wit
     c.Expr(q"${c.prefix}.spec.provideCustomLayer(${layerExpr.tree})")
   }
 
+  def provideSomeMagicLayerImpl[
+      In <: Has[_]: c.WeakTypeTag,
+      R: c.WeakTypeTag,
+      E1,
+      A
+  ](
+      layers: c.Expr[ZLayer[_, E1, _]]*
+  ): c.Expr[Spec[In, E1, A]] = {
+    assertEnvIsNotNothing[In]()
+    assertProperVarArgs(layers)
+
+    val inRequirements = getRequirements[In]
+
+    val inLayer = Node(List.empty, inRequirements, reify(ZLayer.requires[In]))
+    val nodes   = (inLayer +: layers.map(getNode)).toList
+
+    val layerExpr = ExprGraph.buildLayer[R](nodes)
+    c.Expr(q"${c.prefix}.spec.provideLayer(${layerExpr.tree})")
+  }
+
   def provideMagicLayerSharedImpl[
       R: c.WeakTypeTag,
       E: c.WeakTypeTag,
@@ -127,4 +147,23 @@ class SpecProvideMagicLayerMacro(val c: blackbox.Context) extends MacroUtils wit
     c.Expr(q"${c.prefix}.spec.provideCustomLayerShared(${layerExpr.tree})")
   }
 
+  def provideSomeMagicLayerSharedImpl[
+      In <: Has[_]: c.WeakTypeTag,
+      R: c.WeakTypeTag,
+      E1,
+      A
+  ](
+      layers: c.Expr[ZLayer[_, E1, _]]*
+  ): c.Expr[Spec[In, E1, A]] = {
+    assertEnvIsNotNothing[In]()
+    assertProperVarArgs(layers)
+
+    val inRequirements = getRequirements[In]
+
+    val inLayer = Node(List.empty, inRequirements, reify(ZLayer.requires[In]))
+    val nodes   = (inLayer +: layers.map(getNode)).toList
+
+    val layerExpr = ExprGraph.buildLayer[R](nodes)
+    c.Expr(q"${c.prefix}.spec.provideLayerShared(${layerExpr.tree})")
+  }
 }
