@@ -18,10 +18,26 @@ package object magic {
       macro FromMagicMacros.fromMagicDebugImpl[E, Out]
   }
 
+  final class FromSomeMagicLayerPartiallyApplied[In <: Has[_], Out <: Has[_]](val dummy: Boolean = true)
+      extends AnyVal {
+    def apply[E](layers: ZLayer[_, E, _]*): ZLayer[In, E, Out] =
+      macro FromMagicMacros.fromSomeMagicImpl[In, E, Out]
+  }
+
+  final class FromSomeMagicLayerDebugPartiallyApplied[In <: Has[_], Out <: Has[_]](val dummy: Boolean = true)
+      extends AnyVal {
+    def apply[E](layers: ZLayer[_, E, _]*): ZLayer[In, E, Out] =
+      macro FromMagicMacros.fromSomeMagicDebugImpl[In, E, Out]
+  }
+
   implicit final class ZLayerCompanionOps(val self: ZLayer.type) extends AnyVal {
     def fromMagic[Out <: Has[_]] = new FromMagicLayerPartiallyApplied[Out]
 
     def fromMagicDebug[Out <: Has[_]] = new FromMagicLayerDebugPartiallyApplied[Out]
+
+    def fromSomeMagic[In <: Has[_], Out <: Has[_]] = new FromSomeMagicLayerPartiallyApplied[In, Out]
+
+    def fromSomeMagicDebug[In <: Has[_], Out <: Has[_]] = new FromSomeMagicLayerDebugPartiallyApplied[In, Out]
   }
 
   implicit final class ZioProvideMagicOps[R, E, A](val zio: ZIO[R, E, A]) extends AnyVal {

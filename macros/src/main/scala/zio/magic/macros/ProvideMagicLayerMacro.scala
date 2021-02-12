@@ -44,7 +44,6 @@ class ProvideMagicLayerMacro(val c: blackbox.Context) extends MacroUtils with Ex
     val layerExpr = ExprGraph(nodes).buildLayerFor(requirements)
     c.Expr(q"${c.prefix}.zio.provideCustomLayer(${layerExpr.tree})")
   }
-
 }
 
 /** Impls for zio-test Specs

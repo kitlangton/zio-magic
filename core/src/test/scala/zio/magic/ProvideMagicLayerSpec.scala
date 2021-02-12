@@ -4,11 +4,12 @@ import zio.test.Assertion._
 import zio.test.AssertionM.Render.param
 import zio.test._
 import zio.test.environment.TestEnvironment
-import zio.{Has, ZIO, ZLayer}
+import zio.{Has, URLayer, ZIO, ZLayer}
 
 object ProvideMagicLayerSpec extends DefaultRunnableSpec {
   override def spec: ZSpec[TestEnvironment, Any] = suite("provideMagicLayer")(
     constructLayersSuite,
+    constructSomeLayersSuite,
     compileErrorSuite
   )
 
@@ -42,6 +43,50 @@ object ProvideMagicLayerSpec extends DefaultRunnableSpec {
           )
 
         assertM(provided)(equalTo("(9001,33.3)"))
+      }
+    )
+  }
+
+  private def constructSomeLayersSuite = {
+    suite("constructs some layers")(
+      testM("it constructs layers with dependencies") {
+        val iLayer: URLayer[Has[String], Has[(String, Int)]]  = ZLayer.fromService(_ -> 3)
+        val cLayer: URLayer[Has[String], Has[(String, Char)]] = ZLayer.fromService(_ -> 'c')
+
+        val layer = ZLayer.fromSomeMagic[Has[String], Has[(String, Int)] with Has[(String, Char)]](
+          iLayer,
+          cLayer
+        )
+
+        val program = for {
+          si <- ZIO.service[(String, Int)]
+          sc <- ZIO.service[(String, Char)]
+        } yield si -> sc
+
+        val provided = program.provideSomeLayer[Has[String]](layer)
+
+        assertM(provided.provideLayer(ZLayer.succeed("str")))(equalTo((("str", 3), ("str", 'c'))))
+      },
+      testM("it constructs layers vertically") {
+        val iLayer: URLayer[Has[String], Has[(String, Int)]]  = ZLayer.fromService(_ -> 3)
+        val cLayer: URLayer[Has[String], Has[(String, Char)]] = ZLayer.fromService(_ -> 'c')
+
+        val layerWithDependencies
+            : ZLayer[Has[(String, Int)] with Has[(String, Char)], Nothing, Has[((String, Int), (String, Char))]] =
+          (for {
+            si <- ZIO.service[(String, Int)]
+            sc <- ZIO.service[(String, Char)]
+          } yield si -> sc).toLayer
+
+        val layer = ZLayer.fromSomeMagic[Has[String], Has[((String, Int), (String, Char))]](
+          layerWithDependencies,
+          iLayer,
+          cLayer
+        )
+
+        val provided = ZIO.service[((String, Int), (String, Char))].provideSomeLayer[Has[String]](layer)
+
+        assertM(provided.provideLayer(ZLayer.succeed("str")))(equalTo((("str", 3), ("str", 'c'))))
       }
     )
   }
