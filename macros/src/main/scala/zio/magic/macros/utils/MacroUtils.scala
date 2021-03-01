@@ -25,7 +25,7 @@ trait MacroUtils {
   def getRequirements(tpe: Type): List[String] =
     tpe.intersectionTypes
       .filter(_.dealias.typeSymbol == zioSymbol)
-      .map(_.dealias.typeArgs.head.dealias.toString)
+      .map(_.dealias.typeArgs.head.dealias.map(_.dealias).toString)
       .distinct
 
   def assertProperVarArgs(layers: Seq[c.Expr[_]]): Unit =
