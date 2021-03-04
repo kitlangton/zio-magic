@@ -13,11 +13,11 @@ libraryDependencies += "io.github.kitlangton" %% "zio-magic" % "0.1.10"
 ## What's all this then?
 
 ```scala
-// Given a dependency graph (Pie needs Berries & Flour, which in turn need Spoon)*
+// Given a dependency graph (Cake needs Chocolate & Flour, which in turn need Spoon)*
 //
-//           Pie
+//          Cake
 //          /   \
-//     Berries   Flour
+//   Chocolate   Flour
 //       |         |
 //     Spoon     Spoon
 //
@@ -25,20 +25,20 @@ libraryDependencies += "io.github.kitlangton" %% "zio-magic" % "0.1.10"
 
 def run(args: List[String]): URIO[ZEnv, ExitCode] = {
   
-  // An effect requiring Pie and Console. Yum!
-  val program: URIO[Console with Pie, Unit] =
-    Pie.isDelicious.flatMap { bool => console.putStrLn(s"Pie is delicious: $bool") }
+  // An effect requiring Cake and Console. Yum!
+  val program: URIO[Console with Cake, Unit] =
+    Cake.isDelicious.flatMap { bool => console.putStrLn(s"Cake is delicious: $bool") }
 
   // The old way
-  val manually: ULayer[Pie with Console] =
-    ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
+  val manually: ULayer[Cake with Console] =
+    ((Spoon.live >>> Flour.live) ++ (Spoon.live >>> Chocolate.live)) >>> Cake.live ++ Console.live
 
   // The magical way (The order doesn't matter)
   val magically: UIO[Unit] =
     program.provideMagicLayer(
-      Pie.live,
+      Cake.live,
       Flour.live,
-      Berries.live,
+      Chocolate.live,
       Spoon.live,
       Console.live
     )
@@ -54,9 +54,9 @@ And if you leave something off, a **compile time clue**!
 ```scala
 val magically: UIO[Unit] =
   program.provideMagicLayer(
-    Pie.live,
+    Cake.live,
     //Flour.live, <-- Oops
-    Berries.live,
+    Chocolate.live,
     Spoon.live,
     Console.live
   )
@@ -66,25 +66,25 @@ val magically: UIO[Unit] =
 🪄  ZLayer Magic Missing Components
 🪄
 🪄  provide zio.magic.Example.Flour.Service
-🪄      for Pie.live
+🪄      for Cake.live
 ```
 
 ----
 Versus leaving out a dependency when manually constructing your layer...
 
 ```scala
- val manually: ULayer[Pie with Console] =
-   (Flour.live ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
+ val manually: ULayer[Cake with Console] =
+   (Flour.live ++ (Spoon.live >>> Chocolate.live)) >>> Cake.live ++ Console.live
  // ^ A Spoon is missing here! 
 ```
 
 ```shell
 type mismatch;
- found   : zio.ZLayer[zio.magic.Example.Spoon.Spoon with Any,Nothing,zio.magic.Example.Pie.Pie with zio.console.Console]
-    (which expands to)  zio.ZLayer[zio.Has[zio.magic.Example.Spoon.Service] with Any,Nothing,zio.Has[zio.magic.Example.Pie.Service] with zio.Has[zio.console.Console.Service]]
- required: zio.ULayer[zio.magic.Example.Pie.Pie with zio.console.Console]
-    (which expands to)  zio.ZLayer[Any,Nothing,zio.Has[zio.magic.Example.Pie.Service] with zio.Has[zio.console.Console.Service]]
-      ((Flour.live) ++ (Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
+ found   : zio.ZLayer[zio.magic.Example.Spoon.Spoon with Any,Nothing,zio.magic.Example.Cake.Cake with zio.console.Console]
+    (which expands to)  zio.ZLayer[zio.Has[zio.magic.Example.Spoon.Service] with Any,Nothing,zio.Has[zio.magic.Example.Cake.Service] with zio.Has[zio.console.Console.Service]]
+ required: zio.ULayer[zio.magic.Example.Cake.Cake with zio.console.Console]
+    (which expands to)  zio.ZLayer[Any,Nothing,zio.Has[zio.magic.Example.Cake.Service] with zio.Has[zio.console.Console.Service]]
+      ((Flour.live) ++ (Spoon.live >>> Chocolate.live)) >>> Cake.live ++ Console.live
 ```
 
 ## Also
@@ -122,18 +122,18 @@ val provided: URIO[ZEnv, Unit] =
 
 ## Debug!
 
-Try `ZLayer.fromMagicDebug[Pie]` or `ZLayer.fromSomeMagicDebug[Blocking with Console, Pie]` to print out a pretty graph! _Ooh la la!_
+Try `ZLayer.fromMagicDebug[Cake]` or `ZLayer.fromSomeMagicDebug[Blocking with Console, Cake]` to print out a pretty graph! _Ooh la la!_
 
 ```shell
       Your Delicately Rendered Graph
 
-                   Pie.live                   
+                   Cake.live                   
                ┌───────┴──────────────┐       
-          Flour.live            Berries.live  
+         Chocolate.live         Chocolate.live  
         ┌──────┴───────┐              │       
-   Spoon.live    Console.live    Spoon.live   
-       │                             │       
- Blocking.live                Blocking.live 
+   Spoon.live    Console.live     Spoon.live   
+       │                              │       
+ Blocking.live                   Blocking.live 
 ```
 
 **Let me know if you can think of any helpful variants, and I'll give 'em a whirl!**
