@@ -41,10 +41,6 @@ class ProvideMagicLayerMacro(val c: blackbox.Context) extends MacroUtils with Ex
     c.Expr(q"${c.prefix}.zio.provideCustomLayer(${layerExpr.tree})")
   }
 
-  case class Thing[F[_]]()
-  type Nice[A] = Task[A]
-  type Cool    = Thing[Nice]
-
   def provideSomeMagicLayerImpl[
       In <: Has[_]: c.WeakTypeTag,
       R: c.WeakTypeTag,
