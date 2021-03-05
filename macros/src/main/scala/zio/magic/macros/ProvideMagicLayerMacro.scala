@@ -37,9 +37,24 @@ class ProvideMagicLayerMacro(val c: blackbox.Context) extends MacroUtils with Ex
     val zEnvLayer = Node(List.empty, ZEnvRequirements, reify(ZEnv.any))
     val nodes     = (zEnvLayer +: layers.map(getNode)).toList
 
+//    val tpe = weakTypeOf[Cool]
+//    println(tpe)
+//    println(
+//      tpe.dealias.resultType.map(
+//        _.dealias.resultType.map(_.dealias.resultType.map(_.dealias.resultType.map(_.dealias)))
+//      )
+//    )
+//    println(tpe =:= weakTypeOf[Thing[Task]])
+//    println(requirements.last)
+//    println(nodes.flatMap(_.outputs).last)
+
     val layerExpr = ExprGraph(nodes).buildLayerFor(requirements)
     c.Expr(q"${c.prefix}.zio.provideCustomLayer(${layerExpr.tree})")
   }
+
+  case class Thing[F[_]]()
+  type Nice[A] = Task[A]
+  type Cool    = Thing[Nice]
 
   def provideSomeMagicLayerImpl[
       In <: Has[_]: c.WeakTypeTag,

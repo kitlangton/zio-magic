@@ -1,8 +1,9 @@
 package zio.magic.macros.utils
 
-import zio.magic.macros.graph.Node
+import zio.magic.macros.graph.{Eq, Node}
 import zio.{Has, ZLayer}
 
+import scala.annotation.tailrec
 import scala.reflect.macros.blackbox
 
 trait MacroUtils {
@@ -13,20 +14,23 @@ trait MacroUtils {
 
   type LayerExpr = c.Expr[ZLayer[_, _, _]]
 
-  def getNode(layer: LayerExpr): Node[LayerExpr] = {
+  def getNode(layer: LayerExpr): Node[c.Type, LayerExpr] = {
     val tpe                   = layer.actualType.dealias
     val in :: _ :: out :: Nil = tpe.typeArgs
     Node(getRequirements(in), getRequirements(out), layer)
   }
 
-  def getRequirements[T: c.WeakTypeTag]: List[String] =
+  def getRequirements[T: c.WeakTypeTag]: List[Type] =
     getRequirements(weakTypeOf[T])
 
-  def getRequirements(tpe: Type): List[String] =
-    tpe.intersectionTypes
+  def getRequirements(tpe: Type): List[Type] = {
+    val t = tpe.dealias.map(_.dealias)
+
+    t.intersectionTypes
       .filter(_.dealias.typeSymbol == zioSymbol)
-      .map(_.dealias.typeArgs.head.dealias.map(_.dealias).toString)
+      .map(_.dealias.typeArgs.head.dealias.map(_.dealias))
       .distinct
+  }
 
   def assertProperVarArgs(layers: Seq[c.Expr[_]]): Unit =
     layers.map(_.tree) collect { case Typed(_, Ident(typeNames.WILDCARD_STAR)) =>
@@ -69,4 +73,9 @@ trait MacroUtils {
   implicit class TreeOps(self: c.Expr[_]) {
     def showTree: String = CleanCodePrinter.show(c)(self.tree)
   }
+
+  implicit def typeEq: Eq[Type] = new Eq[Type] {
+    override def eq(a1: Type, a2: Type): Boolean = a1 =:= a2
+  }
+
 }
