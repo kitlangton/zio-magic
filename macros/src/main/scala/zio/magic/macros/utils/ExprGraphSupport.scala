@@ -1,17 +1,18 @@
 package zio.magic.macros.utils
 
-import zio.magic.macros.graph.{Graph, GraphError, LayerLike, Node}
+import zio.magic.macros.graph.{Eq, Graph, GraphError, LayerLike, Node}
 import zio.prelude.Validation
 import zio.{Chunk, NonEmptyChunk}
 
+import scala.reflect.api.Universe
 import scala.reflect.macros.blackbox
 
 trait ExprGraphSupport { self: MacroUtils =>
   val c: blackbox.Context
   import c.universe._
 
-  case class ExprGraph(graph: Graph[LayerExpr]) {
-    def buildLayerFor(output: List[String]): LayerExpr =
+  case class ExprGraph(graph: Graph[c.Type, LayerExpr]) {
+    def buildLayerFor(output: List[Type]): LayerExpr =
       if (output.isEmpty) {
         reify { zio.ZLayer.succeed(()) }.asInstanceOf[LayerExpr]
       } else
@@ -22,7 +23,7 @@ trait ExprGraphSupport { self: MacroUtils =>
             value
         }
 
-    private def renderErrors(errors: NonEmptyChunk[GraphError[LayerExpr]]): String = {
+    private def renderErrors(errors: NonEmptyChunk[GraphError[c.Type, LayerExpr]]): String = {
       val allErrors = sortErrors(errors)
 
       val errorMessage =
@@ -41,10 +42,12 @@ trait ExprGraphSupport { self: MacroUtils =>
 
     /** Return only the first level of circular dependencies, as these will be the most relevant.
       */
-    private def sortErrors(errors: NonEmptyChunk[GraphError[LayerExpr]]): Chunk[GraphError[LayerExpr]] = {
+    private def sortErrors(
+        errors: NonEmptyChunk[GraphError[c.Type, LayerExpr]]
+    ): Chunk[GraphError[c.Type, LayerExpr]] = {
       val (circularDependencyErrors, otherErrors) = errors.distinct
         .partitionMap {
-          case circularDependency: GraphError.CircularDependency[LayerExpr] =>
+          case circularDependency: GraphError.CircularDependency[c.Type, LayerExpr] =>
             Left(circularDependency)
           case other => Right(other)
         }
@@ -53,17 +56,17 @@ trait ExprGraphSupport { self: MacroUtils =>
       lowestDepthCircularErrors ++ otherErrors
     }
 
-    private def renderError(error: GraphError[LayerExpr]): String =
+    private def renderError(error: GraphError[c.Type, LayerExpr]): String =
       error match {
         case GraphError.MissingDependency(node, dependency) =>
-          val styledDependency = fansi.Color.White(dependency).overlay(fansi.Underlined.On)
+          val styledDependency = fansi.Color.White(dependency.toString).overlay(fansi.Underlined.On)
           val styledLayer      = fansi.Color.White(node.value.showTree)
           s"""
 provide $styledDependency
     for $styledLayer"""
 
         case GraphError.MissingTopLevelDependency(dependency) =>
-          val styledDependency = fansi.Color.White(dependency).overlay(fansi.Underlined.On)
+          val styledDependency = fansi.Color.White(dependency.toString).overlay(fansi.Underlined.On)
           s"""missing $styledDependency"""
 
         case GraphError.CircularDependency(node, dependency, _) =>
@@ -79,10 +82,10 @@ both requires ${fansi.Bold.On("and")} is transitively required by $styledDepende
   }
 
   object ExprGraph {
-    def apply(layers: List[Node[LayerExpr]]): ExprGraph =
+    def apply(layers: List[Node[c.Type, LayerExpr]]): ExprGraph =
       ExprGraph(Graph(layers))
 
-    def buildLayer[R: c.WeakTypeTag](layers: List[Node[LayerExpr]]): LayerExpr =
+    def buildLayer[R: c.WeakTypeTag](layers: List[Node[c.Type, LayerExpr]]): LayerExpr =
       ExprGraph(Graph(layers)).buildLayerFor(getRequirements[R])
   }
 

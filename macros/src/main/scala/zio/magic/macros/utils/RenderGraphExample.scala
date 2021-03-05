@@ -13,7 +13,7 @@ object RenderGraph {
   def apply(string: String): RenderGraph = Value(string)
 
   case class Value(string: String, children: List[RenderGraph] = List.empty) extends RenderGraph { self =>
-    
+
     override def ++(that: RenderGraph): RenderGraph = that match {
       case value: Value =>
         Row(List(self, value))

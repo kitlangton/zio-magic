@@ -36,10 +36,14 @@ class Issue_Tranzactio {
 
   object Main extends zio.App {
 
+    def cool[A: Tag] = 3
+
+    // 1: io.github.gaelrenoux.tranzactio.DatabaseOps.ServiceOps[zio.Has[doobie.util.transactor.Transactor[zio.Task]]]
+    // 2: io.github.gaelrenoux.tranzactio.DatabaseOps.ServiceOps[zio.Has[doobie.util.transactor.Transactor[[+A]zio.ZIO[Any,Throwable,A]]]]
     override def run(args: List[String]): URIO[zio.ZEnv, ExitCode] = {
       val services = List(
         MyService.plusOne(1),
-//        MyService.plusOne(1)  // uncomment this line and the problem will occur
+        MyService.plusOne(1) // uncomment this line and the problem will occur
       )
       val program = ZIO.collectAll_(services)
 

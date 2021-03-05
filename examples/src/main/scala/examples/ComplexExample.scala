@@ -13,8 +13,8 @@ import examples.ComplexExample.J.J
 import examples.ComplexExample.K.K
 import examples.ComplexExample.L.L
 import examples.ComplexExample.M.M
-import zio.magic._
 import zio._
+import zio.magic._
 import zio.console.Console
 
 /** An example of magically constructing the following nested layer graph:

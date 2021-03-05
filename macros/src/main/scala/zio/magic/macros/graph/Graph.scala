@@ -3,14 +3,14 @@ package zio.magic.macros.graph
 import zio.magic.macros.graph.LayerLike._
 import zio.prelude._
 
-case class Graph[A: LayerLike](nodes: List[Node[A]]) {
+case class Graph[Key: Eq, A: LayerLike](nodes: List[Node[Key, A]]) {
 
-  def map[B: LayerLike](f: A => B): Graph[B] =
+  def map[B: LayerLike](f: A => B): Graph[Key, B] =
     Graph(nodes.map { node =>
       Node(node.inputs, node.outputs, f(node.value))
     })
 
-  def buildComplete(outputs: List[String]): Validation[GraphError[A], A] =
+  def buildComplete(outputs: List[Key]): Validation[GraphError[Key, A], A] =
     TraversableOps(outputs)
       .foreach { output =>
         getNodeWithOutput(output, error = GraphError.MissingTopLevelDependency(output))
@@ -18,12 +18,12 @@ case class Graph[A: LayerLike](nodes: List[Node[A]]) {
       .flatMap(TraversableOps(_).foreach(node => buildNode(node, Set(node))))
       .map(_.distinct.combineHorizontally)
 
-  private def getNodeWithOutput[E](output: String, error: E = ()): Validation[E, Node[A]] =
+  private def getNodeWithOutput[E](output: Key, error: E = ()): Validation[E, Node[Key, A]] =
     Validation.fromEither {
-      nodes.find(_.outputs.contains(output)).toRight(error)
+      nodes.find(_.outputs.exists(implicitly[Eq[Key]].eq(_, output))).toRight(error)
     }
 
-  private def getDependencies[E](node: Node[A]): Validation[GraphError[A], List[Node[A]]] =
+  private def getDependencies[E](node: Node[Key, A]): Validation[GraphError[Key, A], List[Node[Key, A]]] =
     TraversableOps(node.inputs)
       .foreach { input =>
         getNodeWithOutput(input, error = GraphError.MissingDependency(node, input))
@@ -34,7 +34,7 @@ case class Graph[A: LayerLike](nodes: List[Node[A]]) {
     * @param seen The nodes already seen. Used to check for cycles.
     * @return Either the fully constructed sub-graph or a graph errors
     */
-  private def buildNode(node: Node[A], seen: Set[Node[A]] = Set.empty): Validation[GraphError[A], A] =
+  private def buildNode(node: Node[Key, A], seen: Set[Node[Key, A]] = Set.empty): Validation[GraphError[Key, A], A] =
     getDependencies(node)
       .flatMap {
         TraversableOps(_)
@@ -51,10 +51,10 @@ case class Graph[A: LayerLike](nodes: List[Node[A]]) {
       }
 
   private def assertNonCircularDependency(
-      node: Node[A],
-      seen: Set[Node[A]],
-      dependency: Node[A]
-  ): Validation[GraphError.CircularDependency[A], Unit] =
+      node: Node[Key, A],
+      seen: Set[Node[Key, A]],
+      dependency: Node[Key, A]
+  ): Validation[GraphError.CircularDependency[Key, A], Unit] =
     if (seen(dependency))
       Validation.fail(GraphError.CircularDependency(node, dependency, seen.size))
     else
