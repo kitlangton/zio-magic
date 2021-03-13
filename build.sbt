@@ -86,7 +86,7 @@ lazy val macros = (project in file("macros"))
     name := "zio-magic-macros",
     crossScalaVersions := supportedScalaVersions,
     libraryDependencies ++= Seq(
-      "dev.zio"       %% "zio-prelude"   % "1.0.0-RC1",
+      "dev.zio"       %% "zio-prelude"   % "1.0.0-RC3",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value
     )
   )
