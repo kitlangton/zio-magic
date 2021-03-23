@@ -60,10 +60,10 @@ package object magic {
   implicit final class ZioProvideMagicOps[R, E, A](val zio: ZIO[R, E, A]) extends AnyVal {
     @deprecated("use `inject`", "0.2.0")
     def provideMagicLayer[E1 >: E](layers: ZLayer[_, E1, _]*): ZIO[Any, E1, A] =
-      macro LayerMacros.injectSomeImpl[ZIO, Any, R, E1, A]
+      macro LayerMacros.injectImpl[ZIO, R, E1, A]
 
     def inject[E1 >: E](layers: ZLayer[_, E1, _]*): ZIO[Any, E1, A] =
-      macro LayerMacros.injectSomeImpl[ZIO, Any, R, E1, A]
+      macro LayerMacros.injectImpl[ZIO, R, E1, A]
 
     @deprecated("use `injectCustom`", "0.2.0")
     def provideCustomMagicLayer[E1 >: E](layers: ZLayer[_, E1, _]*): ZIO[ZEnv, E1, A] =

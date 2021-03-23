@@ -9,7 +9,7 @@ Construct ZLayers _automagically_, with friendly compile-time hints!
 
 ```sbt
 // build.sbt
-libraryDependencies += "io.github.kitlangton" %% "zio-magic" % "0.2.0"
+libraryDependencies += "io.github.kitlangton" %% "zio-magic" % "0.2.1"
 ```
 
 ## What's all this then?

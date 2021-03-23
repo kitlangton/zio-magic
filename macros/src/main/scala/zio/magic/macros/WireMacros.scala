@@ -26,8 +26,14 @@ final class WireMacros(val c: blackbox.Context) extends LayerMacroUtils {
     val deferredRequirements = getRequirements[R0]
     val requirements         = getRequirements[R] diff deferredRequirements
 
-    val deferredLayer = Node(List.empty, deferredRequirements, reify(ZLayer.requires[R0]))
-    val nodes         = (deferredLayer +: layers.map(getNode)).toList
+    println(deferredRequirements)
+    println(requirements)
+
+    val deferredLayer =
+      if (deferredRequirements.nonEmpty) Seq(Node(List.empty, deferredRequirements, reify(ZLayer.requires[R0])))
+      else Nil
+
+    val nodes = (deferredLayer ++ layers.map(getNode)).toList
 
     buildMemoizedLayer(generateExprGraph(nodes), requirements)
       .asInstanceOf[c.Expr[ZLayer[R0, E, R]]]

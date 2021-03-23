@@ -59,9 +59,9 @@ private object Example extends App {
       } yield 3
 
     // Tho old way... oh no!
-    val manualLayer: ULayer[Pie with Console] =
-      ((Console.live ++ (Blocking.live >>> Spoon.live) >>> Flour.live) ++
-        (Blocking.live >>> Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
+//    val manualLayer: ULayer[Pie with Console] =
+//      ((Console.live ++ (Blocking.live >>> Spoon.live) >>> Flour.live) ++
+//        (Blocking.live >>> Spoon.live >>> Berries.live)) >>> Pie.live ++ Console.live
 
     // The new way... oh yes!
     val satisfied: ZIO[ZEnv, Nothing, Int] =
@@ -72,16 +72,16 @@ private object Example extends App {
           Berries.live,
           Spoon.live
         )
-
-    val `or just build the layer`: ULayer[Pie] =
-      ZLayer.fromMagic[Pie](
-        Pie.live,
-        Flour.live,
-        Berries.live,
-        Spoon.live,
-        Blocking.live,
-        Console.live
-      )
+//
+//    val `or just build the layer`: ULayer[Pie] =
+//      ZLayer.fromMagic[Pie](
+//        Pie.live,
+//        Flour.live,
+//        Berries.live,
+//        Spoon.live,
+//        Blocking.live,
+//        Console.live
+//      )
 
     satisfied.exitCode
   }

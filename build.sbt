@@ -5,7 +5,7 @@ lazy val scala3                 = "3.0.0-M3"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211)
 
 ThisBuild / scalaVersion := scala213
-ThisBuild / version := "0.2.0"
+ThisBuild / version := "0.2.1"
 ThisBuild / organization := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
 ThisBuild / description := "Magically construct ZLayers at compile-time (with friendly errors)"
@@ -99,6 +99,11 @@ lazy val examples = (project in file("examples"))
       "org.typelevel"        %% "cats-effect" % "2.3.1",
       "io.github.gaelrenoux" %% "tranzactio"  % "1.2.0",
       "co.fs2"               %% "fs2-core"    % "2.5.0"
+    ),
+    scalacOptions ++= Seq(
+      "-Wunused:_",     // Warn unused
+      "-Wmacros:after", // Warn after macro expansions, a must for Scala 2.13.5+, else there are tons of false positive warnings due to typeclass derivation for most Scala libraries out there
+      "-Wconf:any:wv"
     )
   )
   .dependsOn(core)

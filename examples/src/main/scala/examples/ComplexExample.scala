@@ -53,21 +53,21 @@ private object ComplexExample extends App {
         F.live
       )
 
-    val orBuildTheLayer = ZLayer.fromMagic[A with J](
-      A.live,
-      J.live,
-      B.live,
-      C.live,
-      G.live,
-      H.live,
-      I.live,
-      K.live,
-      L.live,
-      M.live,
-      D.live,
-      E.live,
-      F.live
-    )
+//    val orBuildTheLayer = ZLayer.fromMagic[A with J](
+//      A.live,
+//      J.live,
+//      B.live,
+//      C.live,
+//      G.live,
+//      H.live,
+//      I.live,
+//      K.live,
+//      L.live,
+//      M.live,
+//      D.live,
+//      E.live,
+//      F.live
+//    )
 
     satisfied.exitCode
   }
