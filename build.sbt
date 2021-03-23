@@ -5,7 +5,7 @@ lazy val scala3                 = "3.0.0-M3"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211)
 
 ThisBuild / scalaVersion := scala213
-ThisBuild / version := "0.1.12"
+ThisBuild / version := "0.2.0"
 ThisBuild / organization := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
 ThisBuild / description := "Magically construct ZLayers at compile-time (with friendly errors)"
@@ -86,7 +86,6 @@ lazy val macros = (project in file("macros"))
     name := "zio-magic-macros",
     crossScalaVersions := supportedScalaVersions,
     libraryDependencies ++= Seq(
-      "dev.zio"       %% "zio-prelude"   % "1.0.0-RC1",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value
     )
   )

@@ -6,7 +6,7 @@ import zio._
 import zio.blocking.Blocking
 import zio.clock.Clock
 import zio.console.putStrLn
-import zio.magic.ZioProvideMagicOps
+import zio.magic._
 
 import javax.sql.DataSource
 
@@ -45,10 +45,10 @@ class Issue_Tranzactio {
         MyService.plusOne(1),
         MyService.plusOne(1) // uncomment this line and the problem will occur
       )
-      val program = ZIO.collectAll_(services)
+      val program: ZIO[MyService.MyService with Transactor, Throwable, Unit] = ZIO.collectAll_(services)
 
       program
-        .provideCustomMagicLayer(
+        .injectCustom(
           MyService.live,
           Transactor.live
         )

@@ -9,7 +9,7 @@ Construct ZLayers _automagically_, with friendly compile-time hints!
 
 ```sbt
 // build.sbt
-libraryDependencies += "io.github.kitlangton" %% "zio-magic" % "0.1.12"
+libraryDependencies += "io.github.kitlangton" %% "zio-magic" % "0.2.0"
 ```
 
 ## What's all this then?
@@ -37,7 +37,7 @@ def run(args: List[String]): URIO[ZEnv, ExitCode] = {
 
   // The magical way (The order doesn't matter)
   val magically: UIO[Unit] =
-    program.provideMagicLayer(
+    program.inject(
       Cake.live,
       Flour.live,
       Chocolate.live,
@@ -55,7 +55,7 @@ And if you leave something off, a **compile time clue**!
 
 ```scala
 val magically: UIO[Unit] =
-  program.provideMagicLayer(
+  program.inject(
     Cake.live,
     //Flour.live, <-- Oops
     Chocolate.live,
@@ -103,9 +103,9 @@ To construct `URLayer[In, Out]` use `Zlayer.fromSomeMagic[In, Out]` this way:
 val layer = Zlayer.fromSomeMagic[CommonEnv, Flour with Console](Console.live, Flour.live, Spoon.live)
 ```
 
-Alternatively you can provide environment partially with `provideSomeMagicLayer[Rest](l1, l2, l3)` - similarly to `.provideSomeLayer`.
+Alternatively you can provide environment partially with `injectSome[Rest](l1, l2, l3)` - similarly to `.provideSomeLayer`.
 
-There's also `.provideCustomMagicLayer` for which behaves similarly to `.provideCustomLayer`, only it also provides `ZEnv.any` to all transitive dependencies.
+There's also `.injectCustom` for which behaves similarly to `.provideCustomLayer`, only it also provides `ZEnv.any` to all transitive dependencies.
 
 ```scala
 val program: URIO[Console with Car, Unit] = ???
@@ -115,16 +115,16 @@ val wheelLayer: ULayer[Wheels] = ???
 
 // The ZEnv you use later will provide both Blocking to carLayer and Console to the program
 val provided: URIO[ZEnv, Unit] = 
-  program.provideCustomMagicLayer(carLayer, wheelLayer)
+  program.injectCustom(carLayer, wheelLayer)
 ```
 
 ## Specs
 
-`provideMagicLayer`, `provideCustomMagicLayer`, `provideSomeMagicLayer`, `provideMagicLayerShared`, `provideCustomMagicLayerShared` and `provideSomeMagicLayerShared` all work for zio-test's `Spec`. 
+`inject`, `injectCustom`, `injectSome`, `injectShared`, `injectCustomShared` and `injectSomeShared` all work for zio-test's `Spec`. 
 
 ## Debug!
 
-Try `ZLayer.fromMagicDebug[Cake]` or `ZLayer.fromSomeMagicDebug[Blocking with Console, Cake]` to print out a pretty graph! _Ooh la la!_
+Try `ZLayer.wireDebug[Cake]` or `ZLayer.wireSomeDebug[Blocking with Console, Cake]` to print out a pretty graph! _Ooh la la!_
 
 ```shell
       Your Delicately Rendered Graph

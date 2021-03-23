@@ -1,62 +1,56 @@
 package zio.magic.macros.graph
 
-import zio.magic.macros.graph.LayerLike._
-import zio.prelude._
+import zio.magic.macros.LayerCompose
 
-case class Graph[Key: Eq, A: LayerLike](nodes: List[Node[Key, A]]) {
+final case class Graph[Key, A](nodes: List[Node[Key, A]], keyEquals: (Key, Key) => Boolean) {
 
-  def map[B: LayerLike](f: A => B): Graph[Key, B] =
-    Graph(nodes.map { node =>
-      Node(node.inputs, node.outputs, f(node.value))
-    })
-
-  def buildComplete(outputs: List[Key]): Validation[GraphError[Key, A], A] =
-    TraversableOps(outputs)
-      .foreach { output =>
-        getNodeWithOutput(output, error = GraphError.MissingTopLevelDependency(output))
-      }
-      .flatMap(TraversableOps(_).foreach(node => buildNode(node, Set(node))))
+  def buildComplete(outputs: List[Key]): Either[::[GraphError[Key, A]], LayerCompose[A]] =
+    forEach(outputs) { output =>
+      getNodeWithOutput[GraphError[Key, A]](output, error = GraphError.MissingTopLevelDependency(output))
+        .flatMap(node => buildNode(node, Set(node)))
+    }
       .map(_.distinct.combineHorizontally)
 
-  private def getNodeWithOutput[E](output: Key, error: E = ()): Validation[E, Node[Key, A]] =
-    Validation.fromEither {
-      nodes.find(_.outputs.exists(implicitly[Eq[Key]].eq(_, output))).toRight(error)
-    }
+  def map[B](f: A => B): Graph[Key, B] =
+    Graph(nodes.map(_.map(f)), keyEquals)
 
-  private def getDependencies[E](node: Node[Key, A]): Validation[GraphError[Key, A], List[Node[Key, A]]] =
-    TraversableOps(node.inputs)
-      .foreach { input =>
-        getNodeWithOutput(input, error = GraphError.MissingDependency(node, input))
-      }
+  private def getNodeWithOutput[E](output: Key, error: E): Either[::[E], Node[Key, A]] =
+    nodes.find(_.outputs.exists(keyEquals(_, output))).toRight(::(error, Nil))
+
+  private def getDependencies[E](node: Node[Key, A]): Either[::[GraphError[Key, A]], List[Node[Key, A]]] =
+    forEach(node.inputs) { input =>
+      getNodeWithOutput(input, error = GraphError.MissingDependency(node, input))
+    }
       .map(_.distinct)
 
-  /** @param node The node to build the sub-graph for
-    * @param seen The nodes already seen. Used to check for cycles.
-    * @return Either the fully constructed sub-graph or a graph errors
-    */
-  private def buildNode(node: Node[Key, A], seen: Set[Node[Key, A]] = Set.empty): Validation[GraphError[Key, A], A] =
-    getDependencies(node)
-      .flatMap {
-        TraversableOps(_)
-          .foreach { out =>
-            for {
-              _    <- assertNonCircularDependency(node, seen, out)
-              tree <- buildNode(out, seen + out)
-            } yield tree
-          }
-          .map {
-            case Nil      => node.value
-            case children => children.distinct.combineHorizontally >>> node.value
-          }
+  private def buildNode(node: Node[Key, A], seen: Set[Node[Key, A]]): Either[::[GraphError[Key, A]], LayerCompose[A]] =
+    getDependencies(node).flatMap {
+      forEach(_) { out =>
+        assertNonCircularDependency(node, seen, out).flatMap(_ => buildNode(out, seen + out))
+      }.map {
+        _.distinct.combineHorizontally >>> LayerCompose.succeed(node.value)
       }
+    }
 
   private def assertNonCircularDependency(
       node: Node[Key, A],
       seen: Set[Node[Key, A]],
       dependency: Node[Key, A]
-  ): Validation[GraphError.CircularDependency[Key, A], Unit] =
+  ): Either[::[GraphError[Key, A]], Unit] =
     if (seen(dependency))
-      Validation.fail(GraphError.CircularDependency(node, dependency, seen.size))
+      Left(::(GraphError.CircularDependency(node, dependency, seen.size), Nil))
     else
-      Validation.unit
+      Right(())
+
+  private def forEach[B, C](
+      list: List[B]
+  )(f: B => Either[::[GraphError[Key, A]], C]): Either[::[GraphError[Key, A]], List[C]] =
+    list.foldRight[Either[::[GraphError[Key, A]], List[C]]](Right(List.empty)) { (a, b) =>
+      (f(a), b) match {
+        case (Left(::(e, es)), Left(e1s)) => Left(::(e, es ++ e1s))
+        case (Left(es), _)                => Left(es)
+        case (_, Left(es))                => Left(es)
+        case (Right(a), Right(b))         => Right(a +: b)
+      }
+    }
 }

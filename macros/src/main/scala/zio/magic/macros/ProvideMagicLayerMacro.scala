@@ -2,168 +2,48 @@ package zio.magic.macros
 
 import zio._
 import zio.magic.macros.graph.Node
-import zio.magic.macros.utils.{ExprGraphSupport, MacroUtils}
-import zio.test.Spec
-import zio.test.environment.TestEnvironment
+import zio.magic.macros.utils.{CleanCodePrinter, LayerMacroUtils}
 
+import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
-class ProvideMagicLayerMacro(val c: blackbox.Context) extends MacroUtils with ExprGraphSupport {
+private[zio] class LayerMacros(val c: blackbox.Context) extends LayerMacroUtils {
   import c.universe._
 
-  def provideMagicLayerImpl[
-      R: c.WeakTypeTag,
-      E: c.WeakTypeTag,
-      A
-  ](
+  def injectImpl[F[_, _, _], R: c.WeakTypeTag, E, A](
       layers: c.Expr[ZLayer[_, E, _]]*
-  ): c.Expr[ZIO[Any, E, A]] = {
+  ): c.Expr[F[Any, E, A]] = {
     assertProperVarArgs(layers)
-    val layerExpr = ExprGraph.buildLayer[R](layers.map(getNode).toList)
-    c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree})")
+    val expr = buildMemoizedLayer(generateExprGraph(layers), getRequirements[R])
+    c.Expr[F[Any, E, A]](q"${c.prefix}.provideLayerManual(${expr.tree})")
   }
 
-  def provideCustomMagicLayerImpl[
-      R: c.WeakTypeTag,
-      E: c.WeakTypeTag,
-      A
-  ](
+  def injectSomeImpl[F[_, _, _], R0: c.WeakTypeTag, R: c.WeakTypeTag, E, A](
       layers: c.Expr[ZLayer[_, E, _]]*
-  ): c.Expr[ZIO[ZEnv, E, A]] = {
+  ): c.Expr[F[R0, E, A]] = {
     assertProperVarArgs(layers)
-    val ZEnvRequirements = getRequirements[ZEnv]
-    val requirements     = getRequirements[R] diff ZEnvRequirements
+    val remainderRequirements = getRequirements[R0]
+    val requirements          = getRequirements[R] diff remainderRequirements
 
-    val zEnvLayer = Node(List.empty, ZEnvRequirements, reify(ZEnv.any))
-    val nodes     = (zEnvLayer +: layers.map(getNode)).toList
+    val remainderExpr = reify(ZLayer.requires[R0])
+    val remainderNode = Node(List.empty, remainderRequirements, remainderExpr)
+    val nodes         = (remainderNode +: layers.map(getNode)).toList
 
-    val layerExpr = ExprGraph(nodes).buildLayerFor(requirements)
-    c.Expr(q"${c.prefix}.zio.provideCustomLayer(${layerExpr.tree})")
+    val layerExpr = buildMemoizedLayer(generateExprGraph(nodes), requirements)
+    c.Expr[F[R0, E, A]](q"${c.prefix}.provideLayerManual(${layerExpr.tree} ++ ${remainderExpr.tree})")
   }
 
-  def provideSomeMagicLayerImpl[
-      In <: Has[_]: c.WeakTypeTag,
-      R: c.WeakTypeTag,
-      E1,
-      A
-  ](
-      layers: c.Expr[ZLayer[_, E1, _]]*
-  ): c.Expr[ZIO[In, E1, A]] = {
-    assertEnvIsNotNothing[In]()
-    assertProperVarArgs(layers)
+  def debugGetRequirements[R: c.WeakTypeTag]: c.Expr[List[String]] =
+    c.Expr[List[String]](q"${getRequirements[R]}")
 
-    val inRequirements = getRequirements[In]
-
-    val inLayer = Node(List.empty, inRequirements, reify(ZLayer.requires[In]))
-    val nodes   = (inLayer +: layers.map(getNode)).toList
-
-    val layerExpr = ExprGraph.buildLayer[R](nodes)
-    c.Expr(q"${c.prefix}.zio.provideLayer(${layerExpr.tree})")
+  def debugShowTree(any: c.Tree): c.Expr[String] = {
+    val string = CleanCodePrinter.show(c)(any)
+    c.Expr[String](q"$string")
   }
 }
 
-/** Impls for zio-test Specs
-  */
-class SpecProvideMagicLayerMacro(val c: blackbox.Context) extends MacroUtils with ExprGraphSupport {
-  import c.universe._
+private[zio] object MacroUnitTestUtils {
+  def getRequirements[R]: List[String] = macro LayerMacros.debugGetRequirements[R]
 
-  def provideMagicLayerImpl[
-      R: c.WeakTypeTag,
-      E: c.WeakTypeTag,
-      A
-  ](
-      layers: c.Expr[ZLayer[_, E, _]]*
-  ): c.Expr[Spec[Any, E, A]] = {
-    assertProperVarArgs(layers)
-    val layerExpr = ExprGraph.buildLayer[R](layers.map(getNode).toList)
-    c.Expr(q"${c.prefix}.spec.provideLayer(${layerExpr.tree})")
-  }
-
-  def provideCustomMagicLayerImpl[
-      R: c.WeakTypeTag,
-      E: c.WeakTypeTag,
-      A
-  ](
-      layers: c.Expr[ZLayer[_, E, _]]*
-  ): c.Expr[Spec[TestEnvironment, E, A]] = {
-    assertProperVarArgs(layers)
-    val TestEnvRequirements = getRequirements[TestEnvironment]
-    val requirements        = getRequirements[R] diff TestEnvRequirements
-
-    val testEnvLayer = Node(List.empty, TestEnvRequirements, reify(TestEnvironment.any))
-    val nodes        = (testEnvLayer +: layers.map(getNode)).toList
-
-    val layerExpr = ExprGraph(nodes).buildLayerFor(requirements)
-    c.Expr(q"${c.prefix}.spec.provideCustomLayer(${layerExpr.tree})")
-  }
-
-  def provideSomeMagicLayerImpl[
-      In <: Has[_]: c.WeakTypeTag,
-      R: c.WeakTypeTag,
-      E1,
-      A
-  ](
-      layers: c.Expr[ZLayer[_, E1, _]]*
-  ): c.Expr[Spec[In, E1, A]] = {
-    assertEnvIsNotNothing[In]()
-    assertProperVarArgs(layers)
-
-    val inRequirements = getRequirements[In]
-
-    val inLayer = Node(List.empty, inRequirements, reify(ZLayer.requires[In]))
-    val nodes   = (inLayer +: layers.map(getNode)).toList
-
-    val layerExpr = ExprGraph.buildLayer[R](nodes)
-    c.Expr(q"${c.prefix}.spec.provideLayer(${layerExpr.tree})")
-  }
-
-  def provideMagicLayerSharedImpl[
-      R: c.WeakTypeTag,
-      E: c.WeakTypeTag,
-      A
-  ](
-      layers: c.Expr[ZLayer[_, E, _]]*
-  ): c.Expr[Spec[Any, E, A]] = {
-    assertProperVarArgs(layers)
-    val layerExpr = ExprGraph.buildLayer[R](layers.map(getNode).toList)
-    c.Expr(q"${c.prefix}.spec.provideLayerShared(${layerExpr.tree})")
-  }
-
-  def provideCustomMagicLayerSharedImpl[
-      R: c.WeakTypeTag,
-      E: c.WeakTypeTag,
-      A
-  ](
-      layers: c.Expr[ZLayer[_, E, _]]*
-  ): c.Expr[Spec[TestEnvironment, E, A]] = {
-    assertProperVarArgs(layers)
-    val TestEnvRequirements = getRequirements[TestEnvironment]
-    val requirements        = getRequirements[R] diff TestEnvRequirements
-
-    val testEnvLayer = Node(List.empty, TestEnvRequirements, reify(TestEnvironment.any))
-    val nodes        = (testEnvLayer +: layers.map(getNode)).toList
-
-    val layerExpr = ExprGraph(nodes).buildLayerFor(requirements)
-    c.Expr(q"${c.prefix}.spec.provideCustomLayerShared(${layerExpr.tree})")
-  }
-
-  def provideSomeMagicLayerSharedImpl[
-      In <: Has[_]: c.WeakTypeTag,
-      R: c.WeakTypeTag,
-      E1,
-      A
-  ](
-      layers: c.Expr[ZLayer[_, E1, _]]*
-  ): c.Expr[Spec[In, E1, A]] = {
-    assertEnvIsNotNothing[In]()
-    assertProperVarArgs(layers)
-
-    val inRequirements = getRequirements[In]
-
-    val inLayer = Node(List.empty, inRequirements, reify(ZLayer.requires[In]))
-    val nodes   = (inLayer +: layers.map(getNode)).toList
-
-    val layerExpr = ExprGraph.buildLayer[R](nodes)
-    c.Expr(q"${c.prefix}.spec.provideLayerShared(${layerExpr.tree})")
-  }
+  def showTree(any: Any): String = macro LayerMacros.debugShowTree
 }

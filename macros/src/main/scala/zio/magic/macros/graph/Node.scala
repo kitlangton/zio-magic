@@ -1,12 +1,5 @@
 package zio.magic.macros.graph
 
-import scala.reflect.api.Universe
-import scala.reflect.runtime.universe.Type
-
-case class Node[+Key: Eq, +A](inputs: List[Key], outputs: List[Key], value: A)
-
-trait Eq[A] {
-  def eq(a1: A, a2: A): Boolean
+case class Node[+Key, +A](inputs: List[Key], outputs: List[Key], value: A) {
+  def map[B](f: A => B): Node[Key, B] = copy(value = f(value))
 }
-
-object Eq {}

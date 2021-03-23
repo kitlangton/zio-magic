@@ -1,37 +1,37 @@
 package zio.magic.macros.utils
 
-import zio.magic.macros.graph.LayerLike
 import zio.magic.macros.utils.StringSyntax.StringOps
+import zio.magic.macros.utils.ansi.AnsiStringOps
 
-sealed trait RenderGraph { self =>
-  def ++(that: RenderGraph): RenderGraph
-  def >>>(that: RenderGraph): RenderGraph
+private[macros] sealed trait RenderedGraph { self =>
+  def ++(that: RenderedGraph): RenderedGraph
+  def >>>(that: RenderedGraph): RenderedGraph
   def render: String
 }
 
-object RenderGraph {
-  def apply(string: String): RenderGraph = Value(string)
+private[macros] object RenderedGraph {
+  def apply(string: String): RenderedGraph = Value(string)
 
-  case class Value(string: String, children: List[RenderGraph] = List.empty) extends RenderGraph { self =>
-
-    override def ++(that: RenderGraph): RenderGraph = that match {
+  final case class Value(string: String, children: List[RenderedGraph] = List.empty) extends RenderedGraph { self =>
+    override def ++(that: RenderedGraph): RenderedGraph = that match {
       case value: Value =>
         Row(List(self, value))
       case Row(values) =>
         Row(self +: values)
     }
 
-    override def >>>(that: RenderGraph): RenderGraph =
+    override def >>>(that: RenderedGraph): RenderedGraph =
       that match {
         case Value(string, children) => Value(string, self +: children)
         case Row(_)                  => throw new Error("NOT LIKE THIS")
       }
 
-    /** Forgive me. What have I done?
-      */
     override def render: String = {
-      val renderedChildren = children.map(_.render)
-      val childCount       = children.length
+      val renderedChildren = children
+        .map(_.render)
+        .sortBy(_.linesIterator.length)
+        .reverse
+      val childCount = children.length
       val connectors =
         renderedChildren
           .foldLeft((0, "")) { case ((idx, acc), child) =>
@@ -47,15 +47,15 @@ object RenderGraph {
             val endChar = if (idx + 1 == childCount) " " else "─"
 
             val addition = (beginChar * half) + centerChar + (endChar * (half - (1 - remainder)))
-            val newStr   = acc + addition //┌┬─
+            val newStr   = acc + addition
             (idx + 1, newStr)
           }
           ._2
 
-      val joinedChildren = renderedChildren.foldLeft("")(_ +++ _)
+      val joinedChildren = renderedChildren.foldLeft("")(_.normalizeWidth +++ _)
+      val maxChildWidth  = joinedChildren.maxLineWidth
 
-      val maxLineWidth = joinedChildren.maxLineWidth
-      val midpoint     = maxLineWidth / 2
+      val midpoint = maxChildWidth / 2
       val connectorsWithCenter =
         if (connectors.length > midpoint) {
           val char =
@@ -66,21 +66,27 @@ object RenderGraph {
         } else
           connectors
 
-      val padding = Math.max(0, maxLineWidth - string.length - 1) / 2
+      def getPadding(w1: Int, w2: Int): Int = Math.max(0, w2 - w1 - 1) / 2
 
-      val centered = (" " * (padding + 1)) + fansi.Color.White(string) + (" " * (padding + 1))
+      def center(string: String, width: Int, extra: Int = 0) = {
+        val padding = getPadding(string.removingAnsiCodes.length, width)
+        (" " * (padding + extra)) + string + (" " * (padding + extra))
+      }
+
+      val centered = center(string, maxChildWidth, 1).white
 
       Seq(
         centered,
-        connectorsWithCenter,
-        joinedChildren
+        (connectorsWithCenter.linesIterator ++ joinedChildren.linesIterator)
+          .map { line => center(line, string.length) }
+          .mkString("\n")
       ).mkString("\n")
     }
 
   }
 
-  case class Row(values: List[RenderGraph]) extends RenderGraph { self =>
-    override def ++(that: RenderGraph): RenderGraph =
+  final case class Row(values: List[RenderedGraph]) extends RenderedGraph { self =>
+    override def ++(that: RenderedGraph): RenderedGraph =
       that match {
         case value: Value =>
           Row(self.values :+ value)
@@ -88,38 +94,37 @@ object RenderGraph {
           Row(self.values ++ values)
       }
 
-    override def >>>(that: RenderGraph): RenderGraph =
+    override def >>>(that: RenderedGraph): RenderedGraph =
       that match {
         case Value(string, children) => Value(string, self.values ++ children)
         case Row(_)                  => throw new Error("NOT LIKE THIS")
       }
 
-    override def render: String = values.map(_.render).foldLeft("")(_ +++ _)
-  }
-
-  implicit val layerLike: LayerLike[RenderGraph] = new LayerLike[RenderGraph] {
-    override def composeH(lhs: RenderGraph, rhs: RenderGraph): RenderGraph = lhs ++ rhs
-
-    override def composeV(lhs: RenderGraph, rhs: RenderGraph): RenderGraph = lhs >>> rhs
+    override def render: String =
+      values.map(_.render).foldLeft("")(_ +++ _)
   }
 }
 
 private object RenderGraphExample {
   def main(args: Array[String]): Unit = {
-    val a   = RenderGraph("Alpha Layer")
-    val b   = RenderGraph("Baby House")
-    val d   = RenderGraph("Daunting")
-    val e   = RenderGraph("Eek")
-    val f   = RenderGraph("Fancy")
-    val c   = RenderGraph("Callous")
-    val end = (((d ++ e ++ f) >>> b) ++ c) >>> a
-    println(end.render)
-    println("")
+    val a   = RenderedGraph("Alpha Layer")
+    val b   = RenderedGraph("Baby House")
+    val d   = RenderedGraph("Daunting")
+    val e   = RenderedGraph("Eek")
+    val f   = RenderedGraph("Fancy")
+    val c   = RenderedGraph("Callous")
+    val end = (c ++ ((d ++ e ++ f) >>> b)) >>> a
+//    println(end.render)
+//    println("")
 
-    val l1 = RenderGraph("Cool")
-    val l2 = RenderGraph("Neat")
-    val l3 = RenderGraph("Alright")
-    println(((l2 ++ l3 ++ l1 ++ l2 ++ l3) >>> l1).render)
-    println((l1 >>> l2 >>> l3).render)
+    val l1 = RenderedGraph("Cool")
+    val l2 = RenderedGraph("Neat")
+    val l3 = RenderedGraph("Alright That's It")
+    println(((l2 ++ (end >>> l3) ++ l1 ++ (end >>> l2) ++ l3) >>> l1).render)
+//    println("")
+
+//    println(end.render.normalizeWidth)
+
+//    println((l1 >>> l2 >>> l3).render)
   }
 }

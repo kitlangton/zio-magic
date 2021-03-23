@@ -1,9 +1,9 @@
 package zio.magic
 
-import zio.{Has, Ref, ULayer, URLayer, ZIO, ZLayer}
 import zio.test.Assertion.{equalTo, isTrue}
 import zio.test._
 import zio.test.environment.TestEnvironment
+import zio.{Has, Ref, ULayer, URLayer, ZIO, ZLayer}
 
 object SpecProvideMagicLayerSpec extends DefaultRunnableSpec {
   override def spec: ZSpec[TestEnvironment, Any] =
@@ -25,7 +25,7 @@ object SpecProvideMagicLayerSpec extends DefaultRunnableSpec {
         } yield assert(string)(equalTo("MAGIC!"))
       }
     )
-      .provideCustomMagicLayerShared(ZLayer.succeed(true), ZLayer.succeed("MAGIC!"))
+      .injectCustomShared(ZLayer.succeed(true), ZLayer.succeed("MAGIC!"))
 
   trait In
 
@@ -47,6 +47,6 @@ object SpecProvideMagicLayerSpec extends DefaultRunnableSpec {
         assertM(ZIO.service[Ref[Int]].flatMap(_.getAndUpdate(_ + 1)))(equalTo(0))
       }
     )
-      .provideSomeMagicLayer[Has[In]](refLayer, strLayer)
+      .injectSome[Has[In]](refLayer, strLayer)
       .provideLayer(inLayer)
 }
