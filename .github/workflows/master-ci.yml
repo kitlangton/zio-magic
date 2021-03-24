@@ -33,4 +33,12 @@ jobs:
         with:
           java-version: adopt@1.11
       - name: Compile
-        run: csbt compile < /dev/null
+        run: |
+          SBT_COMMANDS=$(cat << EOF
+          set core / Compile / scalacOptions += "-Werror"
+          set core / Compile / scalacOptions += "-Werror"
+          compile
+          Test / compile
+          EOF
+          )
+          csbt "${SBT_COMMANDS}" < /dev/null
