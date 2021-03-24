@@ -26,9 +26,6 @@ final class WireMacros(val c: blackbox.Context) extends LayerMacroUtils {
     val deferredRequirements = getRequirements[R0]
     val requirements         = getRequirements[R] diff deferredRequirements
 
-    println(deferredRequirements)
-    println(requirements)
-
     val deferredLayer =
       if (deferredRequirements.nonEmpty) Seq(Node(List.empty, deferredRequirements, reify(ZLayer.requires[R0])))
       else Nil
