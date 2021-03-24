@@ -1,6 +1,6 @@
 package examples
 
-import zio.{Has, ZIO, ZLayer}
+import zio.{Has, URIO, ZIO, ZLayer}
 import zio.magic._
 
 object ZioMagicUnusedWarnings {
@@ -19,5 +19,13 @@ object ZioMagicUnusedWarnings {
     )
 
     println(layer)
+
+    val zio: URIO[Has[Int] with Has[Boolean], Has[Int] with Has[Boolean]] =
+      ZIO.environment[Has[Int] with Has[Boolean]]
+
+    zio
+      .injectSome[Has[Boolean]](
+        ZLayer.succeed(123)
+      )
   }
 }

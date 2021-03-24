@@ -5,7 +5,6 @@ import io.github.gaelrenoux.tranzactio.doobie.Database
 import zio._
 import zio.blocking.Blocking
 import zio.clock.Clock
-import zio.console.putStrLn
 import zio.magic._
 
 import javax.sql.DataSource
@@ -35,9 +34,6 @@ class Issue_Tranzactio {
   }
 
   object Main extends zio.App {
-
-    def cool[A: Tag] = 3
-
     // 1: io.github.gaelrenoux.tranzactio.DatabaseOps.ServiceOps[zio.Has[doobie.util.transactor.Transactor[zio.Task]]]
     // 2: io.github.gaelrenoux.tranzactio.DatabaseOps.ServiceOps[zio.Has[doobie.util.transactor.Transactor[[+A]zio.ZIO[Any,Throwable,A]]]]
     override def run(args: List[String]): URIO[zio.ZEnv, ExitCode] = {

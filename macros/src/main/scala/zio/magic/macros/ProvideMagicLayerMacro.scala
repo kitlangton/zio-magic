@@ -30,7 +30,7 @@ private[zio] class LayerMacros(val c: blackbox.Context) extends LayerMacroUtils 
     val nodes         = (remainderNode +: layers.map(getNode)).toList
 
     val layerExpr = buildMemoizedLayer(generateExprGraph(nodes), requirements)
-    c.Expr[F[R0, E, A]](q"${c.prefix}.provideLayerManual(${layerExpr.tree} ++ ${remainderExpr.tree})")
+    c.Expr[F[R0, E, A]](q"${c.prefix}.provideSomeLayerManual[${weakTypeOf[R0]}](${layerExpr.tree})")
   }
 
   def debugGetRequirements[R: c.WeakTypeTag]: c.Expr[List[String]] =
