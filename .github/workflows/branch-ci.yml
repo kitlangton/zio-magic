@@ -33,5 +33,11 @@ jobs:
       - uses: olafurpg/setup-scala@v10
         with:
           java-version: adopt@1.11
-      - name: Compile
-        run: csbt compile < /dev/null
+      - name: Compile and test
+        run: |
+          csbt \
+            'set core / Compile / scalacOptions += "-Werror"' \
+            'set macros / Compile / scalacOptions += "-Werror"' \
+            compile \
+            test \
+            < /dev/null
