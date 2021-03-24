@@ -168,11 +168,6 @@ object ProvideMagicLayerSpec extends DefaultRunnableSpec {
   }
 
   private def compileErrorSuite = {
-    val program = for {
-      int    <- ZIO.service[Int]
-      string <- ZIO.service[String]
-    } yield string * int
-
     suite("compile errors")(
       testM("it reports missing layers") {
         val checked = typeCheck(" val provided = program.provideMagicLayer(ZLayer.succeed(3)) ")
