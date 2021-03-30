@@ -32,7 +32,7 @@ final class WireMacros(val c: blackbox.Context) extends LayerMacroUtils {
 
     val nodes = (deferredLayer ++ layers.map(getNode)).toList
 
-    buildMemoizedLayer(generateExprGraph(nodes), requirements)
+    buildMemoizedLayer(generateExprGraph(nodes), deferredRequirements ++ requirements)
       .asInstanceOf[c.Expr[ZLayer[R0, E, R]]]
   }
 

@@ -15,7 +15,9 @@ final case class Graph[Key, A](nodes: List[Node[Key, A]], keyEquals: (Key, Key) 
     Graph(nodes.map(_.map(f)), keyEquals)
 
   private def getNodeWithOutput[E](output: Key, error: E): Either[::[E], Node[Key, A]] =
-    nodes.find(_.outputs.exists(keyEquals(_, output))).toRight(::(error, Nil))
+    nodes
+      .find(_.outputs.exists(key => keyEquals(key, output) || key.toString == output.toString))
+      .toRight(::(error, Nil))
 
   private def getDependencies[E](node: Node[Key, A]): Either[::[GraphError[Key, A]], List[Node[Key, A]]] =
     forEach(node.inputs) { input =>

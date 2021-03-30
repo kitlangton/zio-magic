@@ -69,6 +69,25 @@ private object ComplexExample extends App {
 //      F.live
 //    )
 
+    val bLayer = ZLayer.succeed(new B.Service {
+      override def string: UIO[String] = UIO("B")
+    })
+
+    val cLayer: URLayer[A, Has[C.Service]] = ZLayer.succeed(new C.Service {
+      override def string: UIO[String] = UIO("C")
+    })
+
+    val dLayer: ULayer[Has[D.Service]] = ZLayer.succeed(new D.Service {
+      override def string: UIO[String] = UIO("D")
+    })
+
+    val _ =
+      ZLayer.wireSome[A, A with B with C with D](
+        bLayer,
+        cLayer,
+        dLayer
+      )
+
     satisfied.exitCode
   }
 
