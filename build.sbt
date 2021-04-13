@@ -5,7 +5,7 @@ lazy val scala3                 = "3.0.0-M3"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211)
 
 ThisBuild / scalaVersion := scala213
-ThisBuild / version := "0.2.3"
+ThisBuild / version := "0.2.4"
 ThisBuild / organization := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
 ThisBuild / description := "Magically construct ZLayers at compile-time (with friendly errors)"
@@ -59,8 +59,8 @@ lazy val dependencies =
   Seq(
     "dev.zio" %% "zio"          % zioVersion,
     "dev.zio" %% "zio-macros"   % zioVersion,
-    "dev.zio" %% "zio-test"     % zioVersion % "test",
-    "dev.zio" %% "zio-test-sbt" % zioVersion % "test"
+    "dev.zio" %% "zio-test"     % zioVersion % Test,
+    "dev.zio" %% "zio-test-sbt" % zioVersion % Test
   )
 
 lazy val root = (project in file("."))
