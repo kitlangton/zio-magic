@@ -5,7 +5,7 @@ lazy val scala3                 = "3.0.0-M3"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211)
 
 ThisBuild / scalaVersion := scala213
-ThisBuild / version := "0.2.4"
+ThisBuild / version := "0.2.5"
 ThisBuild / organization := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
 ThisBuild / description := "Magically construct ZLayers at compile-time (with friendly errors)"
@@ -59,7 +59,6 @@ val sharedSettings = Seq(
     }
   }
 )
-
 
 lazy val root = (project in file("."))
   .settings(sharedSettings)
