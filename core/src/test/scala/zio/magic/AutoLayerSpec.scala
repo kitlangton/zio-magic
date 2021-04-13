@@ -39,6 +39,18 @@ object AutoLayerSpec extends DefaultRunnableSpec {
               result <- ref.get
             } yield assert(result)(equalTo(1))
           },
+          testM("uses all provided layers; extras included for side-effects") {
+            def sideEffectingLayer(ref: Ref[Int]): ZLayer[Has[Double], Nothing, Has[String]] =
+              (ZIO.service[Double] *> ref.update(_ + 1).as("Howdy")).toLayer
+
+            for {
+              ref <- Ref.make(0)
+              _ <- ZIO
+                .services[Int, Boolean]
+                .inject(ZLayer.succeed(12), ZLayer.succeed(true), sideEffectingLayer(ref), ZLayer.succeed(1.0))
+              result <- ref.get
+            } yield assert(result)(equalTo(1))
+          },
           testM("reports missing top-level layers") {
             val program: URIO[Has[String] with Has[Int], String] = UIO("test")
             val _                                                = program

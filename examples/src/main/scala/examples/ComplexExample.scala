@@ -24,7 +24,7 @@ import zio.console.Console
   *    B       C                K   L
   *  D E F   G H I            M
   */
-private object ComplexExample extends App {
+object ComplexExample extends App {
 
   override def run(args: List[String]): URIO[ZEnv, ExitCode] = {
 
@@ -36,7 +36,7 @@ private object ComplexExample extends App {
       } yield ()
 
     val satisfied: ZIO[Any, E, Unit] =
-      program.provideMagicLayer(
+      program.inject(
         Console.live,
         A.live,
         J.live,
@@ -53,7 +53,7 @@ private object ComplexExample extends App {
         F.live
       )
 
-//    val orBuildTheLayer = ZLayer.fromMagic[A with J](
+//    val orBuildTheLayer = ZLayer.wireDebug[A with J](
 //      A.live,
 //      J.live,
 //      B.live,
@@ -68,25 +68,6 @@ private object ComplexExample extends App {
 //      E.live,
 //      F.live
 //    )
-
-    val bLayer = ZLayer.succeed(new B.Service {
-      override def string: UIO[String] = UIO("B")
-    })
-
-    val cLayer: URLayer[A, Has[C.Service]] = ZLayer.succeed(new C.Service {
-      override def string: UIO[String] = UIO("C")
-    })
-
-    val dLayer: ULayer[Has[D.Service]] = ZLayer.succeed(new D.Service {
-      override def string: UIO[String] = UIO("D")
-    })
-
-    val _ =
-      ZLayer.wireSome[A, A with B with C with D](
-        bLayer,
-        cLayer,
-        dLayer
-      )
 
     satisfied.exitCode
   }

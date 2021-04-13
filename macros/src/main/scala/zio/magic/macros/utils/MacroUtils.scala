@@ -17,7 +17,12 @@ private[zio] trait LayerMacroUtils {
 
   def generateExprGraph(nodes: List[Node[c.Type, LayerExpr]]): ZLayerExprBuilder[c.Type, LayerExpr] =
     ZLayerExprBuilder[c.Type, LayerExpr](
-      graph = Graph(nodes, _ =:= _),
+      graph = Graph(
+        nodes = nodes,
+        // They must be `.toString`-ed as a backup in the case of refinement
+        // types. Otherwise, [[examples.DumbExample]] will fail.
+        keyEquals = (t1, t2) => t1 =:= t2 || (t1.toString == t2.toString)
+      ),
       showKey = tpe => tpe.toString,
       showExpr = expr => CleanCodePrinter.show(c)(expr.tree),
       abort = c.abort(c.enclosingPosition, _),
@@ -40,7 +45,9 @@ private[zio] trait LayerMacroUtils {
     val definitions = memoizedNodes.zip(nodes).map { case (memoizedNode, node) =>
       ValDef(Modifiers(), TermName(memoizedNode.value.tree.toString()), TypeTree(), node.value.tree)
     }
-    val layerExpr = exprGraph.copy(graph = Graph[c.Type, LayerExpr](memoizedNodes, _ =:= _)).buildLayerFor(requirements)
+    val layerExpr = exprGraph
+      .copy(graph = Graph[c.Type, LayerExpr](memoizedNodes, exprGraph.graph.keyEquals))
+      .buildLayerFor(requirements)
 
     c.Expr(q"""
     ..$definitions

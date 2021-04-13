@@ -1,7 +1,5 @@
 package zio.magic.macros.utils
 
-import zio.magic.macros.LayerCompose
-import zio.magic.macros.graph.LayerLike.LayerLikeIterableOps
 import zio.magic.macros.graph.{Graph, GraphError}
 import zio.magic.macros.utils.ansi.AnsiStringOps
 import zio.{Chunk, NonEmptyChunk}
@@ -19,15 +17,9 @@ final case class ZLayerExprBuilder[Key, A](
     if (output.isEmpty)
       emptyExpr
     else
-      graph.buildComplete(output) match {
-        case Left(errors) => abort(renderErrors(errors))
-        case Right(value) =>
-          // Add all leftovers to the final layer, to be used for their effects.
-          val allNodes      = graph.nodes.map(_.value).toSet
-          val composedNodes = value.toSet
-          val unusedNodes   = allNodes -- composedNodes
-          val all           = unusedNodes.map(LayerCompose.succeed).combineHorizontally ++ value
-          all.fold(emptyExpr, identity, composeH, composeV)
+      graph.buildComplete((graph.nodes.flatMap(_.outputs) ++ output).distinct) match {
+        case Left(errors)    => abort(renderErrors(errors))
+        case Right(composed) => composed.fold(emptyExpr, identity, composeH, composeV)
       }
 
   private def renderErrors(errors: ::[GraphError[Key, A]]): String = {

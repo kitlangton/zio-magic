@@ -27,15 +27,17 @@ class Issue_Tranzactio {
       def plusOne(i: Int): ZIO[Transactor, Nothing, Int]
     }
 
-    val live: ZLayer[Any, Nothing, Has[Service]] =
-      ZLayer.succeed((_: Int) => UIO(1))
+    val live =
+      ZLayer.succeed(new Service {
+        def plusOne(i: Int): ZIO[Transactor, Nothing, Int] = UIO(1)
+      })
 
     def plusOne(i: Int): RIO[MyService with Transactor, Int] = ZIO.accessM(_.get.plusOne(i))
   }
 
   object Main extends zio.App {
-    // 1: io.github.gaelrenoux.tranzactio.DatabaseOps.ServiceOps[zio.Has[doobie.util.transactor.Transactor[zio.Task]]]
-    // 2: io.github.gaelrenoux.tranzactio.DatabaseOps.ServiceOps[zio.Has[doobie.util.transactor.Transactor[[+A]zio.ZIO[Any,Throwable,A]]]]
+    val live: ZLayer[Transactor, Nothing, Has[Int]] = ???
+
     override def run(args: List[String]): URIO[zio.ZEnv, ExitCode] = {
       val services = List(
         MyService.plusOne(1),
@@ -46,7 +48,8 @@ class Issue_Tranzactio {
       program
         .injectCustom(
           MyService.live,
-          Transactor.live
+          Transactor.live,
+          live
         )
         .exitCode
     }
