@@ -32,7 +32,12 @@ val sharedSettings = Seq(
       url = url("https://github.com/kitlangton")
     )
   ),
-  libraryDependencies ++= dependencies,
+  libraryDependencies ++= Seq(
+    "dev.zio" %%% "zio"          % zioVersion,
+    "dev.zio" %%% "zio-macros"   % zioVersion,
+    "dev.zio" %%% "zio-test"     % zioVersion,
+    "dev.zio" %%% "zio-test-sbt" % zioVersion % Test
+  ),
   testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework"),
   libraryDependencies ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
@@ -55,24 +60,20 @@ val sharedSettings = Seq(
   }
 )
 
-lazy val dependencies =
-  Seq(
-    "dev.zio" %% "zio"          % zioVersion,
-    "dev.zio" %% "zio-macros"   % zioVersion,
-    "dev.zio" %% "zio-test"     % zioVersion % Test,
-    "dev.zio" %% "zio-test-sbt" % zioVersion % Test
-  )
 
 lazy val root = (project in file("."))
   .settings(sharedSettings)
-  .aggregate(core, macros)
+  .aggregate(core.jvm, macros.jvm, core.js, macros.js)
   .settings(
     // crossScalaVersions must be set to Nil on the aggregating project
     crossScalaVersions := Nil,
     publish / skip := true
   )
 
-lazy val core = (project in file("core"))
+lazy val core = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .withoutSuffixFor(JVMPlatform)
+  .in(file("core"))
   .settings(
     name := "zio-magic",
     crossScalaVersions := supportedScalaVersions
@@ -80,7 +81,10 @@ lazy val core = (project in file("core"))
   .settings(sharedSettings)
   .dependsOn(macros)
 
-lazy val macros = (project in file("macros"))
+lazy val macros = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .withoutSuffixFor(JVMPlatform)
+  .in(file("macros"))
   .settings(sharedSettings)
   .settings(
     name := "zio-magic-macros",
@@ -106,4 +110,4 @@ lazy val examples = (project in file("examples"))
       "-Wconf:any:wv"
     )
   )
-  .dependsOn(core)
+  .dependsOn(core.jvm)
