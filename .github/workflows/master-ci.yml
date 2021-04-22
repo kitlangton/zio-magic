@@ -29,14 +29,12 @@ jobs:
           path: ~/.jabba
           key: ${{ runner.os }}-jabba-${{ hashFiles('build.sbt') }}
       - uses: actions/checkout@v2
-      - uses: olafurpg/setup-scala@v10
-        with:
-          java-version: adopt@1.11
       - name: Compile and test
         run: |
-          csbt \
-            'set core / Compile / scalacOptions += "-Werror"' \
-            'set macros / Compile / scalacOptions += "-Werror"' \
+          sbt \
+            'set core.jvm / Compile / scalacOptions += "-Werror"' \
+            'set core.js / Compile / scalacOptions += "-Werror"' \
+            'set macros.jvm / Compile / scalacOptions += "-Werror"' \
+            'set macros.js / Compile / scalacOptions += "-Werror"' \
             compile \
-            test \
-            < /dev/null
+            test
