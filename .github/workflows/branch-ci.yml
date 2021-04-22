@@ -33,7 +33,9 @@ jobs:
       - name: Compile and test
         run: |
           sbt \
-            'set core / Compile / scalacOptions += "-Werror"' \
-            'set macros / Compile / scalacOptions += "-Werror"' \
+            'set core.jvm / Compile / scalacOptions += "-Werror"' \
+            'set core.js / Compile / scalacOptions += "-Werror"' \
+            'set macros.jvm / Compile / scalacOptions += "-Werror"' \
+            'set macros.js / Compile / scalacOptions += "-Werror"' \
             compile \
             test
