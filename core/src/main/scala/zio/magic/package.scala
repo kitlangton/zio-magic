@@ -171,5 +171,8 @@ package object magic {
       extends AnyVal {
     def apply[E1 >: E](layers: ZLayer[_, E1, _]*): Spec[In, E1, A] =
       macro SpecLayerMacros.injectSomeLayerSharedImpl[In, R, E1, A]
+
+    def provideSomeLayerManualShared[R0 <: Has[_]]: Spec.ProvideSomeLayerShared[R0, R, E, A] =
+      new Spec.ProvideSomeLayerShared[R0, R, E, A](spec)
   }
 }

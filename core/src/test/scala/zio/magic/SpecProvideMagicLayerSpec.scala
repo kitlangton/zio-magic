@@ -9,7 +9,8 @@ object SpecProvideMagicLayerSpec extends DefaultRunnableSpec {
   override def spec: ZSpec[TestEnvironment, Any] =
     suite("SpecProvideMagicLayerSpec")(
       provideCustomMagicLayerShared,
-      provideSomeMagicLayer
+      provideSomeMagicLayer,
+      provideSomeMagicLayerShared
     )
 
   private def provideCustomMagicLayerShared =
@@ -48,5 +49,20 @@ object SpecProvideMagicLayerSpec extends DefaultRunnableSpec {
       }
     )
       .injectSome[Has[In]](refLayer, strLayer)
+      .provideLayer(inLayer)
+
+  private def provideSomeMagicLayerShared =
+    (suite("provideSomeMagicLayerShared")(
+      testM("string") {
+        assertM(ZIO.service[String])(equalTo("str from layer"))
+      },
+      testM("shared ref") {
+        assertM(ZIO.service[Ref[Int]].flatMap(_.getAndUpdate(_ + 1)))(equalTo(0))
+      },
+      testM("new shared ref") {
+        assertM(ZIO.service[Ref[Int]].flatMap(_.getAndUpdate(_ + 1)))(equalTo(1))
+      }
+    ) @@ TestAspect.sequential)
+      .injectSomeShared[Has[In]](refLayer, strLayer)
       .provideLayer(inLayer)
 }
