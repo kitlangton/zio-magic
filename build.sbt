@@ -48,7 +48,7 @@ val sharedSettings = Seq(
         )
       case _ =>
         List(
-          "com.lihaoyi" %% "fansi" % "0.2.10"
+          "com.lihaoyi" %% "fansi" % "0.2.13"
         )
     }
   },
