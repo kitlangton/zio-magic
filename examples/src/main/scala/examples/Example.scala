@@ -10,7 +10,7 @@ import zio.magic._
 private object Example extends App {
   import Berries.Berries
   import Flour.Flour
-  import Pie.Pie
+  import Cake.Cake
 
   object Spoon {
     type Spoon = Has[Service]
@@ -34,27 +34,27 @@ private object Example extends App {
   }
 
   @accessible
-  object Pie {
-    type Pie = Has[Service]
+  object Cake {
+    type Cake = Has[Service]
     trait Service {
       def isDelicious: UIO[Boolean]
     }
 
-    val test: ZLayer[Any, Nothing, Pie] =
-      ZLayer.succeed(new Pie.Service {
+    val test: ZLayer[Any, Nothing, Cake] =
+      ZLayer.succeed(new Cake.Service {
         override def isDelicious: UIO[Boolean] = UIO(false)
       })
 
-    val live: ZLayer[Flour with Berries, Nothing, Pie] =
-      ZLayer.succeed(new Pie.Service {
+    val live: ZLayer[Flour with Berries, Nothing, Cake] =
+      ZLayer.succeed(new Cake.Service {
         override def isDelicious: UIO[Boolean] = UIO(true)
       })
   }
 
   override def run(args: List[String]): URIO[ZEnv, ExitCode] = {
-    val program: ZIO[Console with Pie, Nothing, Int] =
+    val program: ZIO[Console with Cake, Nothing, Int] =
       for {
-        isDelicious <- Pie.isDelicious
+        isDelicious <- Cake.isDelicious
         _           <- console.putStrLn(s"Pie is delicious: $isDelicious")
       } yield 3
 
@@ -67,21 +67,21 @@ private object Example extends App {
     val satisfied: ZIO[ZEnv, Nothing, Int] =
       program
         .provideCustomMagicLayer(
-          Pie.live,
+          Cake.live,
           Flour.live,
           Berries.live,
           Spoon.live
         )
 //
-//    val `or just build the layer`: ULayer[Pie] =
-//      ZLayer.fromMagic[Pie](
-//        Pie.live,
-//        Flour.live,
-//        Berries.live,
-//        Spoon.live,
-//        Blocking.live,
-//        Console.live
-//      )
+    val `or just build the layer`: ULayer[Cake] =
+      ZLayer.wireDebug[Cake](
+        Cake.live,
+        Flour.live,
+        Berries.live,
+        Spoon.live,
+        Blocking.live,
+        Console.live
+      )
 
     satisfied.exitCode
   }

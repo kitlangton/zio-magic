@@ -43,7 +43,7 @@ class Issue_Tranzactio {
         MyService.plusOne(1),
         MyService.plusOne(1) // uncomment this line and the problem will occur
       )
-      val program: ZIO[MyService.MyService with Transactor, Throwable, Unit] = ZIO.collectAll_(services)
+      val program: ZIO[MyService.MyService with Transactor with Has[Int], Throwable, Unit] = ZIO.collectAll_(services)
 
       program
         .injectCustom(

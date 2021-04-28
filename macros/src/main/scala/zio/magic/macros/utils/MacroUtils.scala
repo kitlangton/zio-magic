@@ -75,7 +75,7 @@ private[zio] trait LayerMacroUtils {
       case nonHasTypes =>
         c.abort(
           c.enclosingPosition,
-          s"\nContains non-Has types:\n- ${nonHasTypes.map(_.toString.white).mkString("\n- ")}"
+          s"\nContains non-Has types:\n- ${nonHasTypes.map(_.toString.yellow).mkString("\n- ")}"
         )
     }
 

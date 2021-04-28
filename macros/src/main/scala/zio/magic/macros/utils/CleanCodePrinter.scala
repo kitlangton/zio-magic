@@ -10,6 +10,7 @@ private[zio] object CleanCodePrinter {
   private val startQuote = s"`$magicQuote"
   private val endQuote   = s"$magicQuote`"
   private val magicArg   = "x$$$$123"
+  private val tagRegex   = "\\(Tag.+?$".r.regex
 
   def show(c: blackbox.Context)(expr: c.Tree): String = {
     import c.universe._
@@ -21,6 +22,7 @@ private[zio] object CleanCodePrinter {
       .replace(startQuote, "\"")
       .replace(endQuote, "\"")
       .replace(s"($magicArg) => ", "")
+      .replaceAll(tagRegex, "")
 
   private case class CleanContext(funcSyntheticArgs: Set[String] = Set.empty) {
     def withFuncSyntheticArgs(args: Set[String]): CleanContext = copy(funcSyntheticArgs = args)

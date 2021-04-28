@@ -51,8 +51,12 @@ final class WireMacros(val c: blackbox.Context) extends LayerMacroUtils {
     val deferredRequirements = getRequirements[R0]
     val requirements         = getRequirements[R] diff deferredRequirements
 
-    val deferredLayer = Node(List.empty, deferredRequirements, reify(ZLayer.requires[R0]))
-    val nodes         = (deferredLayer +: layers.map(getNode)).toList
+    val deferredLayer =
+      if (deferredRequirements.isEmpty)
+        List.empty
+      else
+        List(Node(List.empty, deferredRequirements, reify(ZLayer.requires[R0])))
+    val nodes = deferredLayer ++ layers.map(getNode)
 
     val graph = generateExprGraph(nodes)
     graph.buildLayerFor(requirements)
@@ -68,10 +72,10 @@ final class WireMacros(val c: blackbox.Context) extends LayerMacroUtils {
     }
 
     val maxWidth = graphString.maxLineWidth
-    val title    = "Layer Graph Visualization"
+    val title    = "  ZLayer Wiring Graph  ".yellow.bold.inverted
     val adjust   = (maxWidth - title.length) / 2
 
-    val rendered = "\n" + (" " * adjust) + title.yellow.underlined + "\n\n" + graphString + "\n\n"
+    val rendered = "\n" + (" " * adjust) + title + "\n\n" + graphString + "\n\n"
 
     c.abort(c.enclosingPosition, rendered)
 
@@ -93,9 +97,9 @@ final class WireMacros(val c: blackbox.Context) extends LayerMacroUtils {
     if (outType == nothingType) {
       val errorMessage =
         s"""
-${"ZLayer Auto Assemble".yellow.underlined}
+${"  ZLayer Wiring Error  ".red.bold.inverted}
         
-You must provide a type to ${"wire".white} (e.g. ${"ZLayer.wire".white}${"[A with B]".yellow.underlined}${"(A.live, B.live)".white})
+You must provide a type to ${"wire".cyan.bold} (e.g. ${"ZLayer.wire".cyan.bold}${"[A with B]".cyan.bold.underlined}${"(A.live, B.live)".cyan.bold})
 
 """
       c.abort(c.enclosingPosition, errorMessage)

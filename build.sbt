@@ -5,7 +5,7 @@ lazy val scala3                 = "3.0.0-RC3"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211)
 
 ThisBuild / scalaVersion := scala213
-ThisBuild / version := "0.2.6"
+ThisBuild / version := "0.3.0"
 ThisBuild / organization := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
 ThisBuild / description := "Magically construct ZLayers at compile-time (with friendly errors)"

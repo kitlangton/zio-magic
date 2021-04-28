@@ -53,21 +53,21 @@ object ComplexExample extends App {
         F.live
       )
 
-//    val orBuildTheLayer = ZLayer.wireDebug[A with J](
-//      A.live,
-//      J.live,
-//      B.live,
-//      C.live,
-//      G.live,
-//      H.live,
-//      I.live,
-//      K.live,
-//      L.live,
-//      M.live,
-//      D.live,
-//      E.live,
-//      F.live
-//    )
+    val orBuildTheLayer = ZLayer.wireDebug[A with J with M](
+      A.live,
+      J.live,
+      B.live,
+      C.live,
+      G.live,
+      H.live,
+      I.live,
+      K.live,
+      L.live,
+      M.live,
+      D.live,
+      E.live,
+      F.live
+    )
 
     satisfied.exitCode
   }

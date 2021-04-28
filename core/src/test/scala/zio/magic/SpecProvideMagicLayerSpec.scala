@@ -26,7 +26,7 @@ object SpecProvideMagicLayerSpec extends DefaultRunnableSpec {
         } yield assert(string)(equalTo("MAGIC!"))
       }
     )
-      .injectCustomShared(ZLayer.succeed(true), ZLayer.succeed("MAGIC!"))
+      .injectShared(ZLayer.succeed(true), ZLayer.succeed("MAGIC!"))
 
   trait In
 

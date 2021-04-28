@@ -9,7 +9,7 @@ Construct ZLayers _automagically_, with friendly compile-time hints!
 
 ```sbt
 // build.sbt
-libraryDependencies += "io.github.kitlangton" %% "zio-magic" % "0.2.6"
+libraryDependencies += "io.github.kitlangton" %% "zio-magic" % "0.3.0"
 ```
 
 ## What's all this then?
@@ -64,11 +64,11 @@ val magically: UIO[Unit] =
   )
 ```
 
-```shell
-🪄  ZLayer Magic Missing Components
-🪄
-🪄  provide zio.magic.Example.Flour.Service
-🪄      for Cake.live
+```sh
+   ZLayer Wiring Error
+
+>  provide zio.magic.Example.Flour.Service
+>      for Cake.live
 ```
 
 ----
@@ -124,18 +124,20 @@ val provided: URIO[ZEnv, Unit] =
 
 ## Debug!
 
-Try `ZLayer.wireDebug[Cake]` or `ZLayer.wireSomeDebug[Blocking with Console, Cake]` to print out a pretty graph! _Ooh la la!_
+Try `ZLayer.wireDebug[Cake]` or `ZLayer.wireSomeDebug[Blocking with Console, Cake]` to print out a pretty tree! _Ooh la la!_
 
 ```shell
-      Your Delicately Rendered Graph
+ZLayer Wiring Graph
+===================
 
-                   Cake.live                   
-               ┌───────┴──────────────┐       
-         Chocolate.live         Chocolate.live  
-        ┌──────┴───────┐              │       
-   Spoon.live    Console.live     Spoon.live   
-       │                              │       
- Blocking.live                   Blocking.live 
+ ◉ Cake.live
+ ├─◑ Flour.live
+ │ ├─◑ Spoon.live
+ │ │ ╰─◑ Blocking.live
+ │ ╰─◑ Console.live
+ ╰─◑ Berries.live
+   ╰─◑ Spoon.live
+     ╰─◑ Blocking.live
 ```
 
 **Let me know if you can think of any helpful variants, and I'll give 'em a whirl!**
