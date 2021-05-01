@@ -30,7 +30,8 @@ private[macros] object RenderedGraph {
 
     override def render(depth: Int): String = {
       val node         = if (depth == 0) "◉" else "◑".faint
-      val displayTitle = s"$node " + name.bold.withColor(colors(depth % colors.length))
+      val color        = colors(depth % colors.length)
+      val displayTitle = s"$node ".withColor(color) + name.bold.withColor(color)
 
       val childCount = children.length
       var idx        = 0
@@ -49,13 +50,13 @@ private[macros] object RenderedGraph {
             val child = (lines.head +: lines.tail
               .map { line =>
                 if (isNested)
-                  "│ ".faint + line
+                  "│ ".faint.withColor(color) + line
                 else
                   "  " + line
               })
               .mkString("\n")
 
-            symbol.faint + child
+            symbol.faint.withColor(color) + child
           })
         .mkString("\n")
 

@@ -42,14 +42,9 @@ val sharedSettings = Seq(
   libraryDependencies ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, n)) if n <= 12 =>
-        List(
-          compilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
-          "com.lihaoyi" %% "fansi" % "0.2.6"
-        )
+        List(compilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full))
       case _ =>
-        List(
-          "com.lihaoyi" %% "fansi" % "0.2.10"
-        )
+        List()
     }
   },
   Compile / scalacOptions ++= {
