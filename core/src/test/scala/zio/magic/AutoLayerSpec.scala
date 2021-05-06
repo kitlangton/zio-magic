@@ -117,11 +117,24 @@ object AutoLayerSpec extends DefaultRunnableSpec {
         suite("injectCustom")(
           testM("automatically constructs a layer from its dependencies, leaving off ZEnv") {
             val stringLayer = console.getStrLn.orDie.toLayer
-            val program     = ZIO.service[String].zipWith(random.nextInt)((str, int) => s"$str $int")
+            val program: ZIO[Random with Has[String], Nothing, String] =
+              ZIO.service[String].zipWith(random.nextInt)((str, int) => s"$str $int")
+
             val provided = TestConsole.feedLines("Your Lucky Number is:") *>
               program.injectCustom(stringLayer)
 
             assertM(provided)(equalTo("Your Lucky Number is: -1295463240"))
+          },
+          testM("automatically constructs a layer from its dependencies, leaving off ZEnv") {
+            trait Bank
+            val program: ZIO[Console with Has[Bank], Nothing, Unit] =
+              ZIO.service[Bank] *> console.putStrLn("hi")
+
+            val layer: ULayer[Has[Bank]] = ZLayer.succeed(new Bank {})
+
+            val fulfilled = program.injectCustom(layer)
+
+            assertM(fulfilled)(equalTo(()))
           }
         ),
         suite("injectSome")(

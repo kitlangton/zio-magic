@@ -90,8 +90,10 @@ package object magic {
     def apply[E1 >: E](layers: ZLayer[_, E1, _]*): ZIO[In, E1, A] =
       macro LayerMacros.injectSomeImpl[ZIO, In, R, E1, A]
 
-    def provideSomeLayerManual[R0 <: Has[_]]: ZIO.ProvideSomeLayer[R0, R, E, A] =
-      new ZIO.ProvideSomeLayer[R0, R, E, A](zio)
+    def provideLayerManual[E1 >: E, R0, R1](
+        layer: ZLayer[R0, E1, R1]
+    )(implicit ev1: R1 <:< R, ev2: NeedsEnv[R]): ZIO[R0, E1, A] =
+      layer.build.map(ev1).use(zio.provide)
   }
 
   /** ZSpec Extension Methods

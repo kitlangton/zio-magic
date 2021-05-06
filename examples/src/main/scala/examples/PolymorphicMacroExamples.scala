@@ -1,3 +1,0 @@
-package examples class PolymorphicMacroExamples {
-
-}

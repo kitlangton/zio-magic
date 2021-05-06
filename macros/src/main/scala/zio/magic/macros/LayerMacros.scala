@@ -23,9 +23,12 @@ private[zio] class LayerMacros(val c: blackbox.Context) extends LayerMacroUtils 
   ): c.Expr[F[R0, E, A]] = {
     assertProperVarArgs(layers)
     val remainderRequirements = getRequirements[R0]
-    val remainderExpr         = reify(ZLayer.requires[R0])
-    val remainderNode         = Node(List.empty, remainderRequirements, remainderExpr)
-    val nodes                 = (remainderNode +: layers.map(getNode)).toList
+    val remainderExpr =
+      if (weakTypeOf[R0] =:= weakTypeOf[ZEnv]) reify(ZEnv.any)
+      else reify(ZLayer.requires[R0])
+
+    val remainderNode = Node(List.empty, remainderRequirements, remainderExpr)
+    val nodes         = (remainderNode +: layers.map(getNode)).toList
 
     val layerExpr = buildMemoizedLayer(generateExprGraph(nodes), getRequirements[R])
     c.Expr[F[R0, E, A]](q"${c.prefix}.provideLayerManual(${layerExpr.tree})")

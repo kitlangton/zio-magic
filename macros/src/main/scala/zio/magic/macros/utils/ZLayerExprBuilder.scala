@@ -2,7 +2,6 @@ package zio.magic.macros.utils
 
 import zio.magic.macros.LayerCompose
 import zio.magic.macros.graph.{Graph, GraphError, Node}
-import zio.magic.macros.utils.StringSyntax.StringOps
 import zio.magic.macros.utils.ansi.AnsiStringOps
 import zio.{Chunk, NonEmptyChunk}
 
