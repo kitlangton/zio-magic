@@ -69,7 +69,7 @@ final case class ZLayerExprBuilder[Key, A](
   private def reportErrorMessage(errorMessage: String): Nothing = {
     val body = errorMessage.linesIterator
       .map { line =>
-        if (line.isBlank)
+        if (line.trim().isEmpty())
           line
         else
           "❯ ".red + line
