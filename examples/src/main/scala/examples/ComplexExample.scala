@@ -32,7 +32,7 @@ object ComplexExample extends App {
       for {
         a <- ZIO.accessM[A](_.get.string)
         j <- ZIO.accessM[J](_.get.string)
-        _ <- console.putStrLn(s"Result:\n$a\n$j")
+        _ <- console.putStrLn(s"Result:\n$a\n$j").orDie
       } yield ()
 
     val satisfied: ZIO[Any, E, Unit] =
