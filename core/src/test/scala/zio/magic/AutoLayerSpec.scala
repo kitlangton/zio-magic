@@ -128,7 +128,7 @@ object AutoLayerSpec extends DefaultRunnableSpec {
           testM("automatically constructs a layer from its dependencies, leaving off ZEnv") {
             trait Bank
             val program: ZIO[Console with Has[Bank], Nothing, Unit] =
-              ZIO.service[Bank] *> console.putStrLn("hi")
+              ZIO.service[Bank] *> console.putStrLn("hi").orDie
 
             val layer: ULayer[Has[Bank]] = ZLayer.succeed(new Bank {})
 

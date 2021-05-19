@@ -55,7 +55,7 @@ private object Example extends App {
     val program: ZIO[Console with Cake, Nothing, Int] =
       for {
         isDelicious <- Cake.isDelicious
-        _           <- console.putStrLn(s"Pie is delicious: $isDelicious")
+        _           <- console.putStrLn(s"Pie is delicious: $isDelicious").orDie
       } yield 3
 
     // Tho old way... oh no!
