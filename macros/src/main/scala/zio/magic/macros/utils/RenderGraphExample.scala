@@ -12,7 +12,7 @@ private[macros] sealed trait RenderedGraph { self =>
 private[macros] object RenderedGraph {
   def apply(string: String): RenderedGraph = Value(string)
 
-  private val colors = List(Color.Blue, Color.Cyan, Color.Red, Color.Magenta, Color.Green)
+  private val colors = List(Color.Blue, Color.Cyan, Color.Yellow, Color.Magenta, Color.Green)
 
   final case class Value(name: String, children: List[RenderedGraph] = List.empty) extends RenderedGraph { self =>
     override def ++(that: RenderedGraph): RenderedGraph = that match {

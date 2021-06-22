@@ -108,15 +108,31 @@ $body
     val sorted                = circularDependencyErrors.sortBy(_.depth)
     val initialCircularErrors = sorted.takeWhile(_.depth == sorted.headOption.map(_.depth).getOrElse(0))
 
-    initialCircularErrors ++ otherErrors.sortBy(_.isInstanceOf[GraphError.MissingTransitiveDependency[Key, A]])
+    val (transitiveDepErrors, remainingErrors) = otherErrors.partitionMap {
+      case es: GraphError.MissingTransitiveDependencies[Key, A] => Left(es)
+      case other                                                => Right(other)
+    }
+
+    val groupedTransitiveErrors = transitiveDepErrors.groupBy(_.node).map { case (node, errors) =>
+      val deps = errors.flatMap(_.dependency)
+      GraphError.MissingTransitiveDependencies(node, deps)
+    }
+
+    initialCircularErrors ++ groupedTransitiveErrors ++ remainingErrors
   }
 
   private def renderError(error: GraphError[Key, A]): String =
     error match {
-      case GraphError.MissingTransitiveDependency(node, dependency) =>
-        val styledDependency = showKey(dependency).blue.bold
-        val styledLayer      = showExpr(node.value).blue
-        s"""${"missing".underlined} $styledDependency
+      case GraphError.MissingTransitiveDependencies(node, dependencies) =>
+        val styledDependencies = dependencies.zipWithIndex
+          .map { case (dep, idx) =>
+            val prefix = if (idx == 0) "missing".underlined else " " * 7
+            val styled = showKey(dep).blue.bold
+            s"""${prefix} $styled"""
+          }
+          .mkString("\n")
+        val styledLayer = showExpr(node.value).blue
+        s"""$styledDependencies
     ${"for".underlined} $styledLayer"""
 
       case GraphError.MissingTopLevelDependency(dependency) =>

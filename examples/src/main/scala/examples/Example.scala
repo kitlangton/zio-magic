@@ -23,7 +23,7 @@ private object Example extends App {
     type Flour = Has[Service]
     case class Service()
 
-    val live: ZLayer[Spoon with Console, Nothing, Flour] = ZLayer.succeed(Service())
+    val live: ZLayer[Console with Spoon with Console, Nothing, Flour] = ZLayer.succeed(Service())
   }
 
   object Berries {
@@ -74,7 +74,7 @@ private object Example extends App {
         )
 //
     val `or just build the layer`: ULayer[Cake] =
-      ZLayer.wireDebug[Cake](
+      ZLayer.wire[Cake](
         Cake.live,
         Flour.live,
         Berries.live,

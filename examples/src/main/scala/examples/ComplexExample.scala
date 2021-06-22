@@ -53,7 +53,7 @@ object ComplexExample extends App {
         F.live
       )
 
-    val orBuildTheLayer = ZLayer.wireDebug[A with J with M](
+    val orBuildTheLayer = ZLayer.wire[A with J](
       A.live,
       J.live,
       B.live,
@@ -79,7 +79,7 @@ object ComplexExample extends App {
       def string: UIO[String]
     }
 
-    def live: URLayer[B with C, A] =
+    def live: URLayer[B with C with D, A] =
       (for {
         b <- ZIO.accessM[B](_.get.string)
         c <- ZIO.accessM[C](_.get.string)

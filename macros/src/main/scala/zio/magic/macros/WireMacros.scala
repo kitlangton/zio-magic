@@ -2,10 +2,12 @@ package zio.magic.macros
 
 import zio.magic.macros.graph.Node
 import zio.magic.macros.utils.StringSyntax.StringOps
-import zio.magic.macros.utils.{LayerMacroUtils, RenderedGraph}
+import zio.magic.macros.utils.{LayerMacroUtils, RenderedGraph, ZLayerExprBuilder}
 import zio.magic.macros.utils.ansi.AnsiStringOps
-import zio.{Has, ZLayer}
+import zio.{Chunk, Has, ZLayer}
 
+import java.nio.charset.StandardCharsets
+import java.util.Base64
 import scala.reflect.macros.blackbox
 
 final class WireMacros(val c: blackbox.Context) extends LayerMacroUtils {
@@ -75,7 +77,10 @@ final class WireMacros(val c: blackbox.Context) extends LayerMacroUtils {
     val title    = "  ZLayer Wiring Graph  ".yellow.bold.inverted
     val adjust   = (maxWidth - title.length) / 2
 
+//    val mermaidLink: String = generateMermaidJsLink(requirements, graph)
+
     val rendered = "\n" + (" " * adjust) + title + "\n\n" + graphString + "\n\n"
+//      "Mermaid Live Editor Link".underlined + "\n" + mermaidLink.faint
 
     c.abort(c.enclosingPosition, rendered)
 
@@ -106,4 +111,48 @@ You must provide a type to ${"wire".cyan.bold} (e.g. ${"ZLayer.wire".cyan.bold}$
     }
   }
 
+  /** Generates a link of the Layer graph for the Mermaid.js graph viz
+    * library's live-editor (https://mermaid-js.github.io/mermaid-live-editor)
+    */
+  private def generateMermaidJsLink[R <: Has[_]: c.WeakTypeTag, R0: c.WeakTypeTag, E](
+      requirements: List[c.Type],
+      graph: ZLayerExprBuilder[c.Type, LayerExpr]
+  ): String = {
+    val cool = eitherToOption(
+      graph.graph
+        .map(layer => layer.showTree)
+        .buildComplete(requirements)
+    ).get
+
+    val map = cool.fold[Map[String, Chunk[String]]](
+      z = Map.empty,
+      value = str => Map(str -> Chunk.empty),
+      composeH = _ ++ _,
+      composeV = (m1, m2) =>
+        m2.map { case (key, values) =>
+          val result = m1.keys.toSet -- m1.values.flatten.toSet
+          key -> (values ++ Chunk.fromIterable(result))
+        } ++ m1
+    )
+
+    val mermaidGraphString = map
+      .flatMap {
+        case (key, children) if children.isEmpty =>
+          List(s"    $key")
+        case (key, children) =>
+          children.map { child =>
+            s"    $key --> $child"
+          }
+      }
+      .mkString("\\n")
+
+    val mermaidGraph =
+      s"""{"code":"graph\\n$mermaidGraphString\\n    ","mermaid": "{\\n  \\"theme\\": \\"default\\"\\n}", "updateEditor": true, "autoSync": true, "updateDiagram": true}"""
+
+    val encodedMermaidGraph: String =
+      new String(Base64.getEncoder.encode(mermaidGraph.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8)
+
+    val mermaidLink = s"https://mermaid-js.github.io/mermaid-live-editor/edit/#$encodedMermaidGraph"
+    mermaidLink
+  }
 }

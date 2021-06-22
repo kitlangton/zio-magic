@@ -1,11 +1,11 @@
 lazy val scala213               = "2.13.6"
 lazy val scala212               = "2.12.10"
 lazy val scala211               = "2.11.12"
-lazy val scala3                 = "3.0.0-RC3"
+lazy val scala3                 = "3.0.0"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211)
 
 ThisBuild / scalaVersion := scala213
-ThisBuild / version := "0.3.2"
+ThisBuild / version := "0.3.4"
 ThisBuild / organization := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
 ThisBuild / description := "Magically construct ZLayers at compile-time (with friendly errors)"
@@ -57,7 +57,7 @@ val sharedSettings = Seq(
 
 lazy val root = (project in file("."))
   .settings(sharedSettings)
-  .aggregate(core.jvm, macros.jvm, core.js, macros.js)
+  .aggregate(core.jvm, macros.jvm, core.js, macros.js, examples)
   .settings(
     // crossScalaVersions must be set to Nil on the aggregating project
     crossScalaVersions := Nil,
@@ -91,6 +91,7 @@ lazy val macros = crossProject(JSPlatform, JVMPlatform)
 lazy val examples = (project in file("examples"))
   .settings(sharedSettings)
   .settings(
+    publish / skip := true,
     name := "zio-magic-examples",
     libraryDependencies ++= Seq(
       "org.tpolecat"         %% "doobie-core" % "0.10.0",
