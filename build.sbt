@@ -90,7 +90,7 @@ lazy val examples = (project in file("examples"))
     name := "zio-magic-examples",
     libraryDependencies ++= Seq(
       "org.tpolecat"         %% "doobie-core" % "0.10.0",
-      "org.typelevel"        %% "cats-effect" % "2.3.1",
+      "org.typelevel"        %% "cats-effect" % "2.3.3",
       "io.github.gaelrenoux" %% "tranzactio"  % "1.2.0",
       "co.fs2"               %% "fs2-core"    % "2.5.0"
     ),
