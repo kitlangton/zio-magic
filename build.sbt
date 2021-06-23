@@ -5,7 +5,6 @@ lazy val scala3                 = "3.0.0"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211)
 
 ThisBuild / scalaVersion := scala213
-ThisBuild / version := "0.3.4"
 ThisBuild / organization := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
 ThisBuild / description := "Magically construct ZLayers at compile-time (with friendly errors)"
@@ -17,11 +16,7 @@ val zioVersion = "1.0.9"
 import xerial.sbt.Sonatype._
 
 val sharedSettings = Seq(
-  publishMavenStyle := true,
-  sonatypeProjectHosting := Some(GitHubHosting("kitlangton", "zio-magic", "kit.langton@gmail.com")),
-  publishTo := sonatypePublishToBundle.value,
   licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
-  credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credentials"),
   semanticdbEnabled := true,                        // enable SemanticDB
   semanticdbVersion := scalafixSemanticdb.revision, // use Scalafix compatible version
   developers := List(
