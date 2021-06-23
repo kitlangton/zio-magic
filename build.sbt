@@ -91,7 +91,7 @@ lazy val examples = (project in file("examples"))
     libraryDependencies ++= Seq(
       "org.tpolecat"         %% "doobie-core" % "0.10.0",
       "org.typelevel"        %% "cats-effect" % "2.3.1",
-      "io.github.gaelrenoux" %% "tranzactio"  % "1.2.0",
+      "io.github.gaelrenoux" %% "tranzactio"  % "1.3.0",
       "co.fs2"               %% "fs2-core"    % "2.5.0"
     ),
     scalacOptions ++= Seq(
