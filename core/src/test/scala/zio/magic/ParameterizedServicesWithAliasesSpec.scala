@@ -5,6 +5,8 @@ import zio.macros.accessible
 import zio.magic.ParameterizedServicesWithAliasesSpec.ParameterisedServiceWithTypeAlias.C
 import zio.test.{DefaultRunnableSpec, TestResult, assertCompletes}
 
+// https://github.com/kitlangton/zio-magic/issues/76
+// Suite graciously supplied by @ollyw
 object ParameterizedServicesWithAliasesSpec extends DefaultRunnableSpec {
 
   def spec = suite("Samples")(

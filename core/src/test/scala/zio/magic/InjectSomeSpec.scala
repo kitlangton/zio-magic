@@ -10,6 +10,8 @@ import zio.duration._
 
 import java.io.IOException
 
+// https://github.com/kitlangton/zio-magic/issues/91
+// Suite generously donated by @scottweaver
 object InjectSomeSpec extends DefaultRunnableSpec {
 
   final case class TestService(console: Console.Service, clock: Clock.Service) {
