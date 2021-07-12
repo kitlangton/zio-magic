@@ -27,7 +27,7 @@ private[zio] trait LayerMacroUtils {
       showExpr = expr => CleanCodePrinter.show(c)(expr.tree),
       abort = c.abort(c.enclosingPosition, _),
       emptyExpr = reify(ZLayer.succeed(())),
-      composeH = (lhs, rhs) => c.Expr(q"""$lhs +!+ $rhs"""),
+      composeH = (lhs, rhs) => c.Expr(q"""$lhs ++ $rhs"""),
       composeV = (lhs, rhs) => c.Expr(q"""$lhs >>> $rhs""")
     )
 
