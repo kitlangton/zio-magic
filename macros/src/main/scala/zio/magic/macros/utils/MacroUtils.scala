@@ -68,7 +68,7 @@ private[zio] trait LayerMacroUtils {
     tpe.isHas || tpe.isAny
 
   def getRequirements(tpe: Type): List[c.Type] = {
-    val intersectionTypes = tpe.intersectionTypes
+    val intersectionTypes = tpe.dealias.map(_.dealias).intersectionTypes
 
     intersectionTypes.filter(!isValidHasType(_)) match {
       case Nil => ()
@@ -81,7 +81,7 @@ private[zio] trait LayerMacroUtils {
 
     intersectionTypes
       .filter(_.isHas)
-      .map(_.dealias.typeArgs.head)
+      .map(_.dealias.typeArgs.head.dealias)
       .distinct
   }
 
