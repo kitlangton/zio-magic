@@ -91,16 +91,16 @@ type mismatch;
 
 ## Also
 
-You can also directly construct a ZLayer (However you must annotate the call to `ZLayer.fromMagic[LikeThis]`, because macros).
+You can also directly construct a ZLayer (However you must annotate the call to `ZLayer.wire[LikeThis]`, because macros).
 
 ```scala
-val layer = ZLayer.fromMagic[Flour with Console](Console.live, Flour.live, Spoon.live)
+val layer = ZLayer.wire[Flour with Console](Console.live, Flour.live, Spoon.live)
 ```
 
-To construct `URLayer[In, Out]` use `ZLayer.fromSomeMagic[In, Out]` this way:
+To construct `URLayer[In, Out]` use `ZLayer.wireSome[In, Out]` this way:
 
 ```scala
-val layer = ZLayer.fromSomeMagic[CommonEnv, Flour with Console](Console.live, Flour.live, Spoon.live)
+val layer = ZLayer.wireSome[CommonEnv, Flour with Console](Console.live, Flour.live, Spoon.live)
 ```
 
 Alternatively you can provide environment partially with `injectSome[Rest](l1, l2, l3)` - similarly to `.provideSomeLayer`.
