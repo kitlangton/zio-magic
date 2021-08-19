@@ -4,11 +4,11 @@ lazy val scala211               = "2.11.12"
 lazy val scala3                 = "3.0.0"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211)
 
-ThisBuild / scalaVersion := scala213
-ThisBuild / organization := "io.github.kitlangton"
+ThisBuild / scalaVersion     := scala213
+ThisBuild / organization     := "io.github.kitlangton"
 ThisBuild / organizationName := "kitlangton"
-ThisBuild / description := "Magically construct ZLayers at compile-time (with friendly errors)"
-ThisBuild / homepage := Some(url("https://github.com/kitlangton/zio-magic"))
+ThisBuild / description      := "Magically construct ZLayers at compile-time (with friendly errors)"
+ThisBuild / homepage         := Some(url("https://github.com/kitlangton/zio-magic"))
 
 val zioVersion = "1.0.10"
 
@@ -16,7 +16,7 @@ val zioVersion = "1.0.10"
 import xerial.sbt.Sonatype._
 
 val sharedSettings = Seq(
-  licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
+  licenses          := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
   semanticdbEnabled := true,                        // enable SemanticDB
   semanticdbVersion := scalafixSemanticdb.revision, // use Scalafix compatible version
   developers := List(
@@ -56,7 +56,7 @@ lazy val root = (project in file("."))
   .settings(
     // crossScalaVersions must be set to Nil on the aggregating project
     crossScalaVersions := Nil,
-    publish / skip := true
+    publish / skip     := true
   )
 
 lazy val core = crossProject(JSPlatform, JVMPlatform)
@@ -64,7 +64,7 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
   .withoutSuffixFor(JVMPlatform)
   .in(file("core"))
   .settings(
-    name := "zio-magic",
+    name               := "zio-magic",
     crossScalaVersions := supportedScalaVersions
   )
   .settings(sharedSettings)
@@ -76,7 +76,7 @@ lazy val macros = crossProject(JSPlatform, JVMPlatform)
   .in(file("macros"))
   .settings(sharedSettings)
   .settings(
-    name := "zio-magic-macros",
+    name               := "zio-magic-macros",
     crossScalaVersions := supportedScalaVersions,
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value
@@ -87,7 +87,7 @@ lazy val examples = (project in file("examples"))
   .settings(sharedSettings)
   .settings(
     publish / skip := true,
-    name := "zio-magic-examples",
+    name           := "zio-magic-examples",
     libraryDependencies ++= Seq(
       "org.tpolecat"         %% "doobie-core" % "0.10.0",
       "org.typelevel"        %% "cats-effect" % "2.3.1",
@@ -95,7 +95,7 @@ lazy val examples = (project in file("examples"))
       "co.fs2"               %% "fs2-core"    % "2.5.0"
     ),
     scalacOptions ++= Seq(
-      "-Wunused:_",     // Warn unused
+      "-Wunused:_", // Warn unused
       "-Wmacros:after", // Warn after macro expansions, a must for Scala 2.13.5+, else there are tons of false positive warnings due to typeclass derivation for most Scala libraries out there
       "-Wconf:any:wv"
     )

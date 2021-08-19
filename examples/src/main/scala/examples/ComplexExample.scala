@@ -19,10 +19,7 @@ import zio.console.Console
 
 /** An example of magically constructing the following nested layer graph:
   *
-  *           RIO[A with J, Int]
-  *        A                      J
-  *    B       C                K   L
-  *  D E F   G H I            M
+  * RIO[A with J, Int] A J B C K L D E F G H I M
   */
 object ComplexExample extends App {
 
