@@ -113,8 +113,8 @@ private[zio] object CleanCodePrinter {
     import c.universe._
     select match {
       case Select(id @ Ident(_), n: Name) if id.symbol.isPackage => Some(n.decodedName.toString)
-      case Select(nested @ Select(_, _), n: Name)                => packageSelects(c)(nested).map(_ => n.decodedName.toString)
-      case _                                                     => None
+      case Select(nested @ Select(_, _), n: Name) => packageSelects(c)(nested).map(_ => n.decodedName.toString)
+      case _                                      => None
     }
   }
 }

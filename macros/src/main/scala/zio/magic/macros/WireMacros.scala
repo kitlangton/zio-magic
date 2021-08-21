@@ -93,8 +93,7 @@ final class WireMacros(val c: blackbox.Context) extends LayerMacroUtils {
     case Right(value) => Some(value)
   }
 
-  /** Ensures the macro has been annotated with the intended result type.
-    * The macro will not behave correctly otherwise.
+  /** Ensures the macro has been annotated with the intended result type. The macro will not behave correctly otherwise.
     */
   private def assertEnvIsNotNothing[Out <: Has[_]: c.WeakTypeTag](): Unit = {
     val outType     = weakTypeOf[Out]
@@ -111,8 +110,8 @@ You must provide a type to ${"wire".cyan.bold} (e.g. ${"ZLayer.wire".cyan.bold}$
     }
   }
 
-  /** Generates a link of the Layer graph for the Mermaid.js graph viz
-    * library's live-editor (https://mermaid-js.github.io/mermaid-live-editor)
+  /** Generates a link of the Layer graph for the Mermaid.js graph viz library's live-editor
+    * (https://mermaid-js.github.io/mermaid-live-editor)
     */
   private def generateMermaidJsLink[R <: Has[_]: c.WeakTypeTag, R0: c.WeakTypeTag, E](
       requirements: List[c.Type],
