@@ -3,7 +3,7 @@
 [![Release Artifacts][Badge-SonatypeReleases]][Link-SonatypeReleases]
 [![Snapshot Artifacts][Badge-SonatypeSnapshots]][Link-SonatypeSnapshots]
 
-***ANNOUNCEMENT: This library will officially be a first-class feature of ZIO 2.0. I'll link to the relevant PR once that is public, as there are some changes and improvements in there (including Scala 3 support) that haven't been backported yet. But I'll support this library until at least ZIO 2.0 is released officially! 😊***
+***ANNOUNCEMENT: This library is officially included as a first-class feature of ZIO 2.0 😊***
 
 Construct ZLayers _automagically_, with friendly compile-time hints!
 
