@@ -1,7 +1,7 @@
-lazy val scala213               = "2.13.6"
+lazy val scala213               = "2.13.7"
 lazy val scala212               = "2.12.15"
 lazy val scala211               = "2.11.12"
-lazy val scala3                 = "3.0.0"
+lazy val scala3                 = "3.1.0"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211)
 
 ThisBuild / scalaVersion     := scala213
@@ -15,10 +15,12 @@ val zioVersion = "1.0.12"
 // Sonatype Publishing
 import xerial.sbt.Sonatype._
 
+Global / onChangedBuildSource := ReloadOnSourceChanges
+
 val sharedSettings = Seq(
   licenses          := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
-  semanticdbEnabled := true,                        // enable SemanticDB
-  semanticdbVersion := scalafixSemanticdb.revision, // use Scalafix compatible version
+//  semanticdbEnabled := true,                        // enable SemanticDB
+//  semanticdbVersion := scalafixSemanticdb.revision, // use Scalafix compatible version
   developers := List(
     Developer(
       id = "kitlangton",
