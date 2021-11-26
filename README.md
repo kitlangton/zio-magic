@@ -24,6 +24,8 @@ libraryDependencies += "io.github.kitlangton" %% "zio-magic" % "0.3.11"
 //     Spoon     Spoon
 //
 // *Not an actual recipe.
+import zio._
+import zio.magic._
 
 def run(args: List[String]): URIO[ZEnv, ExitCode] = {
   
