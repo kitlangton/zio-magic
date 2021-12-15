@@ -10,7 +10,7 @@ ThisBuild / organizationName := "kitlangton"
 ThisBuild / description      := "Magically construct ZLayers at compile-time (with friendly errors)"
 ThisBuild / homepage         := Some(url("https://github.com/kitlangton/zio-magic"))
 
-val zioVersion = "1.0.12"
+val zioVersion = "1.0.13"
 
 // Sonatype Publishing
 import xerial.sbt.Sonatype._
@@ -18,7 +18,7 @@ import xerial.sbt.Sonatype._
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 val sharedSettings = Seq(
-  licenses          := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
+  licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
 //  semanticdbEnabled := true,                        // enable SemanticDB
 //  semanticdbVersion := scalafixSemanticdb.revision, // use Scalafix compatible version
   developers := List(
