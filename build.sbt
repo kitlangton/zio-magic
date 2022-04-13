@@ -10,7 +10,7 @@ ThisBuild / organizationName := "kitlangton"
 ThisBuild / description      := "Magically construct ZLayers at compile-time (with friendly errors)"
 ThisBuild / homepage         := Some(url("https://github.com/kitlangton/zio-magic"))
 
-val zioVersion = "1.0.13"
+val zioVersion = "1.0.14"
 
 // Sonatype Publishing
 import xerial.sbt.Sonatype._
