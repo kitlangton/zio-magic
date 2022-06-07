@@ -10,7 +10,7 @@ ThisBuild / organizationName := "kitlangton"
 ThisBuild / description      := "Magically construct ZLayers at compile-time (with friendly errors)"
 ThisBuild / homepage         := Some(url("https://github.com/kitlangton/zio-magic"))
 
-val zioVersion = "1.0.13"
+val zioVersion = "1.0.14"
 
 // Sonatype Publishing
 import xerial.sbt.Sonatype._
@@ -32,7 +32,7 @@ val sharedSettings = Seq(
   libraryDependencies ++= Seq(
     "dev.zio" %%% "zio"          % zioVersion,
     "dev.zio" %%% "zio-macros"   % zioVersion,
-    "dev.zio" %%% "zio-test"     % zioVersion,
+    "dev.zio" %%% "zio-test"     % zioVersion % Test,
     "dev.zio" %%% "zio-test-sbt" % zioVersion % Test
   ),
   testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework"),
@@ -94,7 +94,7 @@ lazy val examples = (project in file("examples"))
       "org.tpolecat"         %% "doobie-core" % "0.10.0",
       "org.typelevel"        %% "cats-effect" % "2.3.1",
       "io.github.gaelrenoux" %% "tranzactio"  % "1.2.0",
-      "co.fs2"               %% "fs2-core"    % "2.5.0"
+      "co.fs2"               %% "fs2-core"    % "2.5.11"
     ),
     scalacOptions ++= Seq(
       "-Wunused:_", // Warn unused
