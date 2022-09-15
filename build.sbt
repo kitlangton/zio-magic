@@ -94,7 +94,7 @@ lazy val examples = (project in file("examples"))
       "org.tpolecat"         %% "doobie-core" % "0.10.0",
       "org.typelevel"        %% "cats-effect" % "2.3.1",
       "io.github.gaelrenoux" %% "tranzactio"  % "1.2.0",
-      "co.fs2"               %% "fs2-core"    % "2.5.11"
+      "co.fs2"               %% "fs2-core"    % "3.3.0"
     ),
     scalacOptions ++= Seq(
       "-Wunused:_", // Warn unused
